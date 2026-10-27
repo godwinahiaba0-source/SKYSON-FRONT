@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skysonsolar — Clean Energy Portal</title>
+<style>
+:root{--blue:#0878f9;--deep:#06459d;--green:#12a653;--ink:#103e83;--muted:#6f87ac;--line:#d9eaff;--bg:#f4f9ff;--card:#fff;--shadow:0 5px 18px #1458a30d}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}button,input{font:inherit}button{cursor:pointer}.app{display:none;max-width:520px;min-height:100vh;margin:auto;background:#f8fbff;box-shadow:0 0 35px #0c3c7714;position:relative;padding-bottom:86px}.auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(145deg,#06459d,#0878f9 58%,#eaf6ff)}.auth-card{width:min(430px,100%);background:#fff;border-radius:24px;padding:26px 22px;box-shadow:0 18px 55px #032e6a44}.auth-brand{text-align:center;color:#0750b0;margin-bottom:22px}.auth-logo{font-size:40px;width:76px;height:76px;margin:0 auto 10px;border-radius:24px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#12a653,#0878f9);box-shadow:0 8px 22px #0878f933;border:3px solid #e4f5ff}.auth-brand h1{font-size:27px;margin:4px 0}.auth-brand p{font-size:10px;letter-spacing:2px;margin:0}.auth-card h2{margin:0 0 7px;color:#103e83}.auth-sub{color:#6f87ac;font-size:13px;line-height:1.5;margin:0 0 20px}.auth-field{display:block;margin:13px 0;color:#315b91;font-size:12px;font-weight:700}.auth-field input{width:100%;margin-top:7px;padding:13px;border:1px solid #d9eaff;border-radius:12px;background:#f9fcff;outline-color:#0878f9}.auth-submit{width:100%;margin-top:12px;padding:14px;font-size:14px}.auth-toggle{border:0;background:none;color:#0878f9;font-weight:800;display:block;margin:16px auto 0}.demo-credentials{font-size:11px;line-height:1.6;background:#eef7ff;color:#315b91;padding:11px;border-radius:12px;margin-top:16px}.auth-error{font-size:12px;color:#d63838;margin-top:8px;min-height:16px}.app.logged-in{display:block}.topbar{background:linear-gradient(120deg,#064aa8,#087cf9);color:#fff;padding:15px 18px 17px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:10px}.logo{font-size:35px;line-height:1}.brand-name{font-size:22px;font-weight:850;letter-spacing:-.8px}.tagline{font-size:9px;letter-spacing:2px;font-weight:700;margin-top:2px}.top-actions{display:flex;gap:12px;font-size:21px}.icon-btn{background:transparent;border:0;color:white;font-size:22px;padding:3px}.page{display:none;padding:14px 14px 10px}.page.active{display:block}.hero{border-radius:18px;overflow:hidden;padding:20px 18px;color:#fff;background:linear-gradient(110deg,#0750b0f7 0%,#087cf9d9 48%,#0b78c9a8 100%),radial-gradient(circle at 80% 15%,#fff8a6,transparent 17%),linear-gradient(135deg,#137ec3,#0751a5);position:relative;min-height:170px}.hero{isolation:isolate}.hero-slides{position:absolute;inset:0;z-index:-1;background:#0750b0}.hero-slides img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s ease}.hero-slides img.active{opacity:1}.hero-shade{position:absolute;inset:0;background:linear-gradient(100deg,#063c8fe8,#0878f9a8 65%,#063c8f80);z-index:0}.hero h1,.hero p,.hero .pill-row{position:relative;z-index:1}.hero:after{content:'☀  ▦  ▦  ▦';position:absolute;right:-8px;bottom:0;font-size:54px;letter-spacing:-8px;color:#d5f0ff55;transform:rotate(-10deg)}.hero h1{font-size:23px;margin:0 0 7px;line-height:1.2;max-width:78%}.hero p{font-size:13px;line-height:1.5;margin:0;max-width:78%}.pill-row{display:flex;gap:13px;margin-top:17px;font-size:10px;font-weight:700;flex-wrap:wrap}.pill-row span{border-right:1px solid #ffffff55;padding-right:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);margin-top:13px;padding:15px}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:12px}.stats .stat{padding:7px 4px}.stats .stat:not(:last-child){border-right:0}.stats .stat-value{font-size:17px}.stat{min-width:0}.stat:not(:last-child){border-right:1px solid var(--line);padding-right:7px}.stat-label{font-size:10px;color:#426493;margin-bottom:6px}.stat-value{font-size:18px;font-weight:850;color:var(--blue);white-space:nowrap}.stat-value.green{color:var(--green)}.stat-value.small{font-size:15px}.shortcuts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 5px}.shortcut{border:0;background:transparent;color:var(--ink);font-weight:700;font-size:11px;display:flex;align-items:center;flex-direction:column;gap:6px;min-width:0}.shortcut .bubble{width:53px;height:53px;border-radius:50%;display:grid;place-items:center;color:white;font-size:24px;background:linear-gradient(145deg,#18a9ff,#0867ed);box-shadow:inset 0 2px 5px #fff4}.bubble.green{background:linear-gradient(145deg,#54d93d,#059d51)}.bubble.orange{background:linear-gradient(145deg,#ffca20,#ff8c00)}.bubble.purple{background:linear-gradient(145deg,#c35dff,#6e20d5)}.bubble.pink{background:linear-gradient(145deg,#ff7195,#e81e62)}.bubble.teal{background:linear-gradient(145deg,#17d7df,#0785c6)}.bonus-banner{background:linear-gradient(115deg,#071f76,#075fe2);color:#fff;border-radius:16px;padding:16px;display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:13px}.bonus-banner .gift{font-size:44px}.bonus-banner h2{margin:0;color:#ffd84b;font-size:23px}.bonus-banner p{margin:3px 0 0;font-size:11px;line-height:1.4}.bonus-side{text-align:center;min-width:120px}.bonus-side strong{display:block;font-size:18px;color:#ffe05a;margin:5px 0}.btn{border:0;border-radius:999px;background:var(--blue);color:#fff;font-weight:800;padding:11px 15px;font-size:12px}.btn.green{background:var(--green)}.btn.gold{background:linear-gradient(90deg,#ffe36a,#ffbd20);color:#153c83}.btn.outline{background:white;color:var(--blue);border:1px solid var(--line)}.section-head{display:flex;justify-content:space-between;align-items:center;margin:2px 0 12px;gap:10px}.section-head h2{font-size:17px;margin:0}.section-head button{font-size:11px}.plan-list{display:grid;gap:11px}.plan{border-radius:15px;padding:13px;border:1px solid var(--line);background:linear-gradient(120deg,#f0fff7,#fff)}.plan.blue{background:linear-gradient(120deg,#eff7ff,#fff)}.plan.purple{background:linear-gradient(120deg,#f8f0ff,#fff)}.plan.orange{background:linear-gradient(120deg,#fff6e8,#fff)}.plan-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.badge{font-size:11px;font-weight:800;border-radius:999px;background:#dff8e9;color:#078544;padding:6px 10px}.plan.blue .badge{background:#ddecff;color:#0872ed}.plan.purple .badge{background:#eee0ff;color:#7b39d7}.plan.orange .badge{background:#ffebcd;color:#c76b00}.kw{font-size:12px;font-weight:800}.plan-amount{font-size:22px;font-weight:900;margin:9px 0 2px}.plan .details{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:11px;color:#54739e;margin:9px 0 12px}.details strong{color:var(--ink)}.plan .btn{width:100%}.notice{background:#eaf6ff;border:1px solid #cfe7ff;border-radius:13px;padding:12px;font-size:11px;color:#315b91;line-height:1.5;margin-top:12px}.list{display:grid;gap:9px}.row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #edf3fc}.row:last-child{border-bottom:0}.row-icon{width:40px;height:40px;border-radius:13px;background:#e9f4ff;color:var(--blue);display:grid;place-items:center;font-size:20px;flex-shrink:0}.row-main{flex:1;min-width:0}.row-main strong{font-size:12px;display:block}.row-main small{font-size:10px;color:var(--muted);display:block;margin-top:4px}.row-end{text-align:right;font-size:11px;font-weight:800}.positive{color:var(--green)}.negative{color:#e45b50}.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:13px}.tab{border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 13px;border-radius:999px;white-space:nowrap;font-size:11px;font-weight:700}.tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}.search{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;background:white;outline:none;margin-bottom:10px}.team-title{display:flex;align-items:center;gap:14px;margin:-14px -14px 14px;padding:18px 14px;background:#fff;border-bottom:1px solid #edf0f5}.team-title h1{font-size:22px;margin:0;color:#161b24}.team-back{border:0;border-radius:10px;background:#f0f0f0;width:48px;height:48px;font-size:38px;line-height:1;color:#222}.team-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;text-align:center;margin:10px 0 20px}.team-summary div{min-width:0}.team-summary span{display:block;color:#252a32;font-size:13px;margin-bottom:8px}.team-summary strong,.downline-heading>strong{display:inline-block;background:#10a9df;color:#fff;border-radius:8px;padding:7px 9px;font-size:12px;white-space:nowrap;box-shadow:0 2px 5px #109ed522}.downline-card{background:#fff;border-radius:13px;box-shadow:0 4px 16px #0b31510d;margin:0 0 18px;padding:15px 12px;border:1px solid #eef2f6}.downline-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 -12px 14px;padding:0 12px 15px;border-bottom:1px solid #f0f2f5}.downline-heading h2{font-size:17px;color:#171c25;margin:0}.downline-card .search{border-radius:8px;margin-bottom:12px;padding:12px 13px}.downline-table-wrap{width:100%;overflow-x:auto}.downline-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;color:#30343b}.downline-table th,.downline-table td{text-align:left;padding:12px 8px;border:1px solid #e5e7eb;overflow-wrap:anywhere;vertical-align:middle}.downline-table th{font-weight:500;color:#656b75;background:#fff}.downline-table th:nth-child(1){width:32%}.downline-table th:nth-child(2){width:43%}.downline-table th:nth-child(3){width:25%}.downline-table td{line-height:1.5}.downline-pagination{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:14px 2px 2px;color:#7b818b;font-size:11px}.downline-pagination span{flex:1;min-width:120px;line-height:1.5}.downline-pagination .btn{font-size:10px;padding:9px 10px}.downline-pagination .btn:disabled{opacity:.45;cursor:default}@media(max-width:380px){.team-summary span{font-size:11px}.team-summary strong{font-size:10px;padding:7px 5px}.downline-table{font-size:11px}.downline-table th,.downline-table td{padding:10px 6px}}.profile{background:linear-gradient(120deg,#0750b0,#138df5);border-radius:17px;padding:18px;color:#fff;display:flex;gap:13px;align-items:center}.avatar{width:61px;height:61px;border-radius:50%;display:grid;place-items:center;background:#ffffff2e;font-size:28px}.profile h2{margin:0 0 4px;font-size:19px}.profile p{margin:3px 0;font-size:11px}.menu .row{cursor:pointer}.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:76px;background:#ffffffed;backdrop-filter:blur(12px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:5;padding:8px 3px 5px}.nav-btn{border:0;background:transparent;color:#7a8eae;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:700}.nav-btn .nav-icon{font-size:22px}.nav-btn.active{color:var(--blue)}.nav-btn.active:after{content:'';height:3px;width:44px;border-radius:4px;background:var(--blue);margin-top:1px}.modal-backdrop{position:fixed;inset:0;background:#06224d88;display:none;align-items:flex-end;justify-content:center;z-index:10}.modal-backdrop.show{display:flex}.modal{width:min(520px,100%);background:#fff;border-radius:22px 22px 0 0;padding:23px 20px 30px;box-shadow:0 -10px 40px #001c4633}.modal h2{margin:0 0 8px}.modal p{color:#58739b;font-size:13px;line-height:1.5}.modal-actions{display:flex;gap:10px;margin-top:18px}.modal-actions button{flex:1}.demo-label{text-align:center;font-size:10px;color:#6b82a6;padding:8px 10px 0}.empty{text-align:center;color:var(--muted);padding:25px 10px;font-size:12px}@media(min-width:521px){.app{margin:20px auto;border-radius:24px;overflow:hidden}.bottom-nav{bottom:20px;border-radius:0 0 24px 24px}}
+</style>
+</head>
+<body>
+<section class="auth-screen" id="authScreen"><div class="auth-card">
+<div class="auth-brand"><div class="auth-logo">☀️</div><h1>Skysonsolar</h1><p>CLEAN ENERGY · GREEN FUTURE</p></div>
+<div id="loginPanel"><h2>Welcome back</h2><p class="auth-sub">Log in with your username and password.</p>
+<label class="auth-field">Username<input id="loginUsername" autocomplete="username" placeholder="Enter your username"></label>
+<label class="auth-field">Password<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password"></label>
+<button class="btn auth-submit" onclick="loginDemo()">Log In →</button><div class="auth-error" id="authError"></div><button class="auth-toggle" onclick="toggleAuthMode(true)">Create an account</button>
+</div>
+<div id="signupPanel" style="display:none"><h2>Create an account</h2><p class="auth-sub">Register a secure account connected to the database.</p>
+<label class="auth-field">Username<input id="signupUsername" autocomplete="username" placeholder="Choose a username" required></label><label class="auth-field">Email address<input id="signupEmail" type="email" autocomplete="email" placeholder="Enter your email address" required></label><label class="auth-field">Create password<input id="signupPassword" type="password" autocomplete="new-password" placeholder="At least 8 characters" required></label><label class="auth-field">Repeat password<input id="signupConfirmPassword" type="password" autocomplete="new-password" placeholder="Enter the same password again" required></label><div class="notice">Your account and credentials will be registered safely with backend authentication.</div>
+<button class="btn auth-submit" onclick="signupDemo()">Create Account →</button><div class="auth-error" id="signupError"></div><button class="auth-toggle" onclick="toggleAuthMode(false)">Back to Log In</button></div>
+</div></section>
+<div class="app" id="mainApp">
+<header class="topbar"><div class="brand"><div class="logo">☀️</div><div><div class="brand-name">Skysonsolar</div><div class="tagline">CLEAN ENERGY · GREEN FUTURE</div></div></div><div class="top-actions"><select id="currencySelect" aria-label="Display currency" onchange="setCurrency(this.value)" style="max-width:88px;padding:7px 5px;border:1px solid #ffffff88;border-radius:9px;background:#fff;color:#06459d;font-size:12px;font-weight:800"><option value="GHS">🇬🇭 GHS</option><option value="USD">🇺🇸 USD</option></select><button class="icon-btn" onclick="showModal('Notifications','You have no new notifications.')">♧</button><button class="icon-btn" onclick="navigate('account')">♙</button></div></header>
+<main>
+<section id="home" class="page active">
+<div class="hero"><div class="hero-slides" aria-label="Solar energy image slideshow"><img class="active" src="solar-1.jpg" alt="Solar panels installed on a large building"><img src="solar-2.jpg" alt="Solar panels on rooftops"><img src="solar-3.jpg" alt="Industrial solar energy facility"></div><div class="hero-shade"></div><h1>Welcome to Skysonsolar</h1><p>Clean energy solutions for a brighter and more sustainable tomorrow.</p><div class="pill-row"><span>✓ Safe & Secure</span><span>ϟ Clean Energy</span><span>♧ Green Future</span></div></div>
+<div class="card stats"><div class="stat"><div class="stat-label">Total Balance (withdrawable)</div><div class="stat-value" id="balance">GH₵ 0.00</div></div><div class="stat"><div class="stat-label">Today's Earnings</div><div class="stat-value green small" id="today">GH₵ 0.00</div></div><div class="stat"><div class="stat-label">Yesterday's Earnings</div><div class="stat-value green small" id="yesterday">GH₵ 0.00</div></div><div class="stat"><div class="stat-label">Total Deposit Amount (lease only)</div><div class="stat-value small" id="totalDeposit">GH₵ 0.00</div></div></div>
+<div class="card shortcuts">
+<button class="shortcut" onclick="showModal('Recharge','Payment gateway connection pending.')"><span class="bubble">▣</span>Recharge</button>
+<button class="shortcut" onclick="openWithdraw()"><span class="bubble green">⇧</span>Withdraw</button>
+<button class="shortcut" onclick="navigate('bonus')"><span class="bubble orange">🎁</span>Bonus</button>
+<button class="shortcut" onclick="navigate('team')"><span class="bubble purple">♟</span>My Invitation</button>
+<button class="shortcut" onclick="showModal('Savings','Savings features can be added once product terms are defined.')"><span class="bubble pink">♧</span>Savings</button>
+<button class="shortcut" onclick="navigate('record')"><span class="bubble teal">▤</span>Task Center</button>
+<button class="shortcut" onclick="showModal('Customer Service','Add your verified support email or help desk here.')"><span class="bubble">☏</span>Customer Service</button>
+<button class="shortcut" onclick="showModal('Telegram','Add your official Telegram community link.')"><span class="bubble purple">➤</span>Telegram</button>
+</div>
+<div class="bonus-banner"><div class="gift">🎁</div><div style="flex:1"><h2>BONUS</h2><p>Check your eligibility and claim available rewards.</p></div><div class="bonus-side"><strong id="bonusAmount">GH₵ 0.00</strong><button class="btn gold" onclick="navigate('bonus')">Claim Bonus →</button></div></div>
+
+<div class="card"><div class="section-head"><h2>Recent Activity</h2><button class="btn outline" onclick="navigate('record')">View all →</button></div><div id="homeActivity" class="list"><div class="empty">Your recent activity will appear here.</div></div></div>
+</section>
+<section id="lease" class="page"><div class="hero"><h1>Lease Your Plan</h1><p>Explore sample solar lease products and review terms before proceeding.</p><div class="pill-row"><span>☀ Solar energy</span><span>♧ Clean future</span></div></div><div class="notice"><b>Important:</b> Product prices and daily-income figures are illustrative.</div><div class="card"><div class="section-head"><h2>Available Lease Products</h2><span style="font-size:11px;color:var(--muted)">11 products</span></div><div id="allPlans" class="plan-list"></div></div><div class="card"><div class="section-head"><h2>My Leases</h2></div><div id="myLeases" class="empty">You have not started an active lease.</div></div></section>
+<section id="team" class="page"><div class="team-title"><button class="team-back" onclick="navigate('home')" aria-label="Back">‹</button><h1>Downlines</h1></div><div class="team-summary"><div><span>Referred</span><strong id="teamReferred">0 Users</strong></div><div><span>Earned</span><strong id="teamEarned">GH₵ 0.00</strong></div><div><span>Withdrawn</span><strong>GH₵ 0.00</strong></div></div><div class="downline-card"><div class="downline-heading"><h2>Level 1</h2><strong id="level1Count">0 Users</strong></div><input class="search" placeholder="Search..." oninput="searchTeam(this.value,'level1')"><div class="downline-table-wrap"><table class="downline-table"><thead><tr><th>Username</th><th>Email</th><th>Referred On</th></tr></thead><tbody id="level1Rows"></tbody></table></div><div class="downline-pagination"><span id="level1PageInfo">0 of 0 row(s) selected.</span><button class="btn outline" onclick="changeTeamPage('level1',-1)">Previous</button><button class="btn outline" onclick="changeTeamPage('level1',1)">Next</button></div></div><div class="card"><div class="section-head"><h2>Your Invitation Code</h2></div><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><strong id="userInviteCodeDisplay" style="font-size:24px;color:var(--blue);letter-spacing:2px">SKY7291</strong><button class="btn" onclick="copyCode()">Copy Code</button></div><p style="font-size:12px;color:var(--muted)">Share your code with friends who want to join.</p><button class="btn green" style="width:100%" onclick="shareInvite()">Invite Friends</button></div></section>
+<section id="record" class="page"><div class="hero"><h1>Transaction Records</h1><p>Review lease activity and bonus claims.</p></div><div class="card stats"><div class="stat"><div class="stat-label">Total Leases</div><div class="stat-value" id="recordLeases">0</div></div><div class="stat"><div class="stat-label">Earnings</div><div class="stat-value green small" id="recordEarn">GH₵ 0.00</div></div><div class="stat"><div class="stat-label">Bonus Claims</div><div class="stat-value" id="recordBonus">0</div></div></div><div class="card"><div class="tabs"><button class="tab active" onclick="filterRecords('All',this)">All</button><button class="tab" onclick="filterRecords('Lease',this)">Leases</button><button class="tab" onclick="filterRecords('Bonus',this)">Bonuses</button></div><div id="recordsList" class="list"><div class="empty">No records yet.</div></div></div></section>
+<section id="bonus" class="page"><div class="hero"><h1>🎁 Bonus Center</h1><p>Enter a bonus code supplied by the administrator to claim your reward.</p></div><div class="card"><div class="section-head"><h2>Claim a Bonus Code</h2><span class="badge">🎁 Rewards</span></div><label class="auth-field">Bonus code<input id="bonusCodeInput" placeholder="e.g. CI5RWF" autocomplete="off" style="text-transform:uppercase"></label><button class="btn gold" id="claimCodeButton" style="width:100%;padding:14px" onclick="claimBonusCode()">CLAIM BONUS</button><div id="bonusCodeMessage" class="notice" style="display:none"></div></div><div class="card"><h2 style="font-size:16px">My Bonus Claims</h2><div id="myBonusClaims" class="list"><div class="empty">No bonus codes claimed yet.</div></div></div></section>
+<section id="account" class="page"><div class="profile"><div class="avatar">♙</div><div><h2 id="accountUsernameDisplay">User</h2><p id="accountInviteDisplay">Invitation code: SKY7291</p><p>● Active account</p></div></div><div class="card stats"><div class="stat"><div class="stat-label">Balance</div><div class="stat-value small" id="accountBalance">GH₵ 0.00</div></div><div class="stat"><div class="stat-label">Earnings</div><div class="stat-value green small" id="accountEarnings">GH₵ 0.00</div></div><div class="stat"><div class="stat-label">Leases</div><div class="stat-value" id="accountLeases">0</div></div></div><div class="card menu"><div class="row" onclick="showModal('Personal Information','Profile editing features coming soon.')"><div class="row-icon">♙</div><div class="row-main"><strong>Personal Information</strong><small>View profile details</small></div><b>›</b></div><div class="row" onclick="showModal('Payment Methods','Manage payment details securely.')"><div class="row-icon">▤</div><div class="row-main"><strong>Payment Methods</strong><small>Manage bank or mobile money</small></div><b>›</b></div><div class="row" onclick="logoutDemo()"><div class="row-icon">⇥</div><div class="row-main"><strong>Log Out</strong><small>Return to login screen</small></div><b>›</b></div></div></section>
+</main>
+<nav class="bottom-nav"><button class="nav-btn active" data-page="home" onclick="navigate('home')"><span class="nav-icon">⌂</span>Home</button><button class="nav-btn" data-page="lease" onclick="navigate('lease')"><span class="nav-icon">⬡</span>Lease</button><button class="nav-btn" data-page="team" onclick="navigate('team')"><span class="nav-icon">♟</span>Team</button><button class="nav-btn" data-page="record" onclick="navigate('record')"><span class="nav-icon">▤</span>Record</button><button class="nav-btn" data-page="account" onclick="navigate('account')"><span class="nav-icon">♙</span>Account</button></nav>
+</div>
+<div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target===this)closeModal()"><div class="modal"><h2 id="modalTitle">Notice</h2><p id="modalText"></p><div class="modal-actions"><button class="btn outline" onclick="closeModal()">Close</button><button class="btn" onclick="closeModal()">OK</button></div></div></div>
+<script>
+const plans=[{name:'R0',kw:'Entry Solar Lease',amount:0,daily:3,days:3,cls:'',icon:'☀'},{name:'R1',kw:'Solar Lease Product',amount:100,daily:5,days:45,cls:'blue',icon:'☀'},{name:'R2',kw:'Solar Lease Product',amount:200,daily:12,days:160,cls:'purple',icon:'☀'},{name:'R3',kw:'Solar Lease Product',amount:600,daily:25,days:160,cls:'orange',icon:'☀'},{name:'R4',kw:'Solar Lease Product',amount:1000,daily:42,days:160,cls:'',icon:'☀'},{name:'R5',kw:'Solar Lease Product',amount:1500,daily:62,days:160,cls:'blue',icon:'☀'},{name:'R6',kw:'Solar Lease Product',amount:2500,daily:97,days:160,cls:'purple',icon:'☀'},{name:'R7',kw:'Solar Lease Product',amount:4000,daily:168,days:160,cls:'orange',icon:'☀'},{name:'R8',kw:'Solar Lease Product',amount:8000,daily:350,days:160,cls:'',icon:'☀'},{name:'R9',kw:'Solar Lease Product',amount:15000,daily:600,days:160,cls:'blue',icon:'☀'},{name:'R10',kw:'Solar Lease Product',amount:25000,daily:1500,days:160,cls:'purple',icon:'☀'}];
+
+let state={bonus:0,balance:0,deposit:0,leases:[],records:[],earnings:0,todayEarnings:0,yesterdayEarnings:0,claimedCodes:[]};
+let recordFilter='All';
+let displayCurrency='GHS';
+
+const money=n=>{const value=Number(n)||0;const shown=displayCurrency==='USD'?value/12:value;return (displayCurrency==='USD'?'$':'GH₵ ')+shown.toLocaleString(displayCurrency==='USD'?'en-US':'en-GH',{minimumFractionDigits:2,maximumFractionDigits:2})};
+
+function setCurrency(currency){displayCurrency=currency==='USD'?'USD':'GHS';render();}
+function render(){
+  renderPlans('allPlans');
+  let balance=Number(state.balance)||0;
+  document.getElementById('balance').textContent=money(balance);
+  document.getElementById('today').textContent=money(state.todayEarnings);
+  document.getElementById('yesterday').textContent=money(state.yesterdayEarnings);
+  document.getElementById('totalDeposit').textContent=money(state.deposit);
+  document.getElementById('accountBalance').textContent=money(balance);
+  document.getElementById('accountEarnings').textContent=money(state.earnings);
+  document.getElementById('accountLeases').textContent=state.leases.length;
+  document.getElementById('recordLeases').textContent=state.leases.length;
+  document.getElementById('recordEarn').textContent=money(state.earnings);
+  document.getElementById('recordBonus').textContent=state.records.filter(r=>r.type==='Bonus').length;
+  document.getElementById('bonusAmount').textContent=money(state.bonus);
+  
+  const currentUser = JSON.parse(localStorage.getItem('skysonsolar_current_user') || '{}');
+  if(currentUser.username) {
+    document.getElementById('accountUsernameDisplay').textContent = currentUser.username;
+    document.getElementById('accountInviteDisplay').textContent = 'Invitation code: ' + (currentUser.invitationCode || 'SKY7291');
+    document.getElementById('userInviteCodeDisplay').textContent = currentUser.invitationCode || 'SKY7291';
+  }
+
+  document.getElementById('myLeases').innerHTML=state.leases.length?state.leases.map(l=>`<div class="row"><div class="row-icon">☀</div><div class="row-main"><strong>${l.name}</strong><small>${l.days} days active</small></div><div class="row-end">${money(l.amount)}</div></div>`).join(''):'<div class="empty">You have not started a lease.</div>';
+  let activity=state.records.slice();
+  document.getElementById('homeActivity').innerHTML=activity.length?activity.slice(0,3).map(recordHtml).join(''):'<div class="empty">Your activity will appear here.</div>';
+  let filtered=activity.filter(r=>recordFilter==='All'||r.type===recordFilter);
+  document.getElementById('recordsList').innerHTML=filtered.length?filtered.map(recordHtml).join(''):'<div class="empty">No records in this category yet.</div>';
+}
+
+function recordHtml(r){return `<div class="row"><div class="row-icon">${r.type==='Bonus'?'🎁':r.type==='Lease'?'☀':'▤'}</div><div class="row-main"><strong>${r.title}</strong><small>${r.date}</small></div><div class="row-end ${r.type==='Bonus'?'positive':''}">${r.type==='Bonus'?'+ ':''}${money(r.amount)}</div></div>`}
+function navigate(page){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===page));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===page));window.scrollTo({top:0,behavior:'smooth'});}
+function showModal(title,text){document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text;document.querySelector('#modalBackdrop .modal-actions').style.display='';document.getElementById('modalBackdrop').classList.add('show')}function closeModal(){document.getElementById('modalBackdrop').classList.remove('show');document.querySelector('#modalBackdrop .modal-actions').style.display=''}
+function showInline(id,msg,ok=false){const el=document.getElementById(id);el.style.display='block';el.textContent=msg;el.style.borderColor=ok?'#b8e8cc':'#ffd0c9';el.style.background=ok?'#effcf4':'#fff3f1';el.style.color=ok?'#08783e':'#a33228'}
+function openWithdraw(){showModal('Withdraw from Total Balance',`Available to withdraw: ${money(state.balance)}.`);document.getElementById('modalText').innerHTML=`<p>Available withdrawable balance: <b>${money(state.balance)}</b></p><label class="auth-field">Withdrawal amount<input id="withdrawAmount" type="number" min="0.01" step="0.01" placeholder="Enter amount"></label><div id="withdrawMessage" class="auth-error"></div><button class="btn green" onclick="submitWithdraw()">Submit Request</button>`;document.querySelector('#modalBackdrop .modal-actions').style.display='none'}
+function submitWithdraw(){closeModal();showModal('Request Recorded','Your withdrawal request has been submitted to the server.');}
+
+function renderPlans(target){document.getElementById(target).innerHTML=plans.map((p,i)=>`<div class="plan ${p.cls}"><div class="plan-top"><span class="badge">${p.name}</span><span class="kw">${p.kw}</span></div><div class="plan-amount">${p.amount===0?'Free':money(p.amount)}</div><div class="details"><span>Daily income</span><strong>${money(p.daily)}</strong><span>Lease period</span><strong>${p.days} days</strong></div><button class="btn ${i===0?'green':''}" onclick="leasePlan(${i})">Lease Product →</button></div>`).join('')}
+function leasePlan(i){const p=plans[i];state.leases.push({name:p.name,amount:p.amount,days:p.days});state.records.push({type:'Lease',title:p.name+' leased',amount:p.amount,date:new Date().toLocaleDateString()});render();showModal('Success','Lease activated successfully.')}
+
+function filterRecords(f,el){recordFilter=f;document.querySelectorAll('.tabs .tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');render()}
+function copyCode(){const code=document.getElementById('userInviteCodeDisplay').textContent;navigator.clipboard.writeText(code).then(()=>showModal('Copied','Invitation code copied.'))}
+function shareInvite(){copyCode()}
+
+function toggleAuthMode(signup){document.getElementById('loginPanel').style.display=signup?'none':'block';document.getElementById('signupPanel').style.display=signup?'block':'none'}
+function enterApp(){document.getElementById('authScreen').style.display='none';document.getElementById('mainApp').classList.add('logged-in');render();}
+
+async function loginDemo(){
+    const username=document.getElementById('loginUsername').value.trim();
+    const password=document.getElementById('loginPassword').value;
+    const error=document.getElementById('authError');
+    error.textContent='';
+
+    if(!username||!password){error.textContent='Please enter both username and password.';return;}
+
+    try{
+        const response=await fetch('http://localhost:5000/api/auth/login',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({username,password})
+        });
+        const data=await response.json();
+        if(!response.ok){error.textContent=data.error||'Login failed.';return;}
+
+        localStorage.setItem('skysonsolar_token',data.token);
+        localStorage.setItem('skysonsolar_current_user',JSON.stringify(data.user));
+        enterApp();
+    }catch(err){error.textContent='Could not connect to the backend server.';}
+}
+
+async function signupDemo(){
+    const username=document.getElementById('signupUsername').value.trim();
+    const email=document.getElementById('signupEmail').value.trim().toLowerCase();
+    const password=document.getElementById('signupPassword').value;
+    const confirmPassword=document.getElementById('signupConfirmPassword').value;
+    const error=document.getElementById('signupError');
+    error.textContent='';
+
+    if(username.length<3){error.textContent='Username must be at least 3 characters.';return;}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){error.textContent='Enter a valid email address.';return;}
+    if(password.length<8){error.textContent='Password must contain at least 8 characters.';return;}
+    if(password!==confirmPassword){error.textContent='Passwords do not match.';return;}
+
+    try{
+        const response=await fetch('http://localhost:5000/api/auth/register',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({username,email,password})
+        });
+        const data=await response.json();
+        if(!response.ok){error.textContent=data.error||'Registration failed.';return;}
+
+        localStorage.setItem('skysonsolar_token',data.token);
+        localStorage.setItem('skysonsolar_current_user',JSON.stringify(data.user));
+        enterApp();
+    }catch(err){error.textContent='Could not connect to the backend server.';}
+}
+
+function logoutDemo(){
+    localStorage.removeItem('skysonsolar_token');
+    localStorage.removeItem('skysonsolar_current_user');
+    document.getElementById('mainApp').classList.remove('logged-in');
+    document.getElementById('authScreen').style.display='flex';
+    toggleAuthMode(false);
+}
+
+// Check existing login session on load
+window.addEventListener('DOMContentLoaded', ()=>{
+    const token=localStorage.getItem('skysonsolar_token');
+    if(token){enterApp();}else{document.getElementById('authScreen').style.display='flex';}
+});
+
+const heroSlides=[...document.querySelectorAll('.hero-slides img')];let heroSlideIndex=0;if(heroSlides.length>1){setInterval(()=>{heroSlides[heroSlideIndex].classList.remove('active');heroSlideIndex=(heroSlideIndex+1)%heroSlides.length;heroSlides[heroSlideIndex].classList.add('active')},4000)}
+</script>
+</body>
+</html>
