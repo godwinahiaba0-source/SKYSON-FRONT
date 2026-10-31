@@ -13,7 +13,7 @@
 .menu-main strong { font-size: 13px; display: block; color: var(--ink); }
 .menu-main small { font-size: 10px; color: var(--muted); display: block; margin-top: 2px; }
 
-/* Modal Overlay for Security */
+/* Modal Overlay for Modals */
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
   display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px;
@@ -21,6 +21,7 @@
 .modal-card {
   width: min(400px, 100%); background: #fff; border-radius: 20px; padding: 24px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: scaleIn 0.2s ease;
+  max-height: 85vh; overflow-y: auto;
 }
 @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .modal-title { font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
@@ -57,6 +58,11 @@
     </div>
   </header>
 
+  <script src="app.js"></script>
+<script>
+  requireAuth(); // Redirects to login if not logged in
+</script>
+
   <main class="page">
     <div class="card stats">
       <div class="stat"><div class="stat-label">Balance</div><div class="stat-value small" id="accBalance">GH₵ 0.00</div></div>
@@ -85,10 +91,16 @@
         <div class="menu-main"><strong>Transaction History</strong><small>View account activity</small></div>
         <span style="color:var(--muted)">›</span>
       </div>
-      <!-- Customer Support Redirects to Telegram @DaisyEmily01_jobs -->
+      <!-- Customer Support Redirects to Telegram -->
       <div class="menu-row" onclick="window.open('https://t.me/DaisyEmily01', '_blank')">
         <div class="menu-icon">☏</div>
         <div class="menu-main"><strong>Customer Support</strong><small>Get help and contact us on Telegram</small></div>
+        <span style="color:var(--muted)">›</span>
+      </div>
+      <!-- About Us Tab -->
+      <div class="menu-row" onclick="openAboutModal()">
+        <div class="menu-icon">ℹ️</div>
+        <div class="menu-main"><strong>About Us</strong><small>Learn more about Skysonsolar platform</small></div>
         <span style="color:var(--muted)">›</span>
       </div>
       <div class="menu-row" onclick="logoutUser()">
@@ -140,6 +152,35 @@
     </div>
   </div>
 
+  <!-- About Us Modal -->
+  <div class="modal-overlay" id="aboutModal">
+    <div class="modal-card">
+      <div class="modal-title">
+        <span>About Our Company</span>
+        <button class="close-btn" onclick="closeAboutModal()">×</button>
+      </div>
+      <div style="font-size: 12px; color: var(--ink); line-height: 1.6; font-weight: 500;">
+        <p style="margin-bottom: 12px; font-weight: 700; color: var(--blue);">A BRIEF INFORMATION ABOUT OUR COMPANY</p>
+        
+        <p style="margin-bottom: 10px;"><strong>SKYSONSOLAR COMPANY LTD.</strong> was founded in 1997, with the aim of production, supplying, and maintenance of solar panels for generating electricity power. This setup was designed with the main goal of stabilizing electrical power systems across the globe through sunshine, leading to our first development strategy and the main driving force for building a comprehensive and leading technological innovation system.</p>
+        
+        <p style="margin-bottom: 10px;">So far, Skysonsolar has successfully developed technological facilities capable of producing effective solar equipment to facilitate the aim of stabilizing electrical energy through sunshine.</p>
+        
+        <p style="margin-bottom: 10px;">Skysonsolar began in China and has extended its wings globally to make work efficient and effective, achieving our core motives for global electricity stability.</p>
+        
+        <p style="margin-bottom: 10px;">Offices have been established in Zurich-Switzerland, UAE-Dubai & Sharjah, Singapore, Tokyo, Japan, and other regional headquarters in Australia, Korea, India, Turkey, Italy, Germany, Spain, UK, South Africa, Brazil, Chile, Colombia, and Mexico. Local services have also been established in many other countries to promote global marketing and service centers, alongside production and manufacturing bases in Thailand, Vietnam, and other overseas countries, with business partnerships covering more than 100 countries and sectors around the world.</p>
+        
+        <p style="margin-bottom: 10px;">The company has been operating in <strong>Ghana 🇬🇭</strong> through distribution and maintenance services of solar power generators and panels since 2024.</p>
+        
+        <p style="margin-bottom: 10px;">To help citizens who haven’t yet accessed our power supply services directly, company management decided to establish this online platform. This platform aims to help citizens financially through our investment services while extending our reach to far-flung communities across the nation.</p>
+        
+        <p style="font-size: 11px; color: var(--muted); text-align: center; margin-top: 16px; border-top: 1px solid var(--line); padding-top: 10px;">
+          Clean Energy · Green Future © 2026
+        </p>
+      </div>
+    </div>
+  </div>
+
   <nav class="bottom-nav">
     <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
     <button class="nav-btn" onclick="location.href='lease.html'"><span class="nav-icon">⬡</span>Lease</button>
@@ -150,7 +191,7 @@
 </div>
 
 <script>
-const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live backend URL
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 
 function openSecurityModal() {
   document.getElementById('securityModal').style.display = 'flex';
@@ -159,6 +200,14 @@ function openSecurityModal() {
 
 function closeSecurityModal() {
   document.getElementById('securityModal').style.display = 'none';
+}
+
+function openAboutModal() {
+  document.getElementById('aboutModal').style.display = 'flex';
+}
+
+function closeAboutModal() {
+  document.getElementById('aboutModal').style.display = 'none';
 }
 
 function switchSecTab(tab) {
