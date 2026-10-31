@@ -143,7 +143,7 @@
 </section>
 
 <script>
-const API_URL = 'https://skyson-backend-production.up.railway.app'; // Live Railway backend URL
+const API_URL = 'https://skyson-backend-production.up.railway.app';
 
 function toggleAuth(isSignup) {
   document.getElementById('loginPanel').style.display = isSignup ? 'none' : 'block';
@@ -152,7 +152,6 @@ function toggleAuth(isSignup) {
   document.getElementById('signupError').textContent = '';
 }
 
-// Auto-populate invitation code if URL contains ?invite=CODE
 window.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('skyson_token')) {
     window.location.href = 'home.html';
@@ -173,7 +172,10 @@ async function loginUser() {
   const error = document.getElementById('authError');
   error.textContent = '';
 
-  if(!username || !password) { error.textContent = 'Please fill in all fields.'; return; }
+  if(!username || !password) { 
+    error.textContent = 'Please fill in all fields.'; 
+    return; 
+  }
 
   try {
     const res = await fetch(`${API_URL}/api/auth/login`, {
@@ -181,10 +183,11 @@ async function loginUser() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
-    const data = await res.json();
+    
+    const data = await res.json().catch(() => ({}));
     
     if(!res.ok) { 
-      error.textContent = data.message || data.error || 'Login failed.'; 
+      error.textContent = data.message || data.error || `Login failed (Error ${res.status})`; 
       return; 
     }
 
@@ -226,10 +229,11 @@ async function signupUser() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password, invitationCode })
     });
-    const data = await res.json();
+    
+    const data = await res.json().catch(() => ({}));
     
     if(!res.ok) { 
-      error.textContent = data.message || data.error || 'Registration failed.'; 
+      error.textContent = data.message || data.error || `Registration failed (Error ${res.status})`; 
       return; 
     }
 
