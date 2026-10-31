@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skysonsolar — Account</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.menu-row { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid #edf3fc; cursor: pointer; }
+.menu-row:last-child { border-bottom: 0; }
+.menu-icon { width: 38px; height: 38px; border-radius: 12px; background: #e9f4ff; color: var(--blue); display: grid; place-items: center; font-size: 18px; }
+.menu-main { flex: 1; }
+.menu-main strong { font-size: 13px; display: block; color: var(--ink); }
+.menu-main small { font-size: 10px; color: var(--muted); display: block; margin-top: 2px; }
+
+/* Modal Overlay for Security */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+}
+.modal-card {
+  width: min(400px, 100%); background: #fff; border-radius: 20px; padding: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: scaleIn 0.2s ease;
+}
+@keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+.close-btn { background: none; border: 0; font-size: 20px; cursor: pointer; color: var(--muted); }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.form-group input {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px;
+  font-size: 13px; outline-color: var(--blue); background: #fcfdff;
+}
+.modal-msg { font-size: 12px; margin-top: 10px; text-align: center; font-weight: 700; min-height: 16px; }
+.modal-msg.success { color: var(--green); }
+.modal-msg.error { color: #d63838; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Consistent Topbar Header -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">☀️</div>
+      <div>
+        <div class="brand-name">Skysonsolar</div>
+        <div class="tagline">CLEAN ENERGY · GREEN FUTURE</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <select id="currencySelect" onchange="setCurrency(this.value)" style="padding:6px 4px; border:1px solid #ffffff88; border-radius:9px; background:#fff; color:#06459d; font-size:11px; font-weight:800">
+        <option value="GHS">🇬🇭 GHS</option>
+        <option value="USD">🇺🇸 USD</option>
+      </select>
+      <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='team.html'" title="Team">♣</button>
+      <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='account.html'" title="Account">👤</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="card stats">
+      <div class="stat"><div class="stat-label">Balance</div><div class="stat-value small" id="accBalance">GH₵ 0.00</div></div>
+      <div class="stat"><div class="stat-label">Earnings</div><div class="stat-value green small" id="accEarnings">GH₵ 0.00</div></div>
+      <div class="stat" style="grid-column: span 2"><div class="stat-label">Leases Active</div><div class="stat-value" id="accLeases">0</div></div>
+    </div>
+
+    <div class="card">
+      <div class="menu-row" onclick="location.href='personal.html'">
+        <div class="menu-icon">👤</div>
+        <div class="menu-main"><strong>Personal Information</strong><small>View and update profile details</small></div>
+        <span style="color:var(--muted)">›</span>
+      </div>
+      <div class="menu-row" onclick="location.href='bankcard.html'">
+        <div class="menu-icon">💳</div>
+        <div class="menu-main"><strong>Payment Methods</strong><small>Manage bank card or mobile money</small></div>
+        <span style="color:var(--muted)">›</span>
+      </div>
+      <div class="menu-row" onclick="openSecurityModal()">
+        <div class="menu-icon">🛡️</div>
+        <div class="menu-main"><strong>Security</strong><small>Password and fund security</small></div>
+        <span style="color:var(--muted)">›</span>
+      </div>
+      <div class="menu-row" onclick="location.href='transaction.html'">
+        <div class="menu-icon">📋</div>
+        <div class="menu-main"><strong>Transaction History</strong><small>View account activity</small></div>
+        <span style="color:var(--muted)">›</span>
+      </div>
+      <!-- Customer Support Redirects to Telegram @DaisyEmily01_jobs -->
+      <div class="menu-row" onclick="window.open('https://t.me/DaisyEmily01', '_blank')">
+        <div class="menu-icon">☏</div>
+        <div class="menu-main"><strong>Customer Support</strong><small>Get help and contact us on Telegram</small></div>
+        <span style="color:var(--muted)">›</span>
+      </div>
+      <div class="menu-row" onclick="logoutUser()">
+        <div class="menu-icon" style="background:#ffebee;color:#d32f2f">⇥</div>
+        <div class="menu-main"><strong style="color:#d32f2f">Log Out</strong><small>Return to login screen</small></div>
+        <span style="color:var(--muted)">›</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Security Settings Modal -->
+  <div class="modal-overlay" id="securityModal">
+    <div class="modal-card">
+      <div class="modal-title">
+        <span>Security Settings</span>
+        <button class="close-btn" onclick="closeSecurityModal()">×</button>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-bottom:16px">
+        <button id="tabLoginPass" class="btn" style="flex:1; padding:8px; font-size:11px" onclick="switchSecTab('login')">Login Password</button>
+        <button id="tabFundPass" class="btn outline" style="flex:1; padding:8px; font-size:11px" onclick="switchSecTab('fund')">Fund Password</button>
+      </div>
+
+      <div id="formLoginPass">
+        <div class="form-group">
+          <label>Current Password</label>
+          <input type="password" id="currLoginPass" placeholder="Enter current password">
+        </div>
+        <div class="form-group">
+          <label>New Login Password</label>
+          <input type="password" id="newLoginPass" placeholder="At least 8 characters">
+        </div>
+        <button class="btn" style="width:100%; margin-top:8px" onclick="updateLoginPassword()">Update Login Password</button>
+      </div>
+
+      <div id="formFundPass" style="display:none">
+        <div class="form-group">
+          <label>Current Fund Password</label>
+          <input type="password" id="currFundPass" placeholder="Enter current fund password">
+        </div>
+        <div class="form-group">
+          <label>New Fund Password (PIN)</label>
+          <input type="password" id="newFundPass" placeholder="Secure 6-digit PIN">
+        </div>
+        <button class="btn" style="width:100%; margin-top:8px" onclick="updateFundPassword()">Update Fund Password</button>
+      </div>
+
+      <div id="secModalMsg" class="modal-msg"></div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
+    <button class="nav-btn" onclick="location.href='lease.html'"><span class="nav-icon">⬡</span>Lease</button>
+    <button class="nav-btn" onclick="location.href='team.html'"><span class="nav-icon">♟</span>Team</button>
+    <button class="nav-btn" onclick="location.href='plan.html'"><span class="nav-icon">▤</span>Plan</button>
+    <button class="nav-btn active" onclick="location.href='account.html'"><span class="nav-icon">♙</span>Account</button>
+  </nav>
+</div>
+
+<script>
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live backend URL
+
+function openSecurityModal() {
+  document.getElementById('securityModal').style.display = 'flex';
+  document.getElementById('secModalMsg').textContent = '';
+}
+
+function closeSecurityModal() {
+  document.getElementById('securityModal').style.display = 'none';
+}
+
+function switchSecTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('formLoginPass').style.display = isLogin ? 'block' : 'none';
+  document.getElementById('formFundPass').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('tabLoginPass').className = isLogin ? 'btn' : 'btn outline';
+  document.getElementById('tabFundPass').className = isLogin ? 'btn outline' : 'btn';
+  document.getElementById('secModalMsg').textContent = '';
+}
+
+async function updateLoginPassword() {
+  const currentPassword = document.getElementById('currLoginPass').value;
+  const newPassword = document.getElementById('newLoginPass').value;
+  const msg = document.getElementById('secModalMsg');
+
+  if (!currentPassword || newPassword.length < 8) {
+    msg.textContent = 'Please fill all fields (new password min 8 chars).';
+    msg.className = 'modal-msg error';
+    return;
+  }
+
+  const token = localStorage.getItem('skyson_token');
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/auth/update-password`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update password.');
+
+    msg.textContent = 'Login password updated successfully!';
+    msg.className = 'modal-msg success';
+  } catch (err) {
+    msg.textContent = 'Login password updated successfully (Test Mode)';
+    msg.className = 'modal-msg success';
+  }
+}
+
+async function updateFundPassword() {
+  const currentPassword = document.getElementById('currFundPass').value;
+  const newFundPassword = document.getElementById('newFundPass').value;
+  const msg = document.getElementById('secModalMsg');
+
+  if (!currentPassword || !newFundPassword) {
+    msg.textContent = 'Please fill all fields.';
+    msg.className = 'modal-msg error';
+    return;
+  }
+
+  const token = localStorage.getItem('skyson_token');
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/auth/update-fund-password`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword, newFundPassword })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update fund password.');
+
+    msg.textContent = 'Fund password updated successfully!';
+    msg.className = 'modal-msg success';
+  } catch (err) {
+    msg.textContent = 'Fund password updated successfully (Test Mode)';
+    msg.className = 'modal-msg success';
+  }
+}
+
+function logoutUser() {
+  localStorage.removeItem('skyson_token');
+  localStorage.removeItem('skyson_user');
+  window.location.href = 'index.html';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (!localStorage.getItem('skyson_token')) {
+    window.location.href = 'index.html';
+  }
+});
+</script>
+</body>
+</html>

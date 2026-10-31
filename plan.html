@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skysonsolar — Product Revenue Chart</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* Header Action Row */
+.header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 0;
+  color: #fff;
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+.header-nav h1 {
+  font-size: 20px;
+  color: #fff;
+  margin: 0;
+  font-weight: 800;
+}
+
+/* Chart Reference Image Banner */
+.chart-banner-card {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+  margin-bottom: 16px;
+  text-align: center;
+}
+.chart-banner-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Consistent Topbar Header -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">☀️</div>
+      <div>
+        <div class="brand-name">Skysonsolar</div>
+        <div class="tagline">CLEAN ENERGY · GREEN FUTURE</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <select id="currencySelect" onchange="setCurrency(this.value)" style="padding:6px 4px; border:1px solid #ffffff88; border-radius:9px; background:#fff; color:#06459d; font-size:11px; font-weight:800">
+        <option value="GHS">🇬🇭 GHS</option>
+        <option value="USD">🇺🇸 USD</option>
+      </select>
+      <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='team.html'" title="Team">♣</button>
+      <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='account.html'" title="Account">👤</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- Header Navigation Row -->
+    <div class="header-nav" style="background: linear-gradient(120deg, #064aa8, #087cf9); margin: -14px -14px 14px; padding: 14px;">
+      <a href="home.html" class="back-btn">‹</a>
+      <h1>Product Revenue Chart</h1>
+      <div style="width: 40px;"></div>
+    </div>
+
+    <!-- Product Revenue Chart Reference Image -->
+    <div class="chart-banner-card">
+      <img src="chart.jpg" alt="Product Revenue Chart - Skysonsolar S1 to S8">
+    </div>
+
+    <!-- Invitation Commission Chart Image -->
+    <div class="chart-banner-card">
+      <img src="rev2.jpg" alt="Rules of the Invitation Commission - Skysonsolar">
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
+    <button class="nav-btn" onclick="location.href='lease.html'"><span class="nav-icon">⬡</span>Lease</button>
+    <button class="nav-btn" onclick="location.href='team.html'"><span class="nav-icon">♟</span>Team</button>
+    <button class="nav-btn active" onclick="location.href='plan.html'"><span class="nav-icon">▤</span>Plan</button>
+    <button class="nav-btn" onclick="location.href='account.html'"><span class="nav-icon">♙</span>Account</button>
+  </nav>
+</div>
+
+<script>
+function setCurrency(c) {
+  // Currency switcher hook
+}
+</script>
+</body>
+</html>

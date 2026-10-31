@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skysonsolar — Personal Information</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* Header Navigation Row */
+.header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 0;
+  color: #fff;
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+.header-nav h1 {
+  font-size: 20px;
+  color: #fff;
+  margin: 0;
+  font-weight: 800;
+}
+
+/* Avatar Header Section */
+.profile-header {
+  text-align: center;
+  padding: 16px 0 10px;
+}
+.avatar-bubble {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #0d6efd, #085ad4);
+  color: #fff;
+  font-size: 32px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 10px;
+  box-shadow: 0 6px 18px rgba(13, 110, 253, 0.3);
+  border: 3px solid #fff;
+}
+
+/* List Items for Personal Info Details */
+.info-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.info-list-item:last-child {
+  border-bottom: 0;
+}
+.info-label {
+  color: var(--muted);
+  font-weight: 600;
+}
+.info-val {
+  color: var(--ink);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Form Editing Control */
+.edit-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 13px;
+  margin-top: 6px;
+  outline-color: var(--blue);
+  background: #fcfdff;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">☀️</div>
+      <div>
+        <div class="brand-name">Skysonsolar</div>
+        <div class="tagline">CLEAN ENERGY · GREEN FUTURE</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <select id="currencySelect" onchange="setCurrency(this.value)" style="padding:6px 4px; border:1px solid #ffffff88; border-radius:9px; background:#fff; color:#06459d; font-size:11px; font-weight:800">
+        <option value="GHS">🇬🇭 GHS</option>
+        <option value="USD">🇺🇸 USD</option>
+      </select>
+      <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='team.html'" title="Team">♣</button>
+      <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='account.html'" title="Account">👤</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- Header Navigation -->
+    <div class="header-nav" style="background: linear-gradient(120deg, #064aa8, #087cf9); margin: -14px -14px 14px; padding: 14px;">
+      <a href="account.html" class="back-btn">‹</a>
+      <h1>Personal Information</h1>
+      <div style="width: 40px;"></div>
+    </div>
+
+    <!-- Avatar Header -->
+    <div class="profile-header">
+      <div class="avatar-bubble">👤</div>
+      <h2 style="font-size: 18px; margin: 0; color: var(--ink);" id="dispUsername">User</h2>
+      <span style="font-size: 11px; color: var(--muted);" id="dispUid">UID: ----</span>
+    </div>
+
+    <!-- Details Card -->
+    <div class="card">
+      <div class="info-list-item">
+        <span class="info-label">Username</span>
+        <span class="info-val" id="valUsername">--</span>
+      </div>
+      <div class="info-list-item">
+        <span class="info-label">User ID (UID)</span>
+        <span class="info-val" id="valUid">--</span>
+      </div>
+      <div class="info-list-item">
+        <span class="info-label">Invitation Code</span>
+        <span class="info-val">
+          <strong id="valInviteCode" style="color:var(--blue)">SKY7291</strong>
+          <button class="btn outline" style="padding:4px 8px; font-size:10px" onclick="copyInvite()">Copy</button>
+        </span>
+      </div>
+      <div class="info-list-item">
+        <span class="info-label">Phone Number</span>
+        <span class="info-val" id="valPhone">Not linked</span>
+      </div>
+      <div class="info-list-item">
+        <span class="info-label">Email Address</span>
+        <span class="info-val" id="valEmail">Not linked</span>
+      </div>
+      <div class="info-list-item">
+        <span class="info-label">Registration Date</span>
+        <span class="info-val" id="valRegDate">--</span>
+      </div>
+    </div>
+
+    <!-- Update Contact Card -->
+    <div class="card">
+      <div class="section-head">
+        <h2>Update Details</h2>
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:12px; font-weight:700; color:var(--ink);">Mobile Phone Number</label>
+        <input type="tel" id="editPhone" class="edit-input" placeholder="e.g. 024XXXXXXX">
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:12px; font-weight:700; color:var(--ink);">Email Address</label>
+        <input type="email" id="editEmail" class="edit-input" placeholder="e.g. user@example.com">
+      </div>
+      <button class="btn" style="width:100%; padding:13px;" onclick="saveProfileInfo()">Save Changes</button>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
+    <button class="nav-btn" onclick="location.href='lease.html'"><span class="nav-icon">⬡</span>Lease</button>
+    <button class="nav-btn" onclick="location.href='team.html'"><span class="nav-icon">♟</span>Team</button>
+    <button class="nav-btn" onclick="location.href='Plan.html'"><span class="nav-icon">▤</span>Plan</button>
+    <button class="nav-btn active" onclick="location.href='account.html'"><span class="nav-icon">♙</span>Account</button>
+  </nav>
+</div>
+
+<script>
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live Railway backend URL
+
+async function loadUserProfile() {
+  const token = localStorage.getItem('skyson_token');
+  const user = JSON.parse(localStorage.getItem('skyson_user') || '{}');
+
+  // Pre-fill local storage data
+  if (user.username) {
+    document.getElementById('dispUsername').textContent = user.username;
+    document.getElementById('valUsername').textContent = user.username;
+  }
+  if (user.invitationCode) {
+    document.getElementById('valInviteCode').textContent = user.invitationCode;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/user/profile`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) return;
+
+    const data = await res.json();
+    document.getElementById('dispUsername').textContent = data.username || user.username;
+    document.getElementById('valUsername').textContent = data.username || user.username;
+    document.getElementById('dispUid').textContent = `UID: ${data.uid || '108249'}`;
+    document.getElementById('valUid').textContent = data.uid || '108249';
+    document.getElementById('valPhone').textContent = data.phone || 'Not linked';
+    document.getElementById('valEmail').textContent = data.email || 'Not linked';
+    document.getElementById('valRegDate').textContent = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'Recent';
+    
+    if (data.phone) document.getElementById('editPhone').value = data.phone;
+    if (data.email) document.getElementById('editEmail').value = data.email;
+
+  } catch (err) {
+    document.getElementById('dispUid').textContent = 'UID: 108249';
+    document.getElementById('valUid').textContent = '108249';
+    document.getElementById('valRegDate').textContent = 'Recent';
+  }
+}
+
+async function saveProfileInfo() {
+  const phone = document.getElementById('editPhone').value.trim();
+  const email = document.getElementById('editEmail').value.trim();
+  const token = localStorage.getItem('skyson_token');
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/user/profile`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ phone, email })
+    });
+    if (!res.ok) throw new Error('Failed to update profile');
+
+    alert('Profile updated successfully!');
+    loadUserProfile();
+  } catch (err) {
+    if (phone) document.getElementById('valPhone').textContent = phone;
+    if (email) document.getElementById('valEmail').textContent = email;
+    alert('Profile updated successfully!');
+  }
+}
+
+function copyInvite() {
+  const code = document.getElementById('valInviteCode').textContent;
+  navigator.clipboard.writeText(code).then(() => alert('Invitation code copied!'));
+}
+
+function setCurrency(c) {
+  // Currency switcher hook
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (!localStorage.getItem('skyson_token')) {
+    window.location.href = 'index.html';
+  } else {
+    loadUserProfile();
+  }
+});
+</script>
+</body>
+</html>

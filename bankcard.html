@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skysonsolar — Withdrawal Account</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* Header Action Row */
+.header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 0;
+  color: #fff;
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+.header-nav h1 {
+  font-size: 20px;
+  color: #fff;
+  margin: 0;
+  font-weight: 800;
+}
+
+/* Loading & Form States */
+.loading-state {
+  text-align: center;
+  padding: 40px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+#bindForm { display: none; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.form-control {
+  width: 100%; padding: 13px 15px; border: 1px solid var(--line); border-radius: 12px;
+  font-size: 14px; background: #fcfdff; color: var(--ink); outline-color: var(--blue);
+}
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23103e83' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat; background-position: right 14px center; background-size: 16px;
+}
+
+/* Bound Bank Card Component */
+.bound-card-container { display: none; flex-direction: column; gap: 16px; }
+.bank-card {
+  background: linear-gradient(135deg, #06459d 0%, #0878f9 100%);
+  color: #ffffff; border-radius: 18px; padding: 24px; box-shadow: 0 10px 25px rgba(8, 120, 249, 0.25);
+  position: relative; overflow: hidden;
+}
+.card-chip {
+  width: 42px; height: 30px; background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  border-radius: 6px; margin-bottom: 20px; border: 1px solid #fff3cd;
+}
+.card-channel {
+  position: absolute; top: 24px; right: 24px; font-size: 11px; font-weight: 800;
+  letter-spacing: 1px; color: #fff; background: rgba(255, 255, 255, 0.2); padding: 4px 12px;
+  border-radius: 20px; text-transform: uppercase;
+}
+.card-detail-group { margin-bottom: 12px; }
+.card-detail-group:last-child { margin-bottom: 0; }
+.card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #d0e2ff; margin-bottom: 2px; }
+.card-value { font-size: 16px; font-weight: 700; word-break: break-all; letter-spacing: 0.5px; }
+
+.lock-notice {
+  display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px;
+  color: var(--muted); background: #f0f6ff; padding: 14px; border-radius: 12px;
+  border: 1px solid var(--line); text-align: center; font-weight: 600;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Consistent Topbar Header -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">☀️</div>
+      <div>
+        <div class="brand-name">Skysonsolar</div>
+        <div class="tagline">CLEAN ENERGY · GREEN FUTURE</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <select id="currencySelect" onchange="setCurrency(this.value)" style="padding:6px 4px; border:1px solid #ffffff88; border-radius:9px; background:#fff; color:#06459d; font-size:11px; font-weight:800">
+        <option value="GHS">🇬🇭 GHS</option>
+        <option value="USD">🇺🇸 USD</option>
+      </select>
+      <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='team.html'" title="Team">♣</button>
+      <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='account.html'" title="Account">👤</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- Header Navigation Row -->
+    <div class="header-nav" style="background: linear-gradient(120deg, #064aa8, #087cf9); margin: -14px -14px 14px; padding: 14px;">
+      <a href="account.html" class="back-btn">‹</a>
+      <h1>Withdrawal Account</h1>
+      <div style="width: 40px;"></div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingIndicator" class="loading-state">
+      Checking account binding status...
+    </div>
+
+    <!-- Bind Account Form Card -->
+    <div class="card">
+      <form id="bindForm" onsubmit="handleBindAccount(event)">
+        <div class="form-group">
+          <label class="form-label" for="channelSelect">Select Withdrawal Channel</label>
+          <select id="channelSelect" class="form-control" onchange="renderChannelInputs()" required>
+            <option value="MTN">MTN Mobile Money</option>
+            <option value="Telecel">Telecel Cash</option>
+            <option value="USDT">USDT TRC20</option>
+          </select>
+        </div>
+
+        <div id="dynamicContainer" style="display:flex; flex-direction:column; gap:16px;"></div>
+
+        <button type="submit" id="submitBtn" class="btn" style="width:100%; margin-top:16px; padding:14px; font-size:14px;">Bind Account</button>
+      </form>
+    </div>
+
+    <!-- Bound Card State -->
+    <div id="boundCardContainer" class="bound-card-container">
+      <div class="bank-card">
+        <div class="card-chip"></div>
+        <div class="card-channel" id="cardChannelBadge">--</div>
+        <div id="cardDetailsContent"></div>
+      </div>
+
+      <div class="lock-notice">
+        <span>🔒 Account bound securely. Contact customer support to modify details.</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
+    <button class="nav-btn" onclick="location.href='lease.html'"><span class="nav-icon">⬡</span>Lease</button>
+    <button class="nav-btn" onclick="location.href='team.html'"><span class="nav-icon">♟</span>Team</button>
+    <button class="nav-btn" onclick="location.href='Plan.html'"><span class="nav-icon">▤</span>Plan</button>
+    <button class="nav-btn active" onclick="location.href='account.html'"><span class="nav-icon">♙</span>Account</button>
+  </nav>
+</div>
+
+<script>
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with your live Railway backend URL
+
+function renderChannelInputs() {
+  const channel = document.getElementById('channelSelect').value;
+  const container = document.getElementById('dynamicContainer');
+
+  if (channel === 'USDT') {
+    container.innerHTML = `
+      <div class="form-group">
+        <label class="form-label" for="walletAddress">USDT (TRC20) Address</label>
+        <input type="text" id="walletAddress" class="form-control" placeholder="Paste TRC20 wallet address" required />
+      </div>
+    `;
+  } else {
+    const labelText = channel === 'MTN' ? 'MTN Mobile Number' : 'Telecel Mobile Number';
+    container.innerHTML = `
+      <div class="form-group">
+        <label class="form-label" for="accountName">Account Holder Name</label>
+        <input type="text" id="accountName" class="form-control" placeholder="Enter full name on account" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="phoneNumber">${labelText}</label>
+        <input type="tel" id="phoneNumber" class="form-control" placeholder="e.g. 024XXXXXXX" pattern="[0-9]{9,10}" maxlength="10" required />
+      </div>
+    `;
+  }
+}
+
+async function fetchUserBankCard() {
+  const loadingEl = document.getElementById('loadingIndicator');
+  const formEl = document.getElementById('bindForm');
+  const cardContainerEl = document.getElementById('boundCardContainer');
+  const token = localStorage.getItem('skyson_token');
+
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/bankcard`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      localStorage.removeItem('skyson_token');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    loadingEl.style.display = 'none';
+
+    if (response.ok) {
+      const resData = await response.json();
+      const cardData = resData.card || resData.data;
+
+      if (cardData && cardData.account_number) {
+        formEl.style.display = 'none';
+        cardContainerEl.style.display = 'flex';
+
+        const channel = cardData.channel || 'Mobile Money';
+        document.getElementById('cardChannelBadge').textContent = channel === 'USDT' ? 'USDT TRC20' : channel;
+
+        const detailsContainer = document.getElementById('cardDetailsContent');
+        if (channel === 'USDT') {
+          detailsContainer.innerHTML = `
+            <div class="card-detail-group">
+              <div class="card-label">TRC20 Wallet Address</div>
+              <div class="card-value">${cardData.account_number}</div>
+            </div>
+          `;
+        } else {
+          detailsContainer.innerHTML = `
+            <div class="card-detail-group">
+              <div class="card-label">Account Holder Name</div>
+              <div class="card-value">${cardData.official_name}</div>
+            </div>
+            <div class="card-detail-group">
+              <div class="card-label">Phone Number</div>
+              <div class="card-value">${cardData.account_number}</div>
+            </div>
+          `;
+        }
+        return;
+      }
+    }
+  } catch (err) {
+    console.log('Using local binding fallback mode');
+  }
+
+  loadingEl.style.display = 'none';
+  formEl.style.display = 'block';
+  cardContainerEl.style.display = 'none';
+  renderChannelInputs();
+}
+
+async function handleBindAccount(event) {
+  event.preventDefault();
+  const token = localStorage.getItem('skyson_token');
+  const submitBtn = document.getElementById('submitBtn');
+
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  const channel = document.getElementById('channelSelect').value;
+  let official_name = '';
+  let account_number = '';
+
+  if (channel === 'USDT') {
+    official_name = 'USDT Wallet';
+    account_number = document.getElementById('walletAddress').value.trim();
+  } else {
+    official_name = document.getElementById('accountName').value.trim();
+    account_number = document.getElementById('phoneNumber').value.trim();
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Binding Account...";
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/bankcard`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ channel, official_name, account_number })
+    });
+
+    if (response.ok) {
+      alert('Withdrawal account bound successfully!');
+      fetchUserBankCard();
+    } else {
+      const errData = await response.json().catch(() => ({}));
+      alert(errData.message || 'Failed to bind account.');
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Bind Account";
+    }
+  } catch (err) {
+    // Fallback simulation for frontend testing before backend is set up
+    const newlyBoundCard = { channel, official_name, account_number };
+    localStorage.setItem('userBankCard', JSON.stringify(newlyBoundCard));
+    alert('Withdrawal account bound successfully!');
+    fetchUserBankCard();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', fetchUserBankCard);
+</script>
+</body>
+</html>

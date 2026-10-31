@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skysonsolar — Transaction History</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* Header Action Row */
+.header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 0;
+  color: #fff;
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+.header-nav h1 {
+  font-size: 20px;
+  color: #fff;
+  margin: 0;
+  font-weight: 800;
+}
+
+/* Tab Filtering Buttons */
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.filter-tab {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+.filter-tab.active {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+  box-shadow: 0 4px 12px rgba(8, 120, 249, 0.3);
+}
+
+/* Transaction Record Row Item */
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.record-item:last-child {
+  border-bottom: 0;
+}
+.record-title {
+  font-weight: 800;
+  color: var(--ink);
+  display: block;
+}
+.record-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+  display: block;
+}
+.record-amount {
+  font-weight: 850;
+  font-size: 14px;
+  text-align: right;
+}
+.record-amount.positive { color: var(--green); }
+.record-amount.negative { color: #d63838; }
+.record-status {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-top: 4px;
+}
+.status-success { background: #e8f8f0; color: var(--green); }
+.status-pending { background: #fff8e6; color: #f59e0b; }
+.status-failed { background: #ffebee; color: #d32f2f; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Consistent Topbar Header -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">☀️</div>
+      <div>
+        <div class="brand-name">Skysonsolar</div>
+        <div class="tagline">CLEAN ENERGY · GREEN FUTURE</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <select id="currencySelect" onchange="setCurrency(this.value)" style="padding:6px 4px; border:1px solid #ffffff88; border-radius:9px; background:#fff; color:#06459d; font-size:11px; font-weight:800">
+        <option value="GHS">🇬🇭 GHS</option>
+        <option value="USD">🇺🇸 USD</option>
+      </select>
+      <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='team.html'" title="Team">♣</button>
+      <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='account.html'" title="Account">👤</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- Header Navigation Row -->
+    <div class="header-nav" style="background: linear-gradient(120deg, #064aa8, #087cf9); margin: -14px -14px 14px; padding: 14px;">
+      <a href="account.html" class="back-btn">‹</a>
+      <h1>Transaction History</h1>
+      <div style="width: 40px;"></div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="switchTab('all', this)">All Activity</button>
+      <button class="filter-tab" onclick="switchTab('recharge', this)">Recharges</button>
+      <button class="filter-tab" onclick="switchTab('withdraw', this)">Withdrawals</button>
+      <button class="filter-tab" onclick="switchTab('earnings', this)">Earnings</button>
+    </div>
+
+    <!-- Records List Card -->
+    <div class="card">
+      <div id="recordsListContainer">
+        <div class="empty" style="text-align:center; padding:20px; color:var(--muted)">Loading transaction history...</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
+    <button class="nav-btn" onclick="location.href='lease.html'"><span class="nav-icon">⬡</span>Lease</button>
+    <button class="nav-btn" onclick="location.href='team.html'"><span class="nav-icon">♟</span>Team</button>
+    <button class="nav-btn" onclick="location.href='plan.html'"><span class="nav-icon">▤</span>Plan</button>
+    <button class="nav-btn active" onclick="location.href='account.html'"><span class="nav-icon">♙</span>Account</button>
+  </nav>
+</div>
+
+<script>
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live backend URL
+let allRecords = [];
+let currentFilter = 'all';
+
+async function fetchTransactionRecords() {
+  const token = localStorage.getItem('skyson_token');
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/user/transactions`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch records');
+    const data = await res.json();
+    allRecords = data.records || [];
+    renderRecords();
+  } catch (e) {
+    allRecords = [];
+    renderRecords();
+  }
+}
+
+function switchTab(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderRecords();
+}
+
+function renderRecords() {
+  const container = document.getElementById('recordsListContainer');
+  const filtered = allRecords.filter(r => {
+    if (currentFilter === 'all') return true;
+    return (r.type || '').toLowerCase() === currentFilter;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty" style="text-align:center; padding:20px; color:var(--muted)">No transactions recorded under this category yet.</div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(r => {
+    const isPos = r.amount > 0 && r.type !== 'withdraw';
+    const sign = isPos ? '+' : '';
+    const statusLower = (r.status || 'success').toLowerCase();
+    const statusClass = statusLower === 'success' ? 'status-success' : (statusLower === 'pending' ? 'status-pending' : 'status-failed');
+    
+    return `
+      <div class="record-item">
+        <div>
+          <span class="record-title">${r.description || r.type || 'Transaction'}</span>
+          <span class="record-sub">${r.date ? new Date(r.date).toLocaleString() : 'Recent'}</span>
+          <span class="record-status ${statusClass}">${r.status || 'Completed'}</span>
+        </div>
+        <div class="record-amount ${isPos ? 'positive' : 'negative'}">
+          ${sign}GH₵ ${Math.abs(r.amount || 0).toFixed(2)}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.addEventListener('DOMContentLoaded', fetchTransactionRecords);
+</script>
+</body>
+</html>

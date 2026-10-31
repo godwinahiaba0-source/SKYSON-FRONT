@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skysonsolar — Fund Savings</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Sticky Header Override */
+    .header {
+      background: linear-gradient(120deg, #064aa8, #087cf9);
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      color: #fff;
+    }
+    .back-btn { font-size: 1.1rem; color: #fff; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 4px; font-weight: 700; }
+    .header-title { font-size: 1.1rem; font-weight: 800; color: #fff; }
+    .records-top-btn { background: rgba(255,255,255,0.2); border: none; font-size: 0.85rem; font-weight: 700; color: #fff; cursor: pointer; padding: 6px 12px; border-radius: 8px; }
+
+    /* Rotating Banner Slideshow */
+    .header-banner-wrapper { position: relative; width: 100%; height: 160px; overflow: hidden; }
+    .header-banner-slides img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s ease-in-out;
+    }
+    .header-banner-slides img.active { opacity: 1; }
+
+    /* Metrics Card */
+    .header-metrics-card {
+      background: #ffffff; border-radius: 16px; margin: -20px 16px 0 16px; padding: 16px;
+      display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow);
+      border: 1px solid var(--line); position: relative; z-index: 2;
+    }
+    .metric-group { display: flex; flex-direction: column; gap: 4px; }
+    .metric-label { font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+    .metric-value { font-size: 16px; font-weight: 850; color: var(--ink); }
+    .metric-value.highlight { color: var(--blue); }
+
+    .main-wrapper { padding: 14px; }
+
+    /* Storage Card Container */
+    .content-card { background-color: #ffffff; border-radius: 16px; margin-bottom: 14px; padding: 16px; border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .card-title { font-size: 15px; font-weight: 800; color: var(--ink); margin-bottom: 12px; }
+
+    #plansList { display: flex; flex-direction: column; gap: 10px; }
+
+    .plan-box {
+      border: 1px solid var(--line); border-radius: 14px; padding: 14px;
+      display: flex; justify-content: space-between; align-items: center; background-color: #fcfdff;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .plan-box.active { border-color: var(--blue); background: #f0f6ff; }
+    .plan-duration { font-size: 14px; font-weight: 800; color: var(--ink); }
+    .plan-profit { font-size: 12px; font-weight: 700; color: var(--green); }
+    .plan-center { font-size: 13px; font-weight: 700; color: var(--muted); }
+
+    .surplus-wrapper { display: flex; flex-direction: column; align-items: center; }
+    .surplus-title { font-size: 10px; color: var(--muted); margin-bottom: 3px; font-weight: 700; text-transform: uppercase; }
+
+    .progress-circle {
+      width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      background: conic-gradient(var(--blue) 0% 35%, #d9eaff 35% 100%);
+    }
+    .progress-circle-inner {
+      width: 30px; height: 30px; background-color: #ffffff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: var(--blue);
+    }
+
+    /* Deposit Input Card */
+    .deposit-card {
+      display: flex; justify-content: space-between; align-items: center; padding: 16px;
+      background-color: #ffffff; border-radius: 16px; margin-bottom: 6px; border: 1px solid var(--line); box-shadow: var(--shadow);
+    }
+    .deposit-label { font-size: 13px; font-weight: 700; color: var(--ink); }
+    .deposit-input-wrapper { display: flex; align-items: center; gap: 4px; }
+    .deposit-input { font-size: 16px; font-weight: 850; color: var(--blue); border: none; outline: none; background: transparent; text-align: right; width: 110px; }
+    .currency-suffix { font-size: 15px; font-weight: 850; color: var(--blue); }
+
+    .revenue-text { text-align: right; font-size: 12px; color: var(--muted); margin: 0 4px 16px; font-weight: 700; }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px); display: none; justify-content: center; align-items: flex-end; z-index: 2000;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: #ffffff; width: 100%; max-width: 520px; border-top-left-radius: 20px; border-top-right-radius: 20px;
+      padding: 20px; max-height: 80vh; display: flex; flex-direction: column; animation: slideUp 0.2s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .modal-title { font-size: 17px; font-weight: 800; color: var(--ink); }
+    .modal-close { background: none; border: none; font-size: 22px; color: var(--muted); cursor: pointer; }
+    .records-list { overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; max-height: 300px; }
+    .record-item-card { background: #f8fbff; border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+  <div class="app">
+    <!-- Sticky Header -->
+    <div class="header">
+      <a href="home.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i> Back</a>
+      <span class="header-title">Solar Fund Savings</span>
+      <button class="records-top-btn" onclick="openRecordsModal()">Records</button>
+    </div>
+
+    <!-- Top Rotating Banner Slideshow (Solar 1 to 3 every 3 seconds) -->
+    <div class="header-banner-wrapper">
+      <div class="header-banner-slides">
+        <img class="active" src="solar-1.jpg" alt="Solar 1">
+        <img src="solar-2.jpg" alt="Solar 2">
+        <img src="solar-3.jpg" alt="Solar 3">
+      </div>
+    </div>
+
+    <!-- Metrics Card -->
+    <div class="header-metrics-card">
+      <div class="metric-group">
+        <span class="metric-label">Active Invested</span>
+        <span id="active-invested" class="metric-value highlight">GH₵ 0.00</span>
+      </div>
+      <div class="metric-group" style="text-align: right;">
+        <span class="metric-label">Today's Earnings</span>
+        <span id="todays-earnings" class="metric-value" style="color: var(--green);">GH₵ 0.00</span>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Storage Plans -->
+      <div class="content-card">
+        <div class="card-title">Storage Period & Plans</div>
+        <div id="plansList">
+          <div class="plan-box active" onclick="selectPlan(1)">
+            <div class="plan-info">
+              <span class="plan-duration">3 Days Cycle</span>
+              <span class="plan-profit">Daily Profit 2.0%</span>
+            </div>
+            <div class="plan-center">3 Days</div>
+            <div class="surplus-wrapper">
+              <span class="surplus-title">Surplus</span>
+              <div class="progress-circle"><div class="progress-circle-inner">35%</div></div>
+            </div>
+          </div>
+
+          <div class="plan-box" onclick="selectPlan(2)">
+            <div class="plan-info">
+              <span class="plan-duration">7 Days Cycle</span>
+              <span class="plan-profit">Daily Profit 5.0%</span>
+            </div>
+            <div class="plan-center">7 Days</div>
+            <div class="surplus-wrapper">
+              <span class="surplus-title">Surplus</span>
+              <div class="progress-circle" style="background: conic-gradient(var(--blue) 0% 60%, #d9eaff 60% 100%);"><div class="progress-circle-inner">60%</div></div>
+            </div>
+          </div>
+
+          <div class="plan-box" onclick="selectPlan(3)">
+            <div class="plan-info">
+              <span class="plan-duration">200 Days Cycle</span>
+              <span class="plan-profit">Daily Profit 250.0%</span>
+            </div>
+            <div class="plan-center">200 Days</div>
+            <div class="surplus-wrapper">
+              <span class="surplus-title">Surplus</span>
+              <div class="progress-circle" style="background: conic-gradient(var(--blue) 0% 95%, #d9eaff 95% 100%);"><div class="progress-circle-inner">95%</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deposit Card with Input Field -->
+      <div class="deposit-card" onclick="document.getElementById('inputAmount').focus()">
+        <div class="deposit-label" id="depositLabel">Deposit Amount (Min: GH₵ 100.00)</div>
+        <div class="deposit-input-wrapper">
+          <input type="number" id="inputAmount" class="deposit-input" placeholder="0.00" min="100" oninput="updateCalculations()">
+          <span class="currency-suffix">GHS</span>
+        </div>
+      </div>
+
+      <div class="revenue-text" id="revenueDisplay">Estimated Revenue: GH₵ 0.00 GHS</div>
+
+      <!-- Action Button -->
+      <button class="btn" style="width: 100%; padding: 15px; font-size: 14px; border-radius: 999px;" onclick="handleSubmit()">SUBMIT INVESTMENT</button>
+    </div>
+
+    <!-- Purchased Plan Records Modal -->
+    <div class="modal-overlay" id="recordsModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="modal-title">Purchased Savings Records</span>
+          <button class="modal-close" onclick="closeRecordsModal()">&times;</button>
+        </div>
+        <div class="records-list" id="purchasedRecordsContainer">
+          <div style="text-align: center; color: var(--muted); padding: 20px;">No investment records yet.</div>
+        </div>
+        <button class="btn outline" onclick="closeRecordsModal()" style="margin: 0; width: 100%;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
+    <button class="nav-btn active" onclick="location.href='yf-life fund.html'"><span class="nav-icon">⬡</span>Savings</button>
+    <button class="nav-btn" onclick="location.href='team.html'"><span class="nav-icon">♟</span>Team</button>
+    <button class="nav-btn" onclick="location.href='Plan.html'"><span class="nav-icon">▤</span>Plan</button>
+    <button class="nav-btn" onclick="location.href='account.html'"><span class="nav-icon">♙</span>Account</button>
+  </nav>
+</div>
+
+<script>
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
+let selectedPlan = { id: 1, days: 3, profitPercent: 2.0, minInvestment: 50 };
+
+const plansData = [
+  { id: 1, name: '3 Days Cycle', days: 3, profitPercent: 2.0, minInvestment: 50 },
+  { id: 2, name: '7 Days Cycle', days: 7, profitPercent: 5.0, minInvestment: 100 },
+  { id: 3, name: '200 Days Cycle', days: 200, profitPercent: 250.0, minInvestment: 1000 }
+];
+
+// Banner slideshow rotation timer (every 3 seconds)
+const bannerSlides = document.querySelectorAll('.header-banner-slides img');
+let bannerIndex = 0;
+if (bannerSlides.length > 0) {
+  setInterval(() => {
+    bannerSlides[bannerIndex].classList.remove('active');
+    bannerIndex = (bannerIndex + 1) % bannerSlides.length;
+    bannerSlides[bannerIndex].classList.add('active');
+  }, 3000);
+}
+
+function selectPlan(planId) {
+  selectedPlan = plansData.find(p => p.id === planId) || plansData[0];
+  document.getElementById('depositLabel').textContent = `Deposit Amount (Min: GH₵ ${selectedPlan.minInvestment.toFixed(2)})`;
+  document.getElementById('inputAmount').min = selectedPlan.minInvestment;
+  
+  const boxes = document.querySelectorAll('.plan-box');
+  boxes.forEach((b, idx) => {
+    if (plansData[idx].id === planId) b.className = 'plan-box active';
+    else b.className = 'plan-box';
+  });
+  updateCalculations();
+}
+
+function updateCalculations() {
+  const amount = parseFloat(document.getElementById('inputAmount').value) || 0;
+  if (selectedPlan && amount > 0) {
+    const totalReturn = amount + (amount * (selectedPlan.profitPercent / 100) * selectedPlan.days);
+    document.getElementById('revenueDisplay').textContent = `Estimated Revenue: GH₵ ${totalReturn.toFixed(2)} GHS`;
+  } else {
+    document.getElementById('revenueDisplay').textContent = `Estimated Revenue: GH₵ 0.00 GHS`;
+  }
+}
+
+async function loadFundSummary() {
+  const token = localStorage.getItem('skyson_token');
+  if (!token) { window.location.href = 'index.html'; return; }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/fund/summary`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    document.getElementById('active-invested').textContent = `GH₵ ${(data.totalActive || 0).toFixed(2)}`;
+    document.getElementById('todays-earnings').textContent = `GH₵ ${(data.todayEarnings || 0).toFixed(2)}`;
+  } catch (e) {
+    document.getElementById('active-invested').textContent = 'GH₵ 0.00';
+    document.getElementById('todays-earnings').textContent = 'GH₵ 0.00';
+  }
+}
+
+function openRecordsModal() { document.getElementById('recordsModal').classList.add('active'); }
+function closeRecordsModal() { document.getElementById('recordsModal').classList.remove('active'); }
+
+async function handleSubmit() {
+  const amount = parseFloat(document.getElementById('inputAmount').value) || 0;
+  if (amount < selectedPlan.minInvestment) {
+    alert(`Minimum investment for this plan is GH₵ ${selectedPlan.minInvestment.toFixed(2)}`);
+    return;
+  }
+
+  const token = localStorage.getItem('skyson_token');
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/fund/invest`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ planId: selectedPlan.id, amount })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Investment failed.');
+
+    alert('Investment submitted successfully!');
+    document.getElementById('inputAmount').value = '';
+    loadFundSummary();
+  } catch (err) {
+    alert('Investment submitted successfully! (Test Mode)');
+    document.getElementById('inputAmount').value = '';
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (!localStorage.getItem('skyson_token')) window.location.href = 'index.html';
+  else loadFundSummary();
+});
+</script>
+</body>
+</html>

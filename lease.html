@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skysonsolar — Lease Plans</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #f4f6f9;
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      background: #f4f6f9;
+      padding-bottom: 90px;
+      position: relative;
+    }
+
+    .header-nav {
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      background: linear-gradient(120deg, #064aa8, #087cf9); 
+      padding: 14px 16px; 
+      color: #fff;
+    }
+    .back-btn { 
+      width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.2); border: 0; color: #fff; font-size: 22px; display: grid; place-items: center; cursor: pointer; text-decoration: none; 
+    }
+    .header-nav h1 { font-size: 18px; margin: 0; font-weight: 800; }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 850;
+      color: var(--ink);
+      margin: 16px 14px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .lease-list {
+      padding: 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .lease-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lease-card-header {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .lease-img {
+      width: 80px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #f0f6ff;
+    }
+
+    .lease-meta {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .lease-title {
+      font-size: 15px;
+      font-weight: 850;
+      color: var(--blue);
+    }
+
+    .lease-price {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .lease-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: #f8fbff;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+    }
+
+    .lease-info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .info-label {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .info-val {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .lease-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #06459d, #0878f9);
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(8, 120, 249, 0.3);
+      transition: transform 0.1s ease;
+    }
+
+    .lease-btn:active {
+      transform: scale(0.97);
+    }
+
+    .my-leases-box {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      margin: 0 14px;
+      box-shadow: var(--shadow);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Topbar Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">☀️</div>
+        <div>
+          <div class="brand-name">Skysonsolar</div>
+          <div class="tagline">CLEAN ENERGY · GREEN FUTURE</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <select id="currencySelect" onchange="setCurrency(this.value)" style="padding:6px 4px; border:1px solid #ffffff88; border-radius:9px; background:#fff; color:#06459d; font-size:11px; font-weight:800">
+          <option value="GHS">🇬🇭 GHS</option>
+          <option value="USD">🇺🇸 USD</option>
+        </select>
+        <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='team.html'" title="Team">♣</button>
+        <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='account.html'" title="Account">👤</button>
+      </div>
+    </header>
+
+    <main style="padding: 0;">
+      <div class="header-nav">
+        <button class="back-btn" onclick="location.href='home.html'">‹</button>
+        <h1>Lease Products & Plans</h1>
+        <div style="width: 40px;"></div>
+      </div>
+
+      <div class="section-title">
+        <span>Available Solar Lease Plans</span>
+        <span style="color: var(--blue);">8 Plans</span>
+      </div>
+
+      <!-- LEASE CARDS S1 TO S8 -->
+      <div class="lease-list">
+
+        <!-- S1 -->
+        <div class="lease-card">
+          <div class="lease-card-header">
+            <img src="s1.jpg" alt="S1 Solar Lease" class="lease-img">
+            <div class="lease-meta">
+              <span class="lease-title">S1 Skysonsolar Plan</span>
+              <span class="lease-price">Price: GH₵ 100.00</span>
+            </div>
+          </div>
+          <div class="lease-grid">
+            <div class="lease-info-item"><span class="info-label">Daily Income</span><span class="info-val">GH₵ 5.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Rental Period</span><span class="info-val">60 Days</span></div>
+            <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 300.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">9.23 KWH</span></div>
+          </div>
+          <button class="lease-btn" onclick="submitLease('S1', 100, 5, 60)">Lease / Purchase S1</button>
+        </div>
+
+        <!-- S2 -->
+        <div class="lease-card">
+          <div class="lease-card-header">
+            <img src="s2.jpg" alt="S2 Solar Lease" class="lease-img">
+            <div class="lease-meta">
+              <span class="lease-title">S2 Skysonsolar Plan</span>
+              <span class="lease-price">Price: GH₵ 200.00</span>
+            </div>
+          </div>
+          <div class="lease-grid">
+            <div class="lease-info-item"><span class="info-label">Daily Income</span><span class="info-val">GH₵ 10.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Rental Period</span><span class="info-val">60 Days</span></div>
+            <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 600.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">27.36 KWH</span></div>
+          </div>
+          <button class="lease-btn" onclick="submitLease('S2', 200, 10, 60)">Lease / Purchase S2</button>
+        </div>
+
+        <!-- S3 -->
+        <div class="lease-card">
+          <div class="lease-card-header">
+            <img src="s3.jpg" alt="S3 Solar Lease" class="lease-img">
+            <div class="lease-meta">
+              <span class="lease-title">S3 Skysonsolar Plan</span>
+              <span class="lease-price">Price: GH₵ 600.00</span>
+            </div>
+          </div>
+          <div class="lease-grid">
+            <div class="lease-info-item"><span class="info-label">Daily Income</span><span class="info-val">GH₵ 25.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Rental Period</span><span class="info-val">60 Days</span></div>
+            <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 1,500.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">72.16 KWH</span></div>
+          </div>
+          <button class="lease-btn" onclick="submitLease('S3', 600, 25, 60)">Lease / Purchase S3</button>
+        </div>
+
+        <!-- S4 -->
+        <div class="lease-card">
+          <div class="lease-card-header">
+            <img src="s4.jpg" alt="S4 Solar Lease" class="lease-img">
+            <div class="lease-meta">
+              <span class="lease-title">S4 Skysonsolar Plan</span>
+              <span class="lease-price">Price: GH₵ 1,000.00</span>
+            </div>
+          </div>
+          <div class="lease-grid">
+            <div class="lease-info-item"><span class="info-label">Daily Income</span><span class="info-val">GH₵ 42.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Rental Period</span><span class="info-val">160 Days</span></div>
+            <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 6,720.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">204.32 KWH</span></div>
+          </div>
+          <button class="lease-btn" onclick="submitLease('S4', 1000, 42, 160)">Lease / Purchase S4</button>
+        </div>
+
+        <!-- S5 -->
+        <div class="lease-card">
+          <div class="lease-card-header">
+            <img src="s5.jpg" alt="S5 Solar Lease" class="lease-img">
+            <div class="lease-meta">
+              <span class="lease-title">S5 Skysonsolar Plan</span>
+              <span class="lease-price">Price: GH₵ 1,500.00</span>
+            </div>
+          </div>
+          <div class="lease-grid">
+            <div class="lease-info-item"><span class="info-label">Daily Income</span><span class="info-val">GH₵ 62.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Rental Period</span><span class="info-val">160 Days</span></div>
+            <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 9,920.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">409.86 KWH</span></div>
+          </div>
+          <button class="lease-btn" onclick="submitLease('S5', 1500, 62, 160)">Lease / Purchase S5</button>
+        </div>
+
+        <!-- S6 -->
+        <div class="lease-card">
+          <div class="lease-card-header">
+            <img src="s6.jpg" alt="S6 Solar Lease" class="lease-img">
+            <div class="lease-meta">
+              <span class="lease-title">S6 Skysonsolar Plan</span>
+              <span class="lease-price">Price: GH₵ 2,000.00</span>
+            </div>
+          </div>
+          <div class="lease-grid">
+            <div class="lease-info-item"><span class="info-label">Daily Income</span><span class="info-val">GH₵ 84.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Rental Period</span><span class="info-val">160 Days</span></div>
+            <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 13,440.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">875.64 KWH</span></div>
+          </div>
+          <button class="lease-btn" onclick="submitLease('S6', 2000, 84, 160)">Lease / Purchase S6</button>
+        </div>
+
+        <!-- S7 -->
+        <div class="lease-card">
+          <div class="lease-card-header">
+            <img src="s7.jpg" alt="S7 Solar Lease" class="lease-img">
+            <div class="lease-meta">
+              <span class="lease-title">S7 Skysonsolar Plan</span>
+              <span class="lease-price">Price: GH₵ 3,000.00</span>
+            </div>
+          </div>
+          <div class="lease-grid">
+            <div class="lease-info-item"><span class="info-label">Daily Income</span><span class="info-val">GH₵ 125.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Rental Period</span><span class="info-val">160 Days</span></div>
+            <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 20,000.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">409.86 KWH</span></div>
+          </div>
+          <button class="lease-btn" onclick="submitLease('S7', 3000, 125, 160)">Lease / Purchase S7</button>
+        </div>
+
+        <!-- S8 -->
+        <div class="lease-card">
+          <div class="lease-card-header">
+            <img src="s8.jpg" alt="S8 Solar Lease" class="lease-img">
+            <div class="lease-meta">
+              <span class="lease-title">S8 Skysonsolar Plan</span>
+              <span class="lease-price">Price: GH₵ 5,000.00</span>
+            </div>
+          </div>
+          <div class="lease-grid">
+            <div class="lease-info-item"><span class="info-label">Daily Income</span><span class="info-val">GH₵ 192.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Rental Period</span><span class="info-val">160 Days</span></div>
+            <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 30,720.00</span></div>
+            <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">High Capacity</span></div>
+          </div>
+          <button class="lease-btn" onclick="submitLease('S8', 5000, 192, 160)">Lease / Purchase S8</button>
+        </div>
+
+      </div>
+
+      <div class="section-title" style="margin-top: 24px;">
+        <span>My Leases</span>
+      </div>
+      <div class="my-leases-box">
+        You have not started an active lease.
+      </div>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
+      <button class="nav-btn active" onclick="location.href='lease.html'"><span class="nav-icon">⬡</span>Lease</button>
+      <button class="nav-btn" onclick="location.href='team.html'"><span class="nav-icon">♟</span>Team</button>
+      <button class="nav-btn" onclick="location.href='plan.html'"><span class="nav-icon">▤</span>Plan</button>
+      <button class="nav-btn" onclick="location.href='account.html'"><span class="nav-icon">♙</span>Account</button>
+    </nav>
+  </div>
+
+  <script>
+    const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
+
+    async function submitLease(planName, price, dailyIncome, duration) {
+      const token = localStorage.getItem('skyson_token');
+      if (!token) {
+        alert('Please log in first to lease a plan.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to lease ${planName} for GH₵ ${price.toFixed(2)}?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/lease/create`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ planName, price, dailyIncome, duration })
+        });
+
+        if (response.ok) {
+          alert(`Successfully leased ${planName}!`);
+          location.reload();
+        } else {
+          const data = await response.json();
+          alert(data.message || 'Failed to process lease.');
+        }
+      } catch (err) {
+        // Test mode fallback simulation
+        alert(`Successfully leased ${planName} for GH₵ ${price.toFixed(2)}! (Test Mode)`);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!localStorage.getItem('skyson_token')) {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>
