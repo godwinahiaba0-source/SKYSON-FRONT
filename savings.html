@@ -112,7 +112,7 @@
       <button class="records-top-btn" onclick="openRecordsModal()">Records</button>
     </div>
 
-    <!-- Top Rotating Banner Slideshow (Solar 1 to 3 every 3 seconds) -->
+    <!-- Top Rotating Banner Slideshow -->
     <div class="header-banner-wrapper">
       <div class="header-banner-slides">
         <img class="active" src="solar-1.jpg" alt="Solar 1">
@@ -179,9 +179,9 @@
 
       <!-- Deposit Card with Input Field -->
       <div class="deposit-card" onclick="document.getElementById('inputAmount').focus()">
-        <div class="deposit-label" id="depositLabel">Deposit Amount (Min: GH₵ 100.00)</div>
+        <div class="deposit-label" id="depositLabel">Deposit Amount (Min: GH₵ 50.00)</div>
         <div class="deposit-input-wrapper">
-          <input type="number" id="inputAmount" class="deposit-input" placeholder="0.00" min="100" oninput="updateCalculations()">
+          <input type="number" id="inputAmount" class="deposit-input" placeholder="0.00" min="50" oninput="updateCalculations()">
           <span class="currency-suffix">GHS</span>
         </div>
       </div>
@@ -200,7 +200,7 @@
           <button class="modal-close" onclick="closeRecordsModal()">&times;</button>
         </div>
         <div class="records-list" id="purchasedRecordsContainer">
-          <div style="text-align: center; color: var(--muted); padding: 20px;">No investment records yet.</div>
+          <div style="text-align: center; color: var(--muted); padding: 20px;">Loading investment records...</div>
         </div>
         <button class="btn outline" onclick="closeRecordsModal()" style="margin: 0; width: 100%;">Close</button>
       </div>
@@ -279,7 +279,23 @@ async function loadFundSummary() {
   }
 }
 
-function openRecordsModal() { document.getElementById('recordsModal').classList.add('active'); }
+async function openRecordsModal() {
+  document.getElementById('recordsModal').classList.add('active');
+  const container = document.getElementById('purchasedRecordsContainer');
+  const token = localStorage.getItem('skyson_token');
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/fund/summary`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    // This trigger ensures background completion check runs, and summary data updates
+    loadFundSummary();
+    container.innerHTML = `<div style="text-align: center; color: var(--muted); padding: 20px;">Active investments are running and will auto-credit upon completion.</div>`;
+  } catch (err) {
+    container.innerHTML = `<div style="text-align: center; color: var(--muted); padding: 20px;">No investment records found.</div>`;
+  }
+}
+
 function closeRecordsModal() { document.getElementById('recordsModal').classList.remove('active'); }
 
 async function handleSubmit() {
@@ -297,14 +313,13 @@ async function handleSubmit() {
       body: JSON.stringify({ planId: selectedPlan.id, amount })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Investment failed.');
+    if (!res.ok) throw new Error(data.message || 'Investment failed.');
 
     alert('Investment submitted successfully!');
     document.getElementById('inputAmount').value = '';
     loadFundSummary();
   } catch (err) {
-    alert('Investment submitted successfully! (Test Mode)');
-    document.getElementById('inputAmount').value = '';
+    alert(err.message || 'Investment failed.');
   }
 }
 
