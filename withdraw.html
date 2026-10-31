@@ -146,7 +146,7 @@
       <div class="form-row">
         <span class="form-label">Withdrawal amount</span>
         <div class="form-input-wrapper">
-          <input type="number" id="withdraw-amount" class="form-input" placeholder="Min. 20.00 GHS" oninput="updateCalculations()">
+          <input type="number" id="withdraw-amount" class="form-input" placeholder="Min. 50.00 GHS" oninput="updateCalculations()">
         </div>
       </div>
 
@@ -172,6 +172,17 @@
 
     <!-- Submit Button -->
     <button class="btn green" id="submit-btn" style="width:100%; margin-top:16px; padding:15px; font-size:14px;" onclick="handleWithdrawal()">SUBMIT WITHDRAWAL</button>
+
+    <!-- Withdrawal Policy Card -->
+    <div class="card" style="margin-top: 16px; background: rgba(255, 255, 255, 0.05); border: 1px dashed var(--line); padding: 14px;">
+      <div style="font-size: 13px; font-weight: 800; color: var(--ink); margin-bottom: 8px;">Withdrawal Policy</div>
+      <ol style="margin: 0; padding-left: 18px; font-size: 11px; color: var(--muted); line-height: 1.6; font-weight: 600;">
+        <li>Withdrawals are processed from Monday to Friday.</li>
+        <li>The minimum withdrawal amount is GH₵50.</li>
+        <li>Withdrawals will arrive within 72 hours.</li>
+        <li>If your withdrawal takes more than 72 hours, please contact Customer Service for assistance.</li>
+      </ol>
+    </div>
   </main>
 
   <!-- Bottom Navigation Bar -->
@@ -185,7 +196,7 @@
 </div>
 
 <script>
-const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live Railway backend URL
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 let activeCard = null;
 
 function loadStoredCard() {
