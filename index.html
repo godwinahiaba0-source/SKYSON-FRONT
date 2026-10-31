@@ -120,7 +120,7 @@
     <!-- Login Panel -->
     <div id="loginPanel">
       <h2>Welcome back</h2>
-      <label class="auth-field">Username<input id="loginUsername" placeholder="Enter your username"></label>
+      <label class="auth-field">Username or Email<input id="loginUsername" placeholder="Enter your username or email"></label>
       <label class="auth-field">Password<input id="loginPassword" type="password" placeholder="Enter your password"></label>
       <button class="btn auth-submit" onclick="loginUser()">Log In →</button>
       <div class="auth-error" id="authError"></div>
@@ -134,7 +134,7 @@
       <label class="auth-field">Email address<input id="signupEmail" type="email" placeholder="Enter your email address"></label>
       <label class="auth-field">Create password<input id="signupPassword" type="password" placeholder="At least 8 characters"></label>
       <label class="auth-field">Repeat password<input id="signupConfirmPassword" type="password" placeholder="Repeat password"></label>
-      <label class="auth-field">Invitation Code (Optional)<input id="signupInvitationCode" placeholder="Enter invitation code (e.g. SKY7291)"></label>
+      <label class="auth-field">Invitation Code (Required after first user)<input id="signupInvitationCode" placeholder="Enter valid invitation code"></label>
       <button class="btn auth-submit" onclick="signupUser()">Create Account →</button>
       <div class="auth-error" id="signupError"></div>
       <button class="auth-toggle" onclick="toggleAuth(false)">Back to Log In</button>
@@ -143,7 +143,7 @@
 </section>
 
 <script>
-const API_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live Railway backend URL
+const API_URL = 'https://skyson-backend-production.up.railway.app'; // Live Railway backend URL
 
 function toggleAuth(isSignup) {
   document.getElementById('loginPanel').style.display = isSignup ? 'none' : 'block';
@@ -171,6 +171,8 @@ async function loginUser() {
   const username = document.getElementById('loginUsername').value.trim();
   const password = document.getElementById('loginPassword').value;
   const error = document.getElementById('authError');
+  error.textContent = '';
+
   if(!username || !password) { error.textContent = 'Please fill in all fields.'; return; }
 
   try {
@@ -180,14 +182,17 @@ async function loginUser() {
       body: JSON.stringify({ username, password })
     });
     const data = await res.json();
-    if(!res.ok) { error.textContent = data.error || 'Login failed.'; return; }
+    
+    if(!res.ok) { 
+      error.textContent = data.message || data.error || 'Login failed.'; 
+      return; 
+    }
+
     localStorage.setItem('skyson_token', data.token);
     localStorage.setItem('skyson_user', JSON.stringify(data.user));
     window.location.href = 'home.html';
   } catch(e) {
-    localStorage.setItem('skyson_token', 'mock_token');
-    localStorage.setItem('skyson_user', JSON.stringify({ username, invitationCode: 'SKY7291' }));
-    window.location.href = 'home.html';
+    error.textContent = 'Network error. Could not connect to server.';
   }
 }
 
@@ -198,6 +203,7 @@ async function signupUser() {
   const confirmPassword = document.getElementById('signupConfirmPassword').value;
   const invitationCode = document.getElementById('signupInvitationCode').value.trim();
   const error = document.getElementById('signupError');
+  error.textContent = '';
 
   if(!username || !email || !password || !confirmPassword) {
     error.textContent = 'Please fill in all required fields.';
@@ -221,14 +227,17 @@ async function signupUser() {
       body: JSON.stringify({ username, email, password, invitationCode })
     });
     const data = await res.json();
-    if(!res.ok) { error.textContent = data.error || 'Registration failed.'; return; }
+    
+    if(!res.ok) { 
+      error.textContent = data.message || data.error || 'Registration failed.'; 
+      return; 
+    }
+
     localStorage.setItem('skyson_token', data.token);
     localStorage.setItem('skyson_user', JSON.stringify(data.user));
     window.location.href = 'home.html';
   } catch(e) {
-    localStorage.setItem('skyson_token', 'mock_token');
-    localStorage.setItem('skyson_user', JSON.stringify({ username, invitationCode: invitationCode || 'SKY7291' }));
-    window.location.href = 'home.html';
+    error.textContent = 'Network error. Could not connect to server.';
   }
 }
 </script>
