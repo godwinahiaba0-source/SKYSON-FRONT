@@ -201,6 +201,9 @@ async function loadUserProfile() {
     document.getElementById('dispUid').textContent = `UID: ${localUser.id}`;
     document.getElementById('valUid').textContent = localUser.id;
   }
+  if (localUser.invitation_code) {
+    document.getElementById('valInviteCode').textContent = localUser.invitation_code;
+  }
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/user/profile`, {
@@ -214,11 +217,13 @@ async function loadUserProfile() {
     if (user) {
       const username = user.username || localUser.username || 'User';
       const userId = user.id || localUser.id || '----';
+      const inviteCode = user.invitation_code || user.referral_code || `SKY${100000 + userId}`;
       
       document.getElementById('dispUsername').textContent = username;
       document.getElementById('valUsername').textContent = username;
       document.getElementById('dispUid').textContent = `UID: ${userId}`;
       document.getElementById('valUid').textContent = userId;
+      document.getElementById('valInviteCode').textContent = inviteCode; // Sets the live database invitation code!
       
       document.getElementById('valEmail').textContent = user.email || 'Not linked';
       document.getElementById('valRegDate').textContent = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Recent';
