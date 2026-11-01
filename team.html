@@ -277,38 +277,36 @@ async function loadTeamData() {
   }
 
   try {
-    // 1. Fetch User Profile to get referral code
     const profileRes = await fetch(`${API_BASE_URL}/api/user/profile`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
+    
     if (profileRes.ok) {
       const data = await profileRes.json();
       const user = data.user || data;
-      const refCode = user.referral_code || user.invitation_code || 'SKY7291';
+      
+      // Pull the exact database column 'invitation_code'
+      const refCode = user.invitation_code || user.referral_code || `SKY${1000 + (user.id || 1)}`;
       document.getElementById('displayInviteCode').textContent = refCode;
     }
 
-    // 2. Fetch Team Reports / Metrics
+    // Fetch team reports and members...
     const reportRes = await fetch(`${API_BASE_URL}/api/team/report`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (reportRes.ok) {
       const report = await reportRes.json();
-      
       document.getElementById('metricTeamRecharge').textContent = `GH₵ ${(report.teamRecharge || 0).toFixed(2)}`;
       document.getElementById('metricFirstCharges').textContent = report.firstChargeCount || 0;
       document.getElementById('metricTeamSize').textContent = report.teamSize || 0;
-
       document.getElementById('metricBlueRecharge').textContent = (report.teamRecharge || 0).toFixed(2);
       document.getElementById('metricFirstChargeNum').textContent = report.firstChargeCount || 0;
       document.getElementById('metricBlueTeamSize').textContent = report.teamSize || 0;
-
       document.getElementById('metricTeamWithdraw').textContent = (report.teamWithdraw || 0).toFixed(2);
       document.getElementById('metricFirstPush').textContent = report.firstPushCount || 0;
       document.getElementById('metricNewTeam').textContent = report.newTeamCount || 0;
     }
 
-    // 3. Fetch Team Members List
     const membersRes = await fetch(`${API_BASE_URL}/api/user/team/members`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -317,7 +315,6 @@ async function loadTeamData() {
       allTeamMembers = membersData.members || [];
       renderDownlines();
     }
-
   } catch (err) {
     console.error('Error loading team data:', err);
   }
