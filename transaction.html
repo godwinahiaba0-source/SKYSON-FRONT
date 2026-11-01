@@ -6,7 +6,6 @@
 <title>Skysonsolar — Transaction History</title>
 <link rel="stylesheet" href="style.css">
 <style>
-/* Header Action Row */
 .header-nav {
   display: flex;
   align-items: center;
@@ -32,8 +31,6 @@
   margin: 0;
   font-weight: 800;
 }
-
-/* Tab Filtering Buttons */
 .filter-tabs {
   display: flex;
   gap: 8px;
@@ -58,8 +55,6 @@
   border-color: var(--blue);
   box-shadow: 0 4px 12px rgba(8, 120, 249, 0.3);
 }
-
-/* Transaction Record Row Item */
 .record-item {
   display: flex;
   justify-content: space-between;
@@ -104,13 +99,7 @@
 </head>
 <body>
 
-  <script src="app.js"></script>
-<script>
-  requireAuth(); // Redirects to login if not logged in
-</script>
-
 <div class="app">
-  <!-- Consistent Topbar Header -->
   <header class="topbar">
     <div class="brand">
       <div class="logo">☀️</div>
@@ -130,14 +119,12 @@
   </header>
 
   <main class="page">
-    <!-- Header Navigation Row -->
     <div class="header-nav" style="background: linear-gradient(120deg, #064aa8, #087cf9); margin: -14px -14px 14px; padding: 14px;">
       <a href="account.html" class="back-btn">‹</a>
       <h1>Transaction History</h1>
       <div style="width: 40px;"></div>
     </div>
 
-    <!-- Filter Tabs -->
     <div class="filter-tabs">
       <button class="filter-tab active" onclick="switchTab('all', this)">All Activity</button>
       <button class="filter-tab" onclick="switchTab('recharge', this)">Recharges</button>
@@ -145,7 +132,6 @@
       <button class="filter-tab" onclick="switchTab('earnings', this)">Earnings</button>
     </div>
 
-    <!-- Records List Card -->
     <div class="card">
       <div id="recordsListContainer">
         <div class="empty" style="text-align:center; padding:20px; color:var(--muted)">Loading transaction history...</div>
@@ -153,7 +139,6 @@
     </div>
   </main>
 
-  <!-- Bottom Navigation Bar -->
   <nav class="bottom-nav">
     <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
     <button class="nav-btn" onclick="location.href='lease.html'"><span class="nav-icon">⬡</span>Lease</button>
@@ -164,7 +149,7 @@
 </div>
 
 <script>
-const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live backend URL
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 let allRecords = [];
 let currentFilter = 'all';
 
@@ -184,13 +169,13 @@ async function fetchTransactionRecords() {
     allRecords = data.records || [];
     renderRecords();
   } catch (e) {
-    allRecords = [];
-    renderRecords();
+    console.error('Error loading transactions:', e);
+    document.getElementById('recordsListContainer').innerHTML = `<div class="empty" style="text-align:center; padding:20px; color:#d63838">Failed to load transactions.</div>`;
   }
 }
 
 function switchTab(type, btn) {
-  currentFilter = type;
+    currentFilter = type;
   document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   renderRecords();
@@ -200,7 +185,7 @@ function renderRecords() {
   const container = document.getElementById('recordsListContainer');
   const filtered = allRecords.filter(r => {
     if (currentFilter === 'all') return true;
-    return (r.type || '').toLowerCase() === currentFilter;
+    return (r.type || '').toLowerCase() === currentFilter.toLowerCase();
   });
 
   if (filtered.length === 0) {
@@ -209,7 +194,8 @@ function renderRecords() {
   }
 
   container.innerHTML = filtered.map(r => {
-    const isPos = r.amount > 0 && r.type !== 'withdraw';
+    const amountVal = Number(r.amount) || 0;
+    const isPos = amountVal > 0 && r.type !== 'recharge';
     const sign = isPos ? '+' : '';
     const statusLower = (r.status || 'success').toLowerCase();
     const statusClass = statusLower === 'success' ? 'status-success' : (statusLower === 'pending' ? 'status-pending' : 'status-failed');
@@ -222,7 +208,7 @@ function renderRecords() {
           <span class="record-status ${statusClass}">${r.status || 'Completed'}</span>
         </div>
         <div class="record-amount ${isPos ? 'positive' : 'negative'}">
-          ${sign}GH₵ ${Math.abs(r.amount || 0).toFixed(2)}
+          ${sign}GH₵ ${Math.abs(amountVal).toFixed(2)}
         </div>
       </div>
     `;
