@@ -142,10 +142,10 @@ async function loadTeamData() {
   }
 
   try {
+    // 1. Fetch Profile & Invitation Code
     const profileRes = await fetch(`${API_BASE_URL}/api/user/profile`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    
     if (profileRes.ok) {
       const data = await profileRes.json();
       const user = data.user || data;
@@ -153,6 +153,24 @@ async function loadTeamData() {
       document.getElementById('displayInviteCode').textContent = inviteCode;
     }
 
+    // 2. Fetch Team Report Metrics
+    const reportRes = await fetch(`${API_BASE_URL}/api/team/report`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (reportRes.ok) {
+      const report = await reportRes.json();
+      document.getElementById('metricTeamRecharge').textContent = `GH₵ ${(report.teamRecharge || 0).toFixed(2)}`;
+      document.getElementById('metricFirstCharges').textContent = report.firstChargeCount || 0;
+      document.getElementById('metricTeamSize').textContent = report.teamSize || 0;
+      document.getElementById('metricBlueRecharge').textContent = (report.teamRecharge || 0).toFixed(2);
+      document.getElementById('metricFirstChargeNum').textContent = report.firstChargeCount || 0;
+      document.getElementById('metricBlueTeamSize').textContent = report.teamSize || 0;
+      document.getElementById('metricTeamWithdraw').textContent = (report.teamWithdraw || 0).toFixed(2);
+      document.getElementById('metricFirstPush').textContent = report.firstPushCount || 0;
+      document.getElementById('metricNewTeam').textContent = report.newTeamCount || 0;
+    }
+
+    // 3. Fetch Downline Members List
     const membersRes = await fetch(`${API_BASE_URL}/api/user/team/members`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
