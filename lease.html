@@ -148,17 +148,15 @@
       transform: scale(0.97);
     }
 
-    .my-leases-box {
+    .active-lease-card {
       background: #ffffff;
       border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 600;
+      padding: 16px;
       border: 1px solid var(--line);
-      margin: 0 14px;
       box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
   </style>
 </head>
@@ -214,7 +212,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 300.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">9.23 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S1', 100, 5, 60)">Lease / Purchase S1</button>
+          <button class="lease-btn" onclick="submitLease('S1 Skysonsolar Plan', 100, 5, 60)">Lease / Purchase S1</button>
         </div>
 
         <!-- S2 -->
@@ -232,7 +230,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 600.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">27.36 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S2', 200, 10, 60)">Lease / Purchase S2</button>
+          <button class="lease-btn" onclick="submitLease('S2 Skysonsolar Plan', 200, 10, 60)">Lease / Purchase S2</button>
         </div>
 
         <!-- S3 -->
@@ -250,7 +248,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 1,500.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">72.16 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S3', 600, 25, 60)">Lease / Purchase S3</button>
+          <button class="lease-btn" onclick="submitLease('S3 Skysonsolar Plan', 600, 25, 60)">Lease / Purchase S3</button>
         </div>
 
         <!-- S4 -->
@@ -268,7 +266,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 6,720.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">204.32 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S4', 1000, 42, 160)">Lease / Purchase S4</button>
+          <button class="lease-btn" onclick="submitLease('S4 Skysonsolar Plan', 1000, 42, 160)">Lease / Purchase S4</button>
         </div>
 
         <!-- S5 -->
@@ -286,7 +284,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 9,920.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">409.86 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S5', 1500, 62, 160)">Lease / Purchase S5</button>
+          <button class="lease-btn" onclick="submitLease('S5 Skysonsolar Plan', 1500, 62, 160)">Lease / Purchase S5</button>
         </div>
 
         <!-- S6 -->
@@ -304,7 +302,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 13,440.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">875.64 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S6', 2000, 84, 160)">Lease / Purchase S6</button>
+          <button class="lease-btn" onclick="submitLease('S6 Skysonsolar Plan', 2000, 84, 160)">Lease / Purchase S6</button>
         </div>
 
         <!-- S7 -->
@@ -322,7 +320,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 20,000.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">942.86 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S7', 3000, 125, 160)">Lease / Purchase S7</button>
+          <button class="lease-btn" onclick="submitLease('S7 Skysonsolar Plan', 3000, 125, 160)">Lease / Purchase S7</button>
         </div>
 
         <!-- S8 -->
@@ -340,7 +338,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 30,720.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">1,280.00 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S8', 5000, 192, 160)">Lease / Purchase S8</button>
+          <button class="lease-btn" onclick="submitLease('S8 Skysonsolar Plan', 5000, 192, 160)">Lease / Purchase S8</button>
         </div>
 
       </div>
@@ -348,8 +346,10 @@
       <div class="section-title" style="margin-top: 24px;">
         <span>My Leases</span>
       </div>
-      <div class="my-leases-box">
-        You have not started an active lease.
+      <div id="myLeasesContainer" class="lease-list" style="margin-bottom: 20px;">
+        <div style="background: #ffffff; border-radius: 16px; padding: 20px; text-align: center; color: var(--muted); font-size: 12px; font-weight: 600; border: 1px solid var(--line);">
+          Loading your active leases...
+        </div>
       </div>
     </main>
 
@@ -366,7 +366,47 @@
   <script>
     const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 
-    async function submitLease(planName, price, dailyIncome, duration) {
+    // Fetch and display live user leases on page load
+    async function fetchMyLeases() {
+      const token = localStorage.getItem('skyson_token');
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/lease/my-leases`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        const container = document.getElementById('myLeasesContainer');
+
+        if (res.ok && data.leases && data.leases.length > 0) {
+          container.innerHTML = data.leases.map(lease => `
+            <div class="active-lease-card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="color: var(--blue); font-size: 14px;">${lease.plan_name}</strong>
+                <span style="font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 3px 8px; font-weight: 700; border-radius: 6px;">Active (${lease.duration} Days)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted);">
+                <span>Price Paid: <strong>GH₵ ${Number(lease.price).toFixed(2)}</strong></span>
+                <span>Daily Income: <strong style="color: #16a34a;">GH₵ ${Number(lease.daily_income).toFixed(2)}</strong></span>
+              </div>
+              <button class="lease-btn" style="background: #16a34a; box-shadow: 0 3px 8px rgba(22, 163, 74, 0.3); margin-top: 4px;" onclick="claimDailyIncome(${lease.id})">
+                Claim Daily Income →
+              </button>
+            </div>
+          `).join('');
+        } else {
+          container.innerHTML = `
+            <div style="background: #ffffff; border-radius: 16px; padding: 20px; text-align: center; color: var(--muted); font-size: 12px; font-weight: 600; border: 1px solid var(--line);">
+              You have not started an active lease.
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.error('Error fetching leases:', err);
+      }
+    }
+
+    async function submitLease(plan_name, price, daily_income, duration) {
       const token = localStorage.getItem('skyson_token');
       if (!token) {
         alert('Please log in first to lease a plan.');
@@ -374,37 +414,65 @@
         return;
       }
 
-      if (!confirm(`Are you sure you want to lease ${planName} for GH₵ ${price.toFixed(2)}?`)) {
+      if (!confirm(`Are you sure you want to lease ${plan_name} for GH₵ ${price.toFixed(2)}? This will be deducted from your deposit balance.`)) {
         return;
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/lease/create`, {
+        // Corrected endpoint pointing to /api/lease/buy
+        const response = await fetch(`${API_BASE_URL}/api/lease/buy`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ planName, price, dailyIncome, duration })
+          body: JSON.stringify({ plan_name, price, daily_income, duration })
         });
 
+        const data = await response.json();
+
         if (response.ok) {
-          alert(`Successfully leased ${planName}!`);
+          alert(data.message || `Successfully leased ${plan_name}!`);
           location.reload();
         } else {
-          const data = await response.json();
-          alert(data.message || 'Failed to process lease.');
+          alert(data.message || 'Failed to process lease purchase.');
         }
       } catch (err) {
-        // Test mode fallback simulation
-        alert(`Successfully leased ${planName} for GH₵ ${price.toFixed(2)}! (Test Mode)`);
+        console.error('Lease error:', err);
+        alert('Network error connecting to server.');
+      }
+    }
+
+    async function claimDailyIncome(leaseId) {
+      const token = localStorage.getItem('skyson_token');
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/lease/claim`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ leaseId })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert(data.message);
+          location.reload();
+        } else {
+          alert(data.message || 'Failed to claim daily income.');
+        }
+      } catch (err) {
+        alert('Network error during daily claim.');
       }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
       if (!localStorage.getItem('skyson_token')) {
         window.location.href = 'index.html';
+        return;
       }
+      fetchMyLeases();
     });
   </script>
 </body>
