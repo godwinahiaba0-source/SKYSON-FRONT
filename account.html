@@ -44,8 +44,8 @@
     <div class="brand">
       <div class="logo">☀️</div>
       <div>
-        <div class="brand-name">Skysonsolar</div>
-        <div class="tagline">CLEAN ENERGY · GREEN FUTURE</div>
+        <div class="brand-name" id="accUsername">Skysonsolar</div>
+        <div class="tagline" id="accUid">UID: --</div>
       </div>
     </div>
     <div class="top-actions">
@@ -188,6 +188,46 @@
 <script>
 const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 
+async function fetchUserData() {
+  const token = localStorage.getItem('skyson_token');
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/user/profile`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const user = data.user;
+
+      if (user) {
+        if (document.getElementById('accUsername')) {
+          document.getElementById('accUsername').textContent = user.username || 'User';
+        }
+        if (document.getElementById('accUid')) {
+          document.getElementById('accUid').textContent = `UID: ${user.id}`;
+        }
+        if (document.getElementById('accBalance')) {
+          document.getElementById('accBalance').textContent = `GH₵ ${(user.balance || 0).toFixed(2)}`;
+        }
+      }
+    } else if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem('skyson_token');
+      window.location.href = 'index.html';
+    }
+  } catch (err) {
+    console.error('Failed to load live profile:', err);
+  }
+}
+
 function openSecurityModal() {
   document.getElementById('securityModal').style.display = 'flex';
   document.getElementById('secModalMsg').textContent = '';
@@ -281,7 +321,9 @@ function logoutUser() {
 window.addEventListener('DOMContentLoaded', () => {
   if (!localStorage.getItem('skyson_token')) {
     window.location.href = 'index.html';
+    return;
   }
+  fetchUserData();
 });
 </script>
 </body>
