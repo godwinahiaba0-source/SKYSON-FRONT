@@ -185,19 +185,24 @@
 </div>
 
 <script>
-const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live Railway backend URL
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 
 async function loadUserProfile() {
   const token = localStorage.getItem('skyson_token');
-  const user = JSON.parse(localStorage.getItem('skyson_user') || '{}');
+  const localUser = JSON.parse(localStorage.getItem('skyson_user') || '{}');
 
-  // Pre-fill local storage data
-  if (user.username) {
-    document.getElementById('dispUsername').textContent = user.username;
-    document.getElementById('valUsername').textContent = user.username;
+  // Pre-fill local storage data immediately for instant feedback
+  if (localUser.username) {
+    document.getElementById('dispUsername').textContent = localUser.username;
+    document.getElementById('valUsername').textContent = localUser.username;
   }
-  if (user.invitationCode) {
-    document.getElementById('valInviteCode').textContent = user.invitationCode;
+  if (localUser.email) {
+    document.getElementById('valEmail').textContent = localUser.email;
+    document.getElementById('editEmail').value = localUser.email;
+  }
+  if (localUser.id) {
+    document.getElementById('dispUid').textContent = `UID: ${localUser.id}`;
+    document.getElementById('valUid').textContent = localUser.id;
   }
 
   try {
@@ -206,22 +211,27 @@ async function loadUserProfile() {
     });
     if (!res.ok) return;
 
-    const data = await res.json();
-    document.getElementById('dispUsername').textContent = data.username || user.username;
-    document.getElementById('valUsername').textContent = data.username || user.username;
-    document.getElementById('dispUid').textContent = `UID: ${data.uid || '108249'}`;
-    document.getElementById('valUid').textContent = data.uid || '108249';
-    document.getElementById('valPhone').textContent = data.phone || 'Not linked';
-    document.getElementById('valEmail').textContent = data.email || 'Not linked';
-    document.getElementById('valRegDate').textContent = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'Recent';
-    
-    if (data.phone) document.getElementById('editPhone').value = data.phone;
-    if (data.email) document.getElementById('editEmail').value = data.email;
+    const resData = await res.json();
+    const user = resData.user || resData; // Handles both { user: {} } and direct objects
 
+    if (user) {
+      const username = user.username || localUser.username || 'User';
+      const userId = user.id || localUser.id || '----';
+      
+      document.getElementById('dispUsername').textContent = username;
+      document.getElementById('valUsername').textContent = username;
+      document.getElementById('dispUid').textContent = `UID: ${userId}`;
+      document.getElementById('valUid').textContent = userId;
+      
+      document.getElementById('valPhone').textContent = user.phone || 'Not linked';
+      document.getElementById('valEmail').textContent = user.email || 'Not linked';
+      document.getElementById('valRegDate').textContent = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Recent';
+      
+      if (user.phone) document.getElementById('editPhone').value = user.phone;
+      if (user.email) document.getElementById('editEmail').value = user.email;
+    }
   } catch (err) {
-    document.getElementById('dispUid').textContent = 'UID: 108249';
-    document.getElementById('valUid').textContent = '108249';
-    document.getElementById('valRegDate').textContent = 'Recent';
+    console.error('Error fetching live profile:', err);
   }
 }
 
@@ -239,6 +249,7 @@ async function saveProfileInfo() {
       },
       body: JSON.stringify({ phone, email })
     });
+    
     if (!res.ok) throw new Error('Failed to update profile');
 
     alert('Profile updated successfully!');
@@ -267,5 +278,3 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
-</body>
-</html>
