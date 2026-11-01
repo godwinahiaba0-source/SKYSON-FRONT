@@ -6,133 +6,34 @@
 <title>Skysonsolar — Team Reports</title>
 <link rel="stylesheet" href="style.css">
 <style>
-/* Header Action Row */
-.header-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-.back-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 0;
-  color: #fff;
-  font-size: 22px;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  text-decoration: none;
-}
-.header-nav h1 {
-  font-size: 20px;
-  color: #fff;
-  margin: 0;
-  font-weight: 800;
-}
-
-/* Metric Cards Grid */
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.metric-box {
-  background: #fff;
-  border-radius: 14px;
-  padding: 14px 10px;
-  text-align: center;
-  border: 1px solid var(--line);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-}
+.header-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.back-btn { width: 40px; height: 40px; border-radius: 12px; background: rgba(255, 255, 255, 0.2); border: 0; color: #fff; font-size: 22px; display: grid; place-items: center; cursor: pointer; text-decoration: none; }
+.header-nav h1 { font-size: 20px; color: #fff; margin: 0; font-weight: 800; }
+.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.metric-box { background: #fff; border-radius: 14px; padding: 14px 10px; text-align: center; border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 .metric-box.blue { background: linear-gradient(135deg, #06459d 0%, #0878f9 100%); color: #fff; border: 0; }
 .metric-box.green { background: linear-gradient(135deg, #138a36 0%, #1db954 100%); color: #fff; border: 0; }
-
 .metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 6px; font-weight: 700; }
 .metric-box.blue .metric-label, .metric-box.green .metric-label { color: rgba(255,255,255,0.85); }
-
 .metric-value { font-size: 15px; font-weight: 800; color: var(--ink); word-break: break-all; }
 .metric-box.blue .metric-value, .metric-box.green .metric-value { color: #fff; }
-
-/* Invitation Card */
-.invite-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 20px;
-  border: 1px solid var(--line);
-  margin-bottom: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-}
+.invite-card { background: #fff; border-radius: 16px; padding: 20px; border: 1px solid var(--line); margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
 .invite-title { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 10px; }
-.invite-code-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
+.invite-code-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .invite-code-text { font-size: 24px; font-weight: 900; color: var(--blue); letter-spacing: 1px; }
 .invite-sub { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
-
-/* Downline Tables & Search */
-.search-input {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  font-size: 13px;
-  margin-bottom: 14px;
-  background: #fcfdff;
-  outline-color: var(--blue);
-}
-.downline-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-.downline-table th {
-  text-align: left;
-  padding: 8px 4px;
-  color: var(--muted);
-  border-bottom: 1px solid var(--line);
-  font-weight: 700;
-}
-.downline-table td {
-  padding: 12px 4px;
-  border-bottom: 1px solid #f2f6fc;
-  color: var(--ink);
-  font-weight: 600;
-}
-.level-tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.level-tab {
-  flex: 1;
-  padding: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: #f8fbff;
-  color: var(--muted);
-  cursor: pointer;
-  text-align: center;
-}
-.level-tab.active {
-  background: var(--blue);
-  color: #fff;
-  border-color: var(--blue);
-}
+.search-input { width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; font-size: 13px; margin-bottom: 14px; background: #fcfdff; outline-color: var(--blue); }
+.downline-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.downline-table th { text-align: left; padding: 8px 4px; color: var(--muted); border-bottom: 1px solid var(--line); font-weight: 700; }
+.downline-table td { padding: 12px 4px; border-bottom: 1px solid #f2f6fc; color: var(--ink); font-weight: 600; }
+.level-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.level-tab { flex: 1; padding: 8px; font-size: 11px; font-weight: 700; border-radius: 10px; border: 1px solid var(--line); background: #f8fbff; color: var(--muted); cursor: pointer; text-align: center; }
+.level-tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <!-- Consistent Topbar Header -->
   <header class="topbar">
     <div class="brand">
       <div class="logo">☀️</div>
@@ -142,69 +43,33 @@
       </div>
     </div>
     <div class="top-actions">
-      <select id="currencySelect" onchange="setCurrency(this.value)" style="padding:6px 4px; border:1px solid #ffffff88; border-radius:9px; background:#fff; color:#06459d; font-size:11px; font-weight:800">
-        <option value="GHS">🇬🇭 GHS</option>
-        <option value="USD">🇺🇸 USD</option>
-      </select>
       <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='team.html'" title="Team">♣</button>
       <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='account.html'" title="Account">👤</button>
     </div>
   </header>
 
   <main class="page">
-    <!-- Header Navigation Row -->
     <div class="header-nav" style="background: linear-gradient(120deg, #064aa8, #087cf9); margin: -14px -14px 14px; padding: 14px;">
       <a href="account.html" class="back-btn">‹</a>
       <h1>Team Reports</h1>
       <div style="width: 40px;"></div>
     </div>
 
-    <!-- Row 1: Light Metric Cards -->
+    <!-- Metric Cards -->
     <div class="metrics-grid">
-      <div class="metric-box">
-        <div class="metric-label">Team recharge</div>
-        <div class="metric-value" id="metricTeamRecharge">GH₵ 0.00</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-label">First charges</div>
-        <div class="metric-value" id="metricFirstCharges">0</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-label">Team size</div>
-        <div class="metric-value" id="metricTeamSize">0</div>
-      </div>
+      <div class="metric-box"><div class="metric-label">Team recharge</div><div class="metric-value" id="metricTeamRecharge">GH₵ 0.00</div></div>
+      <div class="metric-box"><div class="metric-label">First charges</div><div class="metric-value" id="metricFirstCharges">0</div></div>
+      <div class="metric-box"><div class="metric-label">Team size</div><div class="metric-value" id="metricTeamSize">0</div></div>
     </div>
-
-    <!-- Row 2: Blue Financial Metric Cards -->
     <div class="metrics-grid">
-      <div class="metric-box blue">
-        <div class="metric-label">Team recharge (GHS)</div>
-        <div class="metric-value" id="metricBlueRecharge">0.00</div>
-      </div>
-      <div class="metric-box blue">
-        <div class="metric-label">Number of first charge</div>
-        <div class="metric-value" id="metricFirstChargeNum">0</div>
-      </div>
-      <div class="metric-box blue">
-        <div class="metric-label">Team size</div>
-        <div class="metric-value" id="metricBlueTeamSize">0</div>
-      </div>
+      <div class="metric-box blue"><div class="metric-label">Team recharge (GHS)</div><div class="metric-value" id="metricBlueRecharge">0.00</div></div>
+      <div class="metric-box blue"><div class="metric-label">Number of first charge</div><div class="metric-value" id="metricFirstChargeNum">0</div></div>
+      <div class="metric-box blue"><div class="metric-label">Team size</div><div class="metric-value" id="metricBlueTeamSize">0</div></div>
     </div>
-
-    <!-- Row 3: Green Operational Metric Cards -->
     <div class="metrics-grid" style="margin-bottom: 20px;">
-      <div class="metric-box green">
-        <div class="metric-label">Team withdraw (GHS)</div>
-        <div class="metric-value" id="metricTeamWithdraw">0.00</div>
-      </div>
-      <div class="metric-box green">
-        <div class="metric-label">Number of first push</div>
-        <div class="metric-value" id="metricFirstPush">0</div>
-      </div>
-      <div class="metric-box green">
-        <div class="metric-label">New team</div>
-        <div class="metric-value" id="metricNewTeam">0</div>
-      </div>
+      <div class="metric-box green"><div class="metric-label">Team withdraw (GHS)</div><div class="metric-value" id="metricTeamWithdraw">0.00</div></div>
+      <div class="metric-box green"><div class="metric-label">Number of first push</div><div class="metric-value" id="metricFirstPush">0</div></div>
+      <div class="metric-box green"><div class="metric-label">New team</div><div class="metric-value" id="metricNewTeam">0</div></div>
     </div>
 
     <!-- Invitation Card -->
@@ -225,36 +90,32 @@
         <span id="downlineCountBadge" style="font-size: 11px; font-weight: 700; background: #e9f4ff; color: var(--blue); padding: 4px 10px; border-radius: 20px;">0 Users</span>
       </div>
 
-      <!-- Level Tabs -->
       <div class="level-tabs">
         <div class="level-tab active" onclick="switchLevel(1, this)">Level 1</div>
         <div class="level-tab" onclick="switchLevel(2, this)">Level 2</div>
         <div class="level-tab" onclick="switchLevel(3, this)">Level 3</div>
       </div>
 
-      <input type="text" id="searchMembers" class="search-input" placeholder="Search members by phone or username..." oninput="filterMembers()">
+      <input type="text" id="searchMembers" class="search-input" placeholder="Search members by email or username..." oninput="filterMembers()">
 
       <div style="overflow-x: auto;">
         <table class="downline-table">
           <thead>
             <tr>
               <th>Username</th>
-              <th>Phone</th>
+              <th>Email</th>
               <th>Deposited</th>
               <th>Joined Date</th>
             </tr>
           </thead>
           <tbody id="downlinesTableBody">
-            <tr>
-              <td colspan="4" style="text-align: center; color: var(--muted); padding: 20px;">Loading team members...</td>
-            </tr>
+            <tr><td colspan="4" style="text-align: center; color: var(--muted); padding: 20px;">Loading team members...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </main>
 
-  <!-- Bottom Navigation Bar -->
   <nav class="bottom-nav">
     <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
     <button class="nav-btn" onclick="location.href='lease.html'"><span class="nav-icon">⬡</span>Lease</button>
@@ -265,7 +126,7 @@
 </div>
 
 <script>
-const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live Railway URL if needed
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 let allTeamMembers = [];
 let currentLevelFilter = 1;
 
@@ -276,6 +137,12 @@ async function loadTeamData() {
     return;
   }
 
+  // Instant fallback from localStorage if available
+  const localUser = JSON.parse(localStorage.getItem('skyson_user') || '{}');
+  if (localUser.invitation_code) {
+    document.getElementById('displayInviteCode').textContent = localUser.invitation_code;
+  }
+
   try {
     const profileRes = await fetch(`${API_BASE_URL}/api/user/profile`, {
       headers: { 'Authorization': `Bearer ${token}` }
@@ -284,27 +151,8 @@ async function loadTeamData() {
     if (profileRes.ok) {
       const data = await profileRes.json();
       const user = data.user || data;
-      
-      // Pull and fallback safely to generate code immediately if needed
-      const inviteCode = user.invitation_code || user.referral_code || `SKY${100000 + (user.user_id || user.id || 1)}`;
+      const inviteCode = user.invitation_code || localUser.invitation_code || `SKY${100000 + (user.id || 1)}`;
       document.getElementById('displayInviteCode').textContent = inviteCode;
-    }
-
-    // Fetch team reports and members...
-    const reportRes = await fetch(`${API_BASE_URL}/api/team/report`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (reportRes.ok) {
-      const report = await reportRes.json();
-      document.getElementById('metricTeamRecharge').textContent = `GH₵ ${(report.teamRecharge || 0).toFixed(2)}`;
-      document.getElementById('metricFirstCharges').textContent = report.firstChargeCount || 0;
-      document.getElementById('metricTeamSize').textContent = report.teamSize || 0;
-      document.getElementById('metricBlueRecharge').textContent = (report.teamRecharge || 0).toFixed(2);
-      document.getElementById('metricFirstChargeNum').textContent = report.firstChargeCount || 0;
-      document.getElementById('metricBlueTeamSize').textContent = report.teamSize || 0;
-      document.getElementById('metricTeamWithdraw').textContent = (report.teamWithdraw || 0).toFixed(2);
-      document.getElementById('metricFirstPush').textContent = report.firstPushCount || 0;
-      document.getElementById('metricNewTeam').textContent = report.newTeamCount || 0;
     }
 
     const membersRes = await fetch(`${API_BASE_URL}/api/user/team/members`, {
@@ -335,7 +183,7 @@ function renderDownlines() {
   const filtered = allTeamMembers.filter(m => {
     const matchesLevel = parseInt(m.level, 10) === currentLevelFilter;
     const matchesSearch = (m.username && m.username.toLowerCase().includes(searchQuery)) || 
-                          (m.phone && m.phone.includes(searchQuery));
+                          (m.email && m.email.toLowerCase().includes(searchQuery));
     return matchesLevel && matchesSearch;
   });
 
@@ -349,7 +197,7 @@ function renderDownlines() {
   tbody.innerHTML = filtered.map(m => `
     <tr>
       <td>${m.username || 'Member'}</td>
-      <td>${m.phone || 'N/A'}</td>
+      <td>${m.email || 'N/A'}</td>
       <td style="color: var(--green);">GH₵ ${parseFloat(m.total_deposited || 0).toFixed(2)}</td>
       <td>${m.created_at ? new Date(m.created_at).toLocaleDateString() : 'Recent'}</td>
     </tr>
@@ -362,17 +210,13 @@ function filterMembers() {
 
 function copyInviteCode() {
   const code = document.getElementById('displayInviteCode').textContent;
-  navigator.clipboard.writeText(code).then(() => {
-    alert('Invitation code copied to clipboard!');
-  });
+  navigator.clipboard.writeText(code).then(() => alert('Invitation code copied!'));
 }
 
 function copyInviteLink() {
   const code = document.getElementById('displayInviteCode').textContent;
   const link = `${window.location.origin}/register.html?ref=${code}`;
-  navigator.clipboard.writeText(link).then(() => {
-    alert('Invitation link copied successfully! Share it with your friends.');
-  });
+  navigator.clipboard.writeText(link).then(() => alert('Invitation link copied successfully!'));
 }
 
 window.addEventListener('DOMContentLoaded', loadTeamData);
