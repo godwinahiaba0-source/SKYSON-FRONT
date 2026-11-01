@@ -96,20 +96,19 @@
         <div class="level-tab" onclick="switchLevel(3, this)">Level 3</div>
       </div>
 
-      <input type="text" id="searchMembers" class="search-input" placeholder="Search members by email or username..." oninput="filterMembers()">
+      <input type="text" id="searchMembers" class="search-input" placeholder="Search members by username..." oninput="filterMembers()">
 
       <div style="overflow-x: auto;">
         <table class="downline-table">
           <thead>
             <tr>
               <th>Username</th>
-              <th>Email</th>
               <th>Deposited</th>
               <th>Joined Date</th>
             </tr>
           </thead>
           <tbody id="downlinesTableBody">
-            <tr><td colspan="4" style="text-align: center; color: var(--muted); padding: 20px;">Loading team members...</td></tr>
+            <tr><td colspan="3" style="text-align: center; color: var(--muted); padding: 20px;">Loading team members...</td></tr>
           </tbody>
         </table>
       </div>
@@ -137,7 +136,6 @@ async function loadTeamData() {
     return;
   }
 
-  // Instant fallback from localStorage if available
   const localUser = JSON.parse(localStorage.getItem('skyson_user') || '{}');
   if (localUser.invitation_code) {
     document.getElementById('displayInviteCode').textContent = localUser.invitation_code;
@@ -182,22 +180,20 @@ function renderDownlines() {
   
   const filtered = allTeamMembers.filter(m => {
     const matchesLevel = parseInt(m.level, 10) === currentLevelFilter;
-    const matchesSearch = (m.username && m.username.toLowerCase().includes(searchQuery)) || 
-                          (m.email && m.email.toLowerCase().includes(searchQuery));
+    const matchesSearch = (m.username && m.username.toLowerCase().includes(searchQuery));
     return matchesLevel && matchesSearch;
   });
 
   document.getElementById('downlineCountBadge').textContent = `${filtered.length} Users`;
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--muted); padding: 20px;">No team members found for Level ${currentLevelFilter}.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--muted); padding: 20px;">No team members found for Level ${currentLevelFilter}.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = filtered.map(m => `
     <tr>
       <td>${m.username || 'Member'}</td>
-      <td>${m.email || 'N/A'}</td>
       <td style="color: var(--green);">GH₵ ${parseFloat(m.total_deposited || 0).toFixed(2)}</td>
       <td>${m.created_at ? new Date(m.created_at).toLocaleDateString() : 'Recent'}</td>
     </tr>
