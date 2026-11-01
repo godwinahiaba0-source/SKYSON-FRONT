@@ -148,6 +148,13 @@
       transform: scale(0.97);
     }
 
+    .lease-btn.disabled {
+      background: #cbd5e1;
+      color: #64748b;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
     .active-lease-card {
       background: #ffffff;
       border-radius: 16px;
@@ -212,7 +219,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 300.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">9.23 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S1 Skysonsolar Plan', 100, 5, 60)">Lease / Purchase S1</button>
+          <button id="btn-S1 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S1 Skysonsolar Plan', 100, 5, 60)">Lease / Purchase S1</button>
         </div>
 
         <!-- S2 -->
@@ -230,7 +237,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 600.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">27.36 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S2 Skysonsolar Plan', 200, 10, 60)">Lease / Purchase S2</button>
+          <button id="btn-S2 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S2 Skysonsolar Plan', 200, 10, 60)">Lease / Purchase S2</button>
         </div>
 
         <!-- S3 -->
@@ -248,7 +255,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 1,500.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">72.16 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S3 Skysonsolar Plan', 600, 25, 60)">Lease / Purchase S3</button>
+          <button id="btn-S3 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S3 Skysonsolar Plan', 600, 25, 60)">Lease / Purchase S3</button>
         </div>
 
         <!-- S4 -->
@@ -266,7 +273,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 6,720.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">204.32 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S4 Skysonsolar Plan', 1000, 42, 160)">Lease / Purchase S4</button>
+          <button id="btn-S4 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S4 Skysonsolar Plan', 1000, 42, 160)">Lease / Purchase S4</button>
         </div>
 
         <!-- S5 -->
@@ -284,7 +291,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 9,920.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">409.86 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S5 Skysonsolar Plan', 1500, 62, 160)">Lease / Purchase S5</button>
+          <button id="btn-S5 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S5 Skysonsolar Plan', 1500, 62, 160)">Lease / Purchase S5</button>
         </div>
 
         <!-- S6 -->
@@ -302,7 +309,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 13,440.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">875.64 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S6 Skysonsolar Plan', 2000, 84, 160)">Lease / Purchase S6</button>
+          <button id="btn-S6 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S6 Skysonsolar Plan', 2000, 84, 160)">Lease / Purchase S6</button>
         </div>
 
         <!-- S7 -->
@@ -320,7 +327,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 20,000.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">942.86 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S7 Skysonsolar Plan', 3000, 125, 160)">Lease / Purchase S7</button>
+          <button id="btn-S7 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S7 Skysonsolar Plan', 3000, 125, 160)">Lease / Purchase S7</button>
         </div>
 
         <!-- S8 -->
@@ -338,7 +345,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 30,720.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">1,280.00 KWH</span></div>
           </div>
-          <button class="lease-btn" onclick="submitLease('S8 Skysonsolar Plan', 5000, 192, 160)">Lease / Purchase S8</button>
+          <button id="btn-S8 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S8 Skysonsolar Plan', 5000, 192, 160)">Lease / Purchase S8</button>
         </div>
 
       </div>
@@ -366,7 +373,7 @@
   <script>
     const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 
-    // Fetch and display live user leases on page load
+    // Fetch live user leases and disable buttons for already-owned plans
     async function fetchMyLeases() {
       const token = localStorage.getItem('skyson_token');
       if (!token) return;
@@ -379,6 +386,18 @@
         const container = document.getElementById('myLeasesContainer');
 
         if (res.ok && data.leases && data.leases.length > 0) {
+          // Disable buttons for plans already leased
+          data.leases.forEach(lease => {
+            const btnId = `btn-${lease.plan_name}`;
+            const btn = document.getElementById(btnId);
+            if (btn) {
+              btn.textContent = 'Already Leased / Active';
+              btn.className = 'lease-btn disabled';
+              btn.disabled = true;
+            }
+          });
+
+          // Render active leases box
           container.innerHTML = data.leases.map(lease => `
             <div class="active-lease-card">
               <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -419,7 +438,6 @@
       }
 
       try {
-        // Corrected endpoint pointing to /api/lease/buy
         const response = await fetch(`${API_BASE_URL}/api/lease/buy`, {
           method: 'POST',
           headers: {
