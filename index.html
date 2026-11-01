@@ -135,7 +135,7 @@
       <label class="auth-field">Email address<input id="signupEmail" type="email" placeholder="Enter your email address"></label>
       <label class="auth-field">Create password<input id="signupPassword" type="password" placeholder="At least 8 characters"></label>
       <label class="auth-field">Repeat password<input id="signupConfirmPassword" type="password" placeholder="Repeat password"></label>
-      <label class="auth-field">Invitation Code (Required after first user)<input id="signupInvitationCode" placeholder="Enter valid invitation code"></label>
+      <label class="auth-field">Invitation Code<input id="signupInvitationCode" placeholder="Enter valid invitation code"></label>
       <button class="btn auth-submit" onclick="signupUser()">Create Account →</button>
       <div class="auth-error" id="signupError"></div>
       <button class="auth-toggle" onclick="toggleAuth(false)">Back to Log In</button>
@@ -159,10 +159,16 @@ window.addEventListener('DOMContentLoaded', () => {
     return;
   }
   
+  // Automatically read ref or invite from URL, prefill, and lock
   const urlParams = new URLSearchParams(window.location.search);
-  const inviteCode = urlParams.get('invite');
+  const inviteCode = urlParams.get('ref') || urlParams.get('invite');
   if (inviteCode) {
-    document.getElementById('signupInvitationCode').value = inviteCode;
+    const inviteInput = document.getElementById('signupInvitationCode');
+    inviteInput.value = inviteCode.trim();
+    inviteInput.readOnly = true;
+    inviteInput.style.backgroundColor = '#f1f5f9';
+    inviteInput.style.color = '#64748b';
+    inviteInput.style.cursor = 'not-allowed';
     toggleAuth(true);
   }
 });
