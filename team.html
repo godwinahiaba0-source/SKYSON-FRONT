@@ -170,18 +170,26 @@ async function loadTeamData() {
       document.getElementById('metricNewTeam').textContent = report.newTeamCount || 0;
     }
 
-    // 3. Fetch Downline Members List
-    const membersRes = await fetch(`${API_BASE_URL}/api/user/team/members`, {
+    // 3. Fetch Downline Members List with resilient endpoint fallback
+    let membersRes = await fetch(`${API_BASE_URL}/api/team/members`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
+    if (!membersRes.ok) {
+      membersRes = await fetch(`${API_BASE_URL}/api/user/team/members`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+    }
+
     if (membersRes.ok) {
       const membersData = await membersRes.json();
-      // Handle both direct array response or object-wrapped response safely
       allTeamMembers = Array.isArray(membersData) ? membersData : (membersData.members || []);
       renderDownlines();
+    } else {
+      document.getElementById('downlinesTableBody').innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--muted); padding: 20px;">No downline members found.</td></tr>`;
     }
   } catch (err) {
     console.error('Error loading team data:', err);
+    document.getElementById('downlinesTableBody').innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--muted); padding: 20px;">Error loading downline members.</td></tr>`;
   }
 }
 
