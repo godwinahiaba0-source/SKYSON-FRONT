@@ -238,7 +238,7 @@ function copyInviteCode() {
 
 function copyInviteLink() {
   const code = document.getElementById('displayInviteCode').textContent;
-  const link = `${window.location.origin}/register.html?ref=${code}`;
+  const link = `${window.location.origin}/index.html?ref=${code}`;
   navigator.clipboard.writeText(link).then(() => alert('Invitation link copied successfully!'));
 }
 
