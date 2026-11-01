@@ -24,6 +24,7 @@
   display: grid;
   place-items: center;
   cursor: pointer;
+  text-decoration: none;
 }
 .header-nav h1 {
   font-size: 20px;
@@ -31,131 +32,107 @@
   margin: 0;
   font-weight: 800;
 }
-.dropdown-btn {
-  background: #fff;
-  color: var(--blue);
-  border: 0;
-  border-radius: 12px;
-  padding: 8px 14px;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-}
 
-/* 3x3 Metric Grid Matching Image */
-.report-grid {
+/* Metric Cards Grid */
+.metrics-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
-
-.report-card {
-  border-radius: 16px;
-  padding: 12px 8px;
+.metric-box {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 10px;
   text-align: center;
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+.metric-box.blue { background: linear-gradient(135deg, #06459d 0%, #0878f9 100%); color: #fff; border: 0; }
+.metric-box.green { background: linear-gradient(135deg, #138a36 0%, #1db954 100%); color: #fff; border: 0; }
+
+.metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 6px; font-weight: 700; }
+.metric-box.blue .metric-label, .metric-box.green .metric-label { color: rgba(255,255,255,0.85); }
+
+.metric-value { font-size: 15px; font-weight: 800; color: var(--ink); word-break: break-all; }
+.metric-box.blue .metric-value, .metric-box.green .metric-value { color: #fff; }
+
+/* Invitation Card */
+.invite-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  margin-bottom: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+.invite-title { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 10px; }
+.invite-code-row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
-  min-height: 90px;
+  margin-bottom: 10px;
 }
+.invite-code-text { font-size: 24px; font-weight: 900; color: var(--blue); letter-spacing: 1px; }
+.invite-sub { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
 
-/* Light Row Cards */
-.report-card.light {
-  background: #f0f6ff;
-  border: 1px solid #e1eeff;
-}
-.report-card.light .metric-title {
-  font-size: 10px;
-  color: #53719c;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.report-card.light .metric-pill {
-  background: #11a4e1;
-  color: #fff;
-  border-radius: 8px;
-  padding: 6px 4px;
-  font-weight: 800;
-  font-size: 11px;
-}
-
-/* Blue Middle Row Cards */
-.report-card.blue {
-  background: linear-gradient(145deg, #0d6efd, #085ad4);
-  color: #fff;
-}
-.report-card.blue .metric-title {
-  font-size: 10px;
-  color: #d0e2ff;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.report-card.blue .metric-val {
-  font-size: 18px;
-  font-weight: 900;
-  color: #fff;
-}
-
-/* Green Bottom Row Cards */
-.report-card.green {
-  background: linear-gradient(145deg, #12b75a, #0e9649);
-  color: #fff;
-}
-.report-card.green .metric-title {
-  font-size: 10px;
-  color: #d1f7e0;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.report-card.green .metric-val {
-  font-size: 18px;
-  font-weight: 900;
-  color: #fff;
-}
-
-/* Table Section */
+/* Downline Tables & Search */
 .search-input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  margin-bottom: 12px;
-  font-size: 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  margin-bottom: 14px;
+  background: #fcfdff;
   outline-color: var(--blue);
 }
-.team-table-wrap {
-  width: 100%;
-  overflow-x: auto;
-}
-.team-table {
+.downline-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 12px;
 }
-.team-table th, .team-table td {
-  padding: 10px 8px;
+.downline-table th {
   text-align: left;
+  padding: 8px 4px;
+  color: var(--muted);
   border-bottom: 1px solid var(--line);
+  font-weight: 700;
 }
-.team-table th {
-  color: var(--muted);
+.downline-table td {
+  padding: 12px 4px;
+  border-bottom: 1px solid #f2f6fc;
+  color: var(--ink);
   font-weight: 600;
-  background: #f8fbff;
 }
-.pagination-controls {
+.level-tabs {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 12px;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.level-tab {
+  flex: 1;
+  padding: 8px;
   font-size: 11px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #f8fbff;
   color: var(--muted);
+  cursor: pointer;
+  text-align: center;
+}
+.level-tab.active {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
 }
 </style>
 </head>
 <body>
 
 <div class="app">
+  <!-- Consistent Topbar Header -->
   <header class="topbar">
     <div class="brand">
       <div class="logo">☀️</div>
@@ -177,97 +154,102 @@
   <main class="page">
     <!-- Header Navigation Row -->
     <div class="header-nav" style="background: linear-gradient(120deg, #064aa8, #087cf9); margin: -14px -14px 14px; padding: 14px;">
-      <button class="back-btn" onclick="location.href='home.html'">‹</button>
+      <a href="account.html" class="back-btn">‹</a>
       <h1>Team Reports</h1>
-      <button class="dropdown-btn">My team ▾</button>
+      <div style="width: 40px;"></div>
     </div>
 
-    <!-- 3x3 Metric Grid Matching Image -->
-    <div class="report-grid">
-      <!-- Light Row -->
-      <div class="report-card light">
-        <div class="metric-title">Team recharge</div>
-        <div class="metric-pill" id="valTeamRechargePill">GH₵ 0.00</div>
+    <!-- Row 1: Light Metric Cards -->
+    <div class="metrics-grid">
+      <div class="metric-box">
+        <div class="metric-label">Team recharge</div>
+        <div class="metric-value" id="metricTeamRecharge">GH₵ 0.00</div>
       </div>
-      <div class="report-card light">
-        <div class="metric-title">First charges</div>
-        <div class="metric-pill" id="valFirstChargesPill">0</div>
+      <div class="metric-box">
+        <div class="metric-label">First charges</div>
+        <div class="metric-value" id="metricFirstCharges">0</div>
       </div>
-      <div class="report-card light">
-        <div class="metric-title">Team size</div>
-        <div class="metric-pill" id="valTeamSizePill">0</div>
+      <div class="metric-box">
+        <div class="metric-label">Team size</div>
+        <div class="metric-value" id="metricTeamSize">0</div>
       </div>
+    </div>
 
-      <!-- Blue Row -->
-      <div class="report-card blue">
-        <div class="metric-title">Team recharge (GHS)</div>
-        <div class="metric-val" id="valTeamRechargeGhs">0.00</div>
+    <!-- Row 2: Blue Financial Metric Cards -->
+    <div class="metrics-grid">
+      <div class="metric-box blue">
+        <div class="metric-label">Team recharge (GHS)</div>
+        <div class="metric-value" id="metricBlueRecharge">0.00</div>
       </div>
-      <div class="report-card blue">
-        <div class="metric-title">Number of first charge</div>
-        <div class="metric-val" id="valNumFirstCharge">0</div>
+      <div class="metric-box blue">
+        <div class="metric-label">Number of first charge</div>
+        <div class="metric-value" id="metricFirstChargeNum">0</div>
       </div>
-      <div class="report-card blue">
-        <div class="metric-title">Team size</div>
-        <div class="metric-val" id="valTeamSize">0</div>
+      <div class="metric-box blue">
+        <div class="metric-label">Team size</div>
+        <div class="metric-value" id="metricBlueTeamSize">0</div>
       </div>
+    </div>
 
-      <!-- Green Row -->
-      <div class="report-card green">
-        <div class="metric-title">Team withdraw (GHS)</div>
-        <div class="metric-val" id="valTeamWithdraw">0.00</div>
+    <!-- Row 3: Green Operational Metric Cards -->
+    <div class="metrics-grid" style="margin-bottom: 20px;">
+      <div class="metric-box green">
+        <div class="metric-label">Team withdraw (GHS)</div>
+        <div class="metric-value" id="metricTeamWithdraw">0.00</div>
       </div>
-      <div class="report-card green">
-        <div class="metric-title">Number of first push</div>
-        <div class="metric-val" id="valNumFirstPush">0</div>
+      <div class="metric-box green">
+        <div class="metric-label">Number of first push</div>
+        <div class="metric-value" id="metricFirstPush">0</div>
       </div>
-      <div class="report-card green">
-        <div class="metric-title">New team</div>
-        <div class="metric-val" id="valNewTeam">0</div>
+      <div class="metric-box green">
+        <div class="metric-label">New team</div>
+        <div class="metric-value" id="metricNewTeam">0</div>
       </div>
     </div>
 
     <!-- Invitation Card -->
-    <div class="card">
-      <div class="section-head"><h2>Your Invitation Code</h2></div>
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin:8px 0;">
-        <strong id="userInviteCode" style="font-size:24px; color:var(--blue); letter-spacing:2px">SKY7291</strong>
-        <button class="btn" onclick="copyInviteCode()">Copy Code</button>
+    <div class="invite-card">
+      <div class="invite-title">Your Invitation Code</div>
+      <div class="invite-code-row">
+        <span class="invite-code-text" id="displayInviteCode">------</span>
+        <button class="btn" style="padding: 8px 16px; font-size: 12px;" onclick="copyInviteCode()">Copy Code</button>
       </div>
-      <p style="font-size:11px; color:var(--muted); margin:0 0 12px">Share your code with friends who want to join.</p>
-      <button class="btn green" style="width:100%" onclick="copyInviteLink()">Invite Friends (Copy Link)</button>
+      <div class="invite-sub">Share your code with friends who want to join.</div>
+      <button class="btn" style="width: 100%; padding: 13px; font-size: 13px; background: var(--green);" onclick="copyInviteLink()">Invite Friends (Copy Link)</button>
     </div>
 
-    <!-- Downline Users Table Card -->
-    <div class="card">
-      <div class="section-head">
-        <h2>Level 1 Downlines</h2>
-        <span id="level1CountBadge" class="badge" style="background:#e9f4ff; color:var(--blue); padding:4px 8px; border-radius:8px; font-size:11px; font-weight:800">0 Users</span>
+    <!-- Downlines Section -->
+    <div class="invite-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="font-size: 14px; font-weight: 800; color: var(--ink); margin: 0;" id="downlineTitle">Level 1 Downlines</h3>
+        <span id="downlineCountBadge" style="font-size: 11px; font-weight: 700; background: #e9f4ff; color: var(--blue); padding: 4px 10px; border-radius: 20px;">0 Users</span>
       </div>
-      
-      <input type="text" class="search-input" id="downlineSearch" placeholder="Search members..." oninput="filterDownlines(this.value)">
 
-      <div class="team-table-wrap">
-        <table class="team-table">
+      <!-- Level Tabs -->
+      <div class="level-tabs">
+        <div class="level-tab active" onclick="switchLevel(1, this)">Level 1</div>
+        <div class="level-tab" onclick="switchLevel(2, this)">Level 2</div>
+        <div class="level-tab" onclick="switchLevel(3, this)">Level 3</div>
+      </div>
+
+      <input type="text" id="searchMembers" class="search-input" placeholder="Search members by phone or username..." oninput="filterMembers()">
+
+      <div style="overflow-x: auto;">
+        <table class="downline-table">
           <thead>
             <tr>
               <th>Username</th>
-              <th>Email</th>
+              <th>Phone</th>
+              <th>Deposited</th>
               <th>Joined Date</th>
             </tr>
           </thead>
-          <tbody id="downlineTableBody">
-            <tr><td colspan="3" class="empty" style="text-align:center; padding:16px; color:var(--muted)">Loading team data...</td></tr>
+          <tbody id="downlinesTableBody">
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--muted); padding: 20px;">Loading team members...</td>
+            </tr>
           </tbody>
         </table>
-      </div>
-
-      <div class="pagination-controls">
-        <span id="paginationInfo">Showing 0 users</span>
-        <div>
-          <button class="btn outline" style="padding:5px 10px; font-size:10px" onclick="changePage(-1)">Prev</button>
-          <button class="btn outline" style="padding:5px 10px; font-size:10px" onclick="changePage(1)">Next</button>
-        </div>
       </div>
     </div>
   </main>
@@ -283,124 +265,120 @@
 </div>
 
 <script>
-const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live Railway backend URL
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live Railway URL if needed
+let allTeamMembers = [];
+let currentLevelFilter = 1;
 
-let teamMembers = [];
-let filteredMembers = [];
-let currentPage = 1;
-const pageSize = 5;
-
-// Fetch Live Data from Database API
-async function loadLiveTeamData() {
+async function loadTeamData() {
   const token = localStorage.getItem('skyson_token');
-  const user = JSON.parse(localStorage.getItem('skyson_user') || '{}');
-
-  if (user.invitationCode) {
-    document.getElementById('userInviteCode').textContent = user.invitationCode;
-  }
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/team/report`, {
-      headers: { 
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json' 
-      }
-    });
-
-    if (!res.ok) throw new Error('API request failed');
-
-    const data = await res.json();
-
-    // Populate Metrics Grid
-    document.getElementById('valTeamRechargePill').textContent = `GH₵ ${(data.teamRecharge || 0).toFixed(2)}`;
-    document.getElementById('valFirstChargesPill').textContent = data.firstCharges || 0;
-    document.getElementById('valTeamSizePill').textContent = data.teamSize || 0;
-
-    document.getElementById('valTeamRechargeGhs').textContent = (data.teamRecharge || 0).toFixed(2);
-    document.getElementById('valNumFirstCharge').textContent = data.firstCharges || 0;
-    document.getElementById('valTeamSize').textContent = data.teamSize || 0;
-
-    document.getElementById('valTeamWithdraw').textContent = (data.teamWithdraw || 0).toFixed(2);
-    document.getElementById('valNumFirstPush').textContent = data.firstPush || 0;
-    document.getElementById('valNewTeam').textContent = data.newTeam || 0;
-
-    // Populate Downlines List
-    teamMembers = data.downlines || [];
-    filteredMembers = [...teamMembers];
-    renderTable();
-
-  } catch (err) {
-    // Fallback test data if backend route is not active yet
-    teamMembers = [];
-    filteredMembers = [];
-    renderTable();
-  }
-}
-
-function renderTable() {
-  const body = document.getElementById('downlineTableBody');
-  document.getElementById('level1CountBadge').textContent = `${filteredMembers.length} Users`;
-
-  if (filteredMembers.length === 0) {
-    body.innerHTML = `<tr><td colspan="3" class="empty" style="text-align:center; padding:16px; color:var(--muted)">No team members found.</td></tr>`;
-    document.getElementById('paginationInfo').textContent = 'Showing 0 users';
+  if (!token) {
+    window.location.href = 'index.html';
     return;
   }
 
-  const start = (currentPage - 1) * pageSize;
-  const end = start + pageSize;
-  const pageData = filteredMembers.slice(start, end);
+  try {
+    // 1. Fetch User Profile to get referral code
+    const profileRes = await fetch(`${API_BASE_URL}/api/user/profile`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (profileRes.ok) {
+      const data = await profileRes.json();
+      const user = data.user || data;
+      const refCode = user.referral_code || user.invitation_code || 'SKY7291';
+      document.getElementById('displayInviteCode').textContent = refCode;
+    }
 
-  body.innerHTML = pageData.map(m => `
+    // 2. Fetch Team Reports / Metrics
+    const reportRes = await fetch(`${API_BASE_URL}/api/team/report`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (reportRes.ok) {
+      const report = await reportRes.json();
+      
+      document.getElementById('metricTeamRecharge').textContent = `GH₵ ${(report.teamRecharge || 0).toFixed(2)}`;
+      document.getElementById('metricFirstCharges').textContent = report.firstChargeCount || 0;
+      document.getElementById('metricTeamSize').textContent = report.teamSize || 0;
+
+      document.getElementById('metricBlueRecharge').textContent = (report.teamRecharge || 0).toFixed(2);
+      document.getElementById('metricFirstChargeNum').textContent = report.firstChargeCount || 0;
+      document.getElementById('metricBlueTeamSize').textContent = report.teamSize || 0;
+
+      document.getElementById('metricTeamWithdraw').textContent = (report.teamWithdraw || 0).toFixed(2);
+      document.getElementById('metricFirstPush').textContent = report.firstPushCount || 0;
+      document.getElementById('metricNewTeam').textContent = report.newTeamCount || 0;
+    }
+
+    // 3. Fetch Team Members List
+    const membersRes = await fetch(`${API_BASE_URL}/api/user/team/members`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (membersRes.ok) {
+      const membersData = await membersRes.json();
+      allTeamMembers = membersData.members || [];
+      renderDownlines();
+    }
+
+  } catch (err) {
+    console.error('Error loading team data:', err);
+  }
+}
+
+function switchLevel(level, el) {
+  currentLevelFilter = level;
+  document.querySelectorAll('.level-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('downlineTitle').textContent = `Level ${level} Downlines`;
+  renderDownlines();
+}
+
+function renderDownlines() {
+  const tbody = document.getElementById('downlinesTableBody');
+  const searchQuery = document.getElementById('searchMembers').value.toLowerCase();
+  
+  const filtered = allTeamMembers.filter(m => {
+    const matchesLevel = parseInt(m.level, 10) === currentLevelFilter;
+    const matchesSearch = (m.username && m.username.toLowerCase().includes(searchQuery)) || 
+                          (m.phone && m.phone.includes(searchQuery));
+    return matchesLevel && matchesSearch;
+  });
+
+  document.getElementById('downlineCountBadge').textContent = `${filtered.length} Users`;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--muted); padding: 20px;">No team members found for Level ${currentLevelFilter}.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(m => `
     <tr>
-      <td><strong>${m.username || 'User'}</strong></td>
-      <td>${m.email || 'N/A'}</td>
-      <td>${m.createdAt ? new Date(m.createdAt).toLocaleDateString() : 'Recent'}</td>
+      <td>${m.username || 'Member'}</td>
+      <td>${m.phone || 'N/A'}</td>
+      <td style="color: var(--green);">GH₵ ${parseFloat(m.total_deposited || 0).toFixed(2)}</td>
+      <td>${m.created_at ? new Date(m.created_at).toLocaleDateString() : 'Recent'}</td>
     </tr>
   `).join('');
-
-  document.getElementById('paginationInfo').textContent = `Showing ${start + 1}-${Math.min(end, filteredMembers.length)} of ${filteredMembers.length}`;
 }
 
-function filterDownlines(query) {
-  const q = query.toLowerCase().trim();
-  filteredMembers = teamMembers.filter(m => 
-    (m.username && m.username.toLowerCase().includes(q)) || (m.email && m.email.toLowerCase().includes(q))
-  );
-  currentPage = 1;
-  renderTable();
-}
-
-function changePage(delta) {
-  const maxPage = Math.ceil(filteredMembers.length / pageSize) || 1;
-  if (currentPage + delta >= 1 && currentPage + delta <= maxPage) {
-    currentPage += delta;
-    renderTable();
-  }
+function filterMembers() {
+  renderDownlines();
 }
 
 function copyInviteCode() {
-  const code = document.getElementById('userInviteCode').textContent;
-  navigator.clipboard.writeText(code).then(() => alert('Invitation code copied!'));
+  const code = document.getElementById('displayInviteCode').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    alert('Invitation code copied to clipboard!');
+  });
 }
 
 function copyInviteLink() {
-  const code = document.getElementById('userInviteCode').textContent;
-  const link = `${window.location.origin}${window.location.pathname.replace('team.html', 'index.html')}?invite=${code}`;
-  navigator.clipboard.writeText(link).then(() => alert('Invitation link copied!'));
+  const code = document.getElementById('displayInviteCode').textContent;
+  const link = `${window.location.origin}/register.html?ref=${code}`;
+  navigator.clipboard.writeText(link).then(() => {
+    alert('Invitation link copied successfully! Share it with your friends.');
+  });
 }
 
-function setCurrency(c) {
-  // Currency switcher hook
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  if (!localStorage.getItem('skyson_token')) {
-    window.location.href = 'index.html';
-  } else {
-    loadLiveTeamData();
-  }
-});
+window.addEventListener('DOMContentLoaded', loadTeamData);
 </script>
 </body>
 </html>
