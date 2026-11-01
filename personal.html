@@ -144,10 +144,6 @@
         </span>
       </div>
       <div class="info-list-item">
-        <span class="info-label">Phone Number</span>
-        <span class="info-val" id="valPhone">Not linked</span>
-      </div>
-      <div class="info-list-item">
         <span class="info-label">Email Address</span>
         <span class="info-val" id="valEmail">Not linked</span>
       </div>
@@ -157,14 +153,14 @@
       </div>
     </div>
 
-    <!-- Update Contact Card -->
+    <!-- Update Username / Email Card -->
     <div class="card">
       <div class="section-head">
         <h2>Update Details</h2>
       </div>
       <div style="margin-bottom:12px">
-        <label style="font-size:12px; font-weight:700; color:var(--ink);">Mobile Phone Number</label>
-        <input type="tel" id="editPhone" class="edit-input" placeholder="e.g. 024XXXXXXX">
+        <label style="font-size:12px; font-weight:700; color:var(--ink);">Username</label>
+        <input type="text" id="editUsername" class="edit-input" placeholder="Enter new username">
       </div>
       <div style="margin-bottom:16px">
         <label style="font-size:12px; font-weight:700; color:var(--ink);">Email Address</label>
@@ -195,6 +191,7 @@ async function loadUserProfile() {
   if (localUser.username) {
     document.getElementById('dispUsername').textContent = localUser.username;
     document.getElementById('valUsername').textContent = localUser.username;
+    document.getElementById('editUsername').value = localUser.username;
   }
   if (localUser.email) {
     document.getElementById('valEmail').textContent = localUser.email;
@@ -212,7 +209,7 @@ async function loadUserProfile() {
     if (!res.ok) return;
 
     const resData = await res.json();
-    const user = resData.user || resData; // Handles both { user: {} } and direct objects
+    const user = resData.user || resData;
 
     if (user) {
       const username = user.username || localUser.username || 'User';
@@ -223,11 +220,10 @@ async function loadUserProfile() {
       document.getElementById('dispUid').textContent = `UID: ${userId}`;
       document.getElementById('valUid').textContent = userId;
       
-      document.getElementById('valPhone').textContent = user.phone || 'Not linked';
       document.getElementById('valEmail').textContent = user.email || 'Not linked';
       document.getElementById('valRegDate').textContent = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'Recent';
       
-      if (user.phone) document.getElementById('editPhone').value = user.phone;
+      if (user.username) document.getElementById('editUsername').value = user.username;
       if (user.email) document.getElementById('editEmail').value = user.email;
     }
   } catch (err) {
@@ -236,7 +232,7 @@ async function loadUserProfile() {
 }
 
 async function saveProfileInfo() {
-  const phone = document.getElementById('editPhone').value.trim();
+  const username = document.getElementById('editUsername').value.trim();
   const email = document.getElementById('editEmail').value.trim();
   const token = localStorage.getItem('skyson_token');
 
@@ -247,7 +243,7 @@ async function saveProfileInfo() {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ phone, email })
+      body: JSON.stringify({ username, email })
     });
     
     if (!res.ok) throw new Error('Failed to update profile');
@@ -255,7 +251,10 @@ async function saveProfileInfo() {
     alert('Profile updated successfully!');
     loadUserProfile();
   } catch (err) {
-    if (phone) document.getElementById('valPhone').textContent = phone;
+    if (username) {
+      document.getElementById('dispUsername').textContent = username;
+      document.getElementById('valUsername').textContent = username;
+    }
     if (email) document.getElementById('valEmail').textContent = email;
     alert('Profile updated successfully!');
   }
@@ -278,3 +277,5 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
+</body>
+</html>
