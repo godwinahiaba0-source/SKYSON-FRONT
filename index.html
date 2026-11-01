@@ -220,6 +220,12 @@ async function signupUser() {
     return;
   }
 
+  // Block registration if invitation code is missing
+  if(!invitationCode) {
+    error.textContent = 'Invitation code is required to register.';
+    return;
+  }
+
   if(password !== confirmPassword) { 
     error.textContent = 'Passwords do not match.'; 
     return; 
