@@ -285,9 +285,9 @@ async function loadTeamData() {
       const data = await profileRes.json();
       const user = data.user || data;
       
-      // Pull the exact database column 'invitation_code'
-      const refCode = user.invitation_code || user.referral_code || `SKY${1000 + (user.id || 1)}`;
-      document.getElementById('displayInviteCode').textContent = refCode;
+      // Pull and fallback safely to generate code immediately if needed
+      const inviteCode = user.invitation_code || user.referral_code || `SKY${100000 + (user.user_id || user.id || 1)}`;
+      document.getElementById('displayInviteCode').textContent = inviteCode;
     }
 
     // Fetch team reports and members...
