@@ -176,7 +176,8 @@ async function loadTeamData() {
     });
     if (membersRes.ok) {
       const membersData = await membersRes.json();
-      allTeamMembers = membersData.members || [];
+      // Handle both direct array response or object-wrapped response safely
+      allTeamMembers = Array.isArray(membersData) ? membersData : (membersData.members || []);
       renderDownlines();
     }
   } catch (err) {
