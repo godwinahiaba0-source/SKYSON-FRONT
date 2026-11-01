@@ -24,17 +24,63 @@
   max-height: 85vh; overflow-y: auto;
 }
 @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.modal-title { font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+.modal-title { font-size: 18px; font-weight: 800; color: #0f3775; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
 .close-btn { background: none; border: 0; font-size: 20px; cursor: pointer; color: var(--muted); }
-.form-group { margin-bottom: 14px; }
-.form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; color: #0f3775; margin-bottom: 6px; }
 .form-group input {
-  width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px;
-  font-size: 13px; outline-color: var(--blue); background: #fcfdff;
+  width: 100%; padding: 14px 16px; border: 1px solid #e1e8f5; border-radius: 16px;
+  font-size: 13px; outline: none; background: #fff; color: #333;
 }
+.form-group input:focus { border-color: #007bff; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
 .modal-msg { font-size: 12px; margin-top: 10px; text-align: center; font-weight: 700; min-height: 16px; }
 .modal-msg.success { color: var(--green); }
 .modal-msg.error { color: #d63838; }
+
+/* Dynamic Pill Tabs styling to match screenshot */
+.sec-tabs-container {
+  display: flex;
+  background-color: #ffffff;
+  border-radius: 30px;
+  padding: 4px;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.sec-tab-btn {
+  flex: 1;
+  padding: 12px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 24px;
+  border: 1px solid #e1e8f5;
+  background-color: #ffffff;
+  color: #007bff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.sec-tab-btn.active {
+  background-color: #007bff;
+  color: #ffffff;
+  border-color: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+}
+
+.submit-action-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+}
 </style>
 </head>
 <body>
@@ -104,31 +150,34 @@
     </div>
   </main>
 
-  <!-- Security Settings Modal -->
+  <!-- Security Settings Modal with Pill-Switch Tabs -->
   <div class="modal-overlay" id="securityModal">
     <div class="modal-card">
       <div class="modal-title">
         <span>Security Settings</span>
-        <button class="close-btn" onclick="closeSecurityModal()">×</button>
+        <button class="close-btn" onclick="closeSecurityModal()">✕</button>
       </div>
 
-      <div style="display:flex; gap:8px; margin-bottom:16px">
-        <button id="tabLoginPass" class="btn" style="flex:1; padding:8px; font-size:11px" onclick="switchSecTab('login')">Login Password</button>
-        <button id="tabFundPass" class="btn outline" style="flex:1; padding:8px; font-size:11px" onclick="switchSecTab('fund')">Fund Password</button>
+      <!-- Tab Switcher Bar -->
+      <div class="sec-tabs-container">
+        <button id="tabLoginPass" class="sec-tab-btn active" onclick="switchSecTab('login')">Login Password</button>
+        <button id="tabFundPass" class="sec-tab-btn" onclick="switchSecTab('fund')">Fund Password</button>
       </div>
 
+      <!-- Login Password Tab Content -->
       <div id="formLoginPass">
         <div class="form-group">
-          <label>Current Password</label>
-          <input type="password" id="currLoginPass" placeholder="Enter current password">
+          <label>Current Login Password</label>
+          <input type="password" id="currLoginPass" placeholder="Enter current login password">
         </div>
         <div class="form-group">
           <label>New Login Password</label>
           <input type="password" id="newLoginPass" placeholder="At least 8 characters">
         </div>
-        <button class="btn" style="width:100%; margin-top:8px" onclick="updateLoginPassword()">Update Login Password</button>
+        <button class="submit-action-btn" onclick="updateLoginPassword()">Update Login Password</button>
       </div>
 
+      <!-- Fund Password Tab Content -->
       <div id="formFundPass" style="display:none">
         <div class="form-group">
           <label>Current Fund Password</label>
@@ -138,7 +187,7 @@
           <label>New Fund Password (PIN)</label>
           <input type="password" id="newFundPass" placeholder="Secure 6-digit PIN">
         </div>
-        <button class="btn" style="width:100%; margin-top:8px" onclick="updateFundPassword()">Update Fund Password</button>
+        <button class="submit-action-btn" onclick="updateFundPassword()">Update Fund Password</button>
       </div>
 
       <div id="secModalMsg" class="modal-msg"></div>
@@ -150,7 +199,7 @@
     <div class="modal-card">
       <div class="modal-title">
         <span>About Our Company</span>
-        <button class="close-btn" onclick="closeAboutModal()">×</button>
+        <button class="close-btn" onclick="closeAboutModal()">✕</button>
       </div>
       <div style="font-size: 12px; color: var(--ink); line-height: 1.6; font-weight: 500;">
         <p style="margin-bottom: 12px; font-weight: 700; color: var(--blue);">A BRIEF INFORMATION ABOUT OUR COMPANY</p>
@@ -230,8 +279,15 @@ function switchSecTab(tab) {
   const isLogin = tab === 'login';
   document.getElementById('formLoginPass').style.display = isLogin ? 'block' : 'none';
   document.getElementById('formFundPass').style.display = isLogin ? 'none' : 'block';
-  document.getElementById('tabLoginPass').className = isLogin ? 'btn' : 'btn outline';
-  document.getElementById('tabFundPass').className = isLogin ? 'btn outline' : 'btn';
+  
+  if (isLogin) {
+    document.getElementById('tabLoginPass').classList.add('active');
+    document.getElementById('tabFundPass').classList.remove('active');
+  } else {
+    document.getElementById('tabFundPass').classList.add('active');
+    document.getElementById('tabLoginPass').classList.remove('active');
+  }
+  
   document.getElementById('secModalMsg').textContent = '';
 }
 
