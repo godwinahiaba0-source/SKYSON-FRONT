@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Skysonsolar — Task Center</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
   <style>
     body {
@@ -14,7 +13,6 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      overflow-x: hidden;
     }
 
     .app-container {
@@ -26,68 +24,53 @@
       position: relative;
     }
 
-    /* Header Nav */
     .header-nav {
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      background: linear-gradient(120deg, #064aa8, #087cf9); 
+      padding: 14px 16px; 
+      color: #fff;
+    }
+    .back-btn { 
+      width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.2); border: 0; color: #fff; font-size: 22px; display: grid; place-items: center; cursor: pointer; text-decoration: none; 
+    }
+    .header-nav h1 { font-size: 18px; margin: 0; font-weight: 800; }
+
+    .banner-card {
+      margin: 16px 14px;
+      background: linear-gradient(135deg, #06459d, #0878f9);
+      border-radius: 20px;
+      padding: 20px;
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(8, 120, 249, 0.25);
+    }
+    .banner-card h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      font-weight: 850;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      background: linear-gradient(120deg, #064aa8, #087cf9);
-      padding: 14px 16px;
-      color: #fff;
+      gap: 8px;
     }
-
-    .back-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 0;
-      color: #fff;
-      font-size: 22px;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .header-nav h1 {
-      font-size: 18px;
+    .banner-card p {
       margin: 0;
-      font-weight: 800;
+      font-size: 12px;
+      opacity: 0.9;
+      line-height: 1.4;
     }
 
-    .task-container {
-      padding: 14px;
+    .task-list {
+      padding: 0 14px;
       display: flex;
       flex-direction: column;
       gap: 14px;
     }
 
-    .banner-card {
-      background: linear-gradient(135deg, #06459d, #0878f9);
-      border-radius: 16px;
-      padding: 18px;
-      color: #ffffff;
-      box-shadow: var(--shadow);
-    }
-
-    .banner-title {
-      font-size: 16px;
-      font-weight: 850;
-      margin-bottom: 4px;
-    }
-
-    .banner-sub {
-      font-size: 12px;
-      opacity: 0.9;
-      font-weight: 600;
-      line-height: 1.4;
-    }
-
     .task-card {
       background: #ffffff;
-      border-radius: 16px;
-      padding: 16px;
+      border-radius: 18px;
+      padding: 18px;
       box-shadow: var(--shadow);
       border: 1px solid var(--line);
       display: flex;
@@ -95,30 +78,31 @@
       gap: 12px;
     }
 
-    .task-card-header {
+    .task-card-head {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 10px;
+      align-items: center;
     }
 
-    .product-title {
+    .task-title {
       font-size: 15px;
       font-weight: 850;
-      color: var(--ink);
+      color: var(--blue);
     }
 
-    .status-badge {
-      background: #e6f4ea;
-      color: #137333;
+    .gen-badge {
+      font-size: 11px;
+      background: #dcfce7;
+      color: #15803d;
       padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 10px;
       font-weight: 800;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .task-info-grid {
+    .task-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
@@ -128,7 +112,7 @@
       border: 1px solid var(--line);
     }
 
-    .info-item {
+    .task-info-item {
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -142,7 +126,7 @@
     }
 
     .info-val {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 850;
       color: var(--ink);
     }
@@ -152,55 +136,24 @@
       background: linear-gradient(135deg, #06459d, #0878f9);
       color: #ffffff;
       border: none;
-      padding: 13px;
+      padding: 14px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 3px 8px rgba(8, 120, 249, 0.3);
-      transition: all 0.1s ease;
+      box-shadow: 0 4px 12px rgba(8, 120, 249, 0.3);
+      transition: transform 0.1s ease;
     }
 
-    .claim-btn:disabled {
-      background: #ccc;
-      color: #666;
+    .claim-btn:active {
+      transform: scale(0.98);
+    }
+
+    .claim-btn.disabled {
+      background: #cbd5e1;
+      color: #64748b;
       box-shadow: none;
       cursor: not-allowed;
-    }
-
-    .empty-tasks {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 30px 20px;
-      text-align: center;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .empty-icon {
-      font-size: 36px;
-      color: var(--blue);
-    }
-
-    .empty-text {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--muted);
-    }
-
-    .lease-link-btn {
-      margin-top: 8px;
-      background: var(--blue);
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-size: 12px;
-      font-weight: 800;
     }
   </style>
 </head>
@@ -223,23 +176,20 @@
     </header>
 
     <main style="padding: 0;">
-      <!-- Navigation Bar Header -->
       <div class="header-nav">
         <button class="back-btn" onclick="location.href='home.html'">‹</button>
         <h1>Task Center — Claim Daily Income</h1>
         <div style="width: 40px;"></div>
       </div>
 
-      <div class="task-container">
-        <!-- Banner Header -->
-        <div class="banner-card">
-          <div class="banner-title"><i class="fa-solid fa-solar-panel"></i> Daily Revenue Collection</div>
-          <div class="banner-sub">Claim your 24-hour daily generation earnings for all active leased products below.</div>
-        </div>
+      <div class="banner-card">
+        <h2><span>▤</span> Daily Revenue Collection</h2>
+        <p>Claim your 24-hour daily generation earnings for all active leased products below.</p>
+      </div>
 
-        <!-- Dynamic Active Leased Tasks List -->
-        <div id="taskList">
-          <!-- Loaded via JavaScript -->
+      <div id="tasksContainer" class="task-list">
+        <div style="background: #ffffff; border-radius: 18px; padding: 24px; text-align: center; color: var(--muted); font-size: 13px; font-weight: 700; border: 1px solid var(--line);">
+          Loading your active solar generation plants...
         </div>
       </div>
     </main>
@@ -255,97 +205,86 @@
   </div>
 
   <script>
-    const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with Railway URL
+    const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 
-    async function loadTasks() {
+    async function fetchTaskLeases() {
       const token = localStorage.getItem('skyson_token');
-      const container = document.getElementById('taskList');
-
       if (!token) {
         window.location.href = 'index.html';
         return;
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/lease/my-leases`, {
+        const res = await fetch(`${API_BASE_URL}/api/lease/my-leases`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
+        const data = await res.json();
+        const container = document.getElementById('tasksContainer');
 
-        if (response.ok) {
-          const leases = await response.json();
-          renderTasks(leases);
+        if (res.ok && data.leases && data.leases.length > 0) {
+          const now = new Date();
+
+          container.innerHTML = data.leases.map(lease => {
+            const lastClaim = new Date(lease.last_claim_time);
+            const nextClaimTime = new Date(lastClaim.getTime() + (24 * 60 * 60 * 1000));
+            const diffMs = nextClaimTime - now;
+
+            const isReady = diffMs <= 0;
+            const dailyIncomeNum = Number(lease.daily_income).toFixed(2);
+
+            let timeRemainingText = '';
+            if (!isReady) {
+              const hours = Math.floor(diffMs / (1000 * 60 * 60));
+              const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+              timeRemainingText = `Next Claim Available in ${hours}h ${mins}m`;
+            }
+
+            return `
+              <div class="task-card">
+                <div class="task-card-head">
+                  <span class="task-title">${lease.plan_name}</span>
+                  <span class="gen-badge">⚡ Generating</span>
+                </div>
+                <div class="task-grid">
+                  <div class="task-info-item">
+                    <span class="info-label">Daily Income</span>
+                    <span class="info-val" style="color: #0878f9;">GH₵ ${dailyIncomeNum}</span>
+                  </div>
+                  <div class="task-info-item">
+                    <span class="info-label">Status</span>
+                    <span class="info-val" style="color: ${isReady ? '#16a34a' : '#0284c7'};">
+                      ${isReady ? 'Ready to Claim' : 'In Progress'}
+                    </span>
+                  </div>
+                </div>
+
+                ${isReady ? `
+                  <button class="claim-btn" onclick="claimIncome(${lease.id}, '${lease.plan_name}')">
+                    Claim GH₵ ${dailyIncomeNum}
+                  </button>
+                ` : `
+                  <button class="claim-btn disabled" disabled>
+                    ${timeRemainingText || 'Next Claim Available in 24h'}
+                  </button>
+                `}
+              </div>
+            `;
+          }).join('');
         } else {
-          renderTestFallback();
+          container.innerHTML = `
+            <div style="background: #ffffff; border-radius: 18px; padding: 24px; text-align: center; color: var(--muted); font-size: 13px; font-weight: 700; border: 1px solid var(--line);">
+              No active solar lease products found. <br><br>
+              <a href="lease.html" style="color: var(--blue); text-decoration: none; font-weight: 800;">Rent a Solar Plan to Start Generating Daily Income →</a>
+            </div>
+          `;
         }
       } catch (err) {
-        renderTestFallback();
+        console.error('Task fetch error:', err);
       }
     }
 
-    function renderTasks(leases) {
-      const container = document.getElementById('taskList');
-      if (!leases || leases.length === 0) {
-        container.innerHTML = `
-          <div class="empty-tasks">
-            <i class="fa-solid fa-box-open empty-icon"></i>
-            <div class="empty-text">You have no active leased solar products generating revenue.</div>
-            <a href="lease.html" class="lease-link-btn">Go to Lease Products</a>
-          </div>
-        `;
-        return;
-      }
-
-      let html = '';
-      leases.forEach((lease, index) => {
-        const canClaim = isClaimAvailable(lease.lastClaimTime);
-        html += `
-          <div class="task-card">
-            <div class="task-card-header">
-              <span class="product-title">${lease.planName} Solar Plant</span>
-              <span class="status-badge"><i class="fa-solid fa-bolt"></i> Generating</span>
-            </div>
-            <div class="task-info-grid">
-              <div class="info-item">
-                <span class="info-label">Daily Income</span>
-                <span class="info-val" style="color: var(--blue);">GH₵ ${parseFloat(lease.dailyIncome).toFixed(2)}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">Status</span>
-                <span class="info-val" id="timer-${index}">${canClaim ? 'Ready to Claim' : 'In Progress'}</span>
-              </div>
-            </div>
-            <button class="claim-btn" id="btn-claim-${index}" ${!canClaim ? 'disabled' : ''} onclick="claimIncome('${lease.id}', ${lease.dailyIncome}, ${index})">
-              ${canClaim ? 'Claim GH₵ ' + parseFloat(lease.dailyIncome).toFixed(2) : 'Next Claim Available in 24h'}
-            </button>
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
-    }
-
-    function isClaimAvailable(lastClaimTime) {
-      if (!lastClaimTime) return true;
-      const last = new Date(lastClaimTime).getTime();
-      const now = new Date().getTime();
-      return (now - last) >= 24 * 60 * 60 * 1000;
-    }
-
-    function renderTestFallback() {
-      // Demo active lease simulation for preview
-      const demoLeases = [
-        { id: 'L101', planName: 'S1 Skysonsolar', dailyIncome: 5.00, lastClaimTime: null },
-        { id: 'L102', planName: 'S3 Skysonsolar', dailyIncome: 25.00, lastClaimTime: new Date().toISOString() }
-      ];
-      renderTasks(demoLeases);
-    }
-
-    async function claimIncome(leaseId, amount, btnIndex) {
+    async function claimIncome(leaseId, planName) {
       const token = localStorage.getItem('skyson_token');
-      const btn = document.getElementById(`btn-claim-${btnIndex}`);
-      btn.disabled = true;
-      btn.textContent = 'Claiming...';
-
       try {
         const response = await fetch(`${API_BASE_URL}/api/lease/claim`, {
           method: 'POST',
@@ -353,23 +292,23 @@
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ leaseId, amount })
+          body: JSON.stringify({ leaseId })
         });
 
+        const data = await response.json();
         if (response.ok) {
-          alert(`Successfully claimed GH₵ ${amount.toFixed(2)} daily income!`);
-          loadTasks();
+          alert(data.message || `Successfully claimed daily income for ${planName}!`);
+          fetchTaskLeases();
         } else {
-          alert(`Successfully claimed GH₵ ${amount.toFixed(2)} daily income! (Test Mode)`);
-          btn.textContent = 'Claimed for Today';
+          alert(data.message || 'Failed to claim daily income.');
         }
       } catch (err) {
-        alert(`Successfully claimed GH₵ ${amount.toFixed(2)} daily income! (Test Mode)`);
-        btn.textContent = 'Claimed for Today';
+        console.error('Claim error:', err);
+        alert('Network error attempting to claim earnings.');
       }
     }
 
-    window.addEventListener('DOMContentLoaded', loadTasks);
+    window.addEventListener('DOMContentLoaded', fetchTaskLeases);
   </script>
 </body>
 </html>
