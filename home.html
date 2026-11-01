@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <!-- Live Balance Stats (Initialized at 0.00) -->
+    <!-- Live Balance Stats -->
     <div class="card stats">
       <div class="stat"><div class="stat-label">Total Balance (withdrawable)</div><div class="stat-value" id="balanceDisplay">GH₵ 0.00</div></div>
       <div class="stat"><div class="stat-label">Today's Earnings</div><div class="stat-value green small" id="todayDisplay">GH₵ 0.00</div></div>
@@ -57,7 +57,6 @@
     <!-- Shortcuts Grid -->
     <div class="card shortcuts">
       <button class="shortcut" onclick="location.href='recharge.html'"><span class="bubble">▣</span>Recharge</button>
-      <!-- Withdraw shortcut button linked to withdraw.html -->
       <button class="shortcut" onclick="location.href='withdraw.html'"><span class="bubble green">⇧</span>Withdraw</button>
       <button class="shortcut" onclick="location.href='bonus.html'"><span class="bubble orange">🎁</span>Bonus</button>
       <button class="shortcut" onclick="location.href='team.html'"><span class="bubble purple">♟</span>My Invitation</button>
@@ -99,9 +98,9 @@
 </div>
 
 <script>
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 let displayCurrency = 'GHS';
 
-// Format currency display based on selected currency
 function money(val) {
   const num = Number(val) || 0;
   const valConv = displayCurrency === 'USD' ? num / 12 : num;
@@ -113,7 +112,6 @@ function setCurrency(c) {
   fetchLiveDashboardData();
 }
 
-// Fetch live user financial stats from your database backend
 async function fetchLiveDashboardData() {
   const token = localStorage.getItem('skyson_token');
   if (!token) {
@@ -122,7 +120,7 @@ async function fetchLiveDashboardData() {
   }
 
   try {
-    const res = await fetch('https://skyson-backend-production.up.railway.app/api/user/dashboard', {
+    const res = await fetch(`${API_BASE_URL}/api/user/dashboard`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -133,18 +131,13 @@ async function fetchLiveDashboardData() {
 
     const data = await res.json();
 
-    // Populate live data from database
     document.getElementById('balanceDisplay').textContent = money(data.balance || 0);
     document.getElementById('todayDisplay').textContent = money(data.todayEarnings || 0);
     document.getElementById('yesterdayDisplay').textContent = money(data.yesterdayEarnings || 0);
-    document.getElementById('depositDisplay').textContent = money(data.totalDeposit || 0);
+    document.getElementById('depositDisplay').textContent = money(data.deposit_balance || data.totalDeposit || 0);
 
   } catch (err) {
-    // Default clean 0.00 state for brand new project before backend routes are written
-    document.getElementById('balanceDisplay').textContent = money(0);
-    document.getElementById('todayDisplay').textContent = money(0);
-    document.getElementById('yesterdayDisplay').textContent = money(0);
-    document.getElementById('depositDisplay').textContent = money(0);
+    console.error('Dashboard fetch error:', err);
   }
 }
 
@@ -159,7 +152,6 @@ if (slides.length > 0) {
   }, 4000);
 }
 
-// Run on page load
 window.addEventListener('DOMContentLoaded', () => {
   if (!localStorage.getItem('skyson_token')) {
     window.location.href = 'index.html';
