@@ -86,13 +86,11 @@
         <div class="menu-main"><strong>Transaction History</strong><small>View account activity</small></div>
         <span style="color:var(--muted)">›</span>
       </div>
-      <!-- Customer Support Redirects to Telegram -->
       <div class="menu-row" onclick="window.open('https://t.me/DaisyEmily01', '_blank')">
         <div class="menu-icon">☏</div>
         <div class="menu-main"><strong>Customer Support</strong><small>Get help and contact us on Telegram</small></div>
         <span style="color:var(--muted)">›</span>
       </div>
-      <!-- About Us Tab -->
       <div class="menu-row" onclick="openAboutModal()">
         <div class="menu-icon">ℹ️</div>
         <div class="menu-main"><strong>About Us</strong><small>Learn more about Skysonsolar platform</small></div>
@@ -156,19 +154,7 @@
       </div>
       <div style="font-size: 12px; color: var(--ink); line-height: 1.6; font-weight: 500;">
         <p style="margin-bottom: 12px; font-weight: 700; color: var(--blue);">A BRIEF INFORMATION ABOUT OUR COMPANY</p>
-        
-        <p style="margin-bottom: 10px;"><strong>SKYSONSOLAR COMPANY LTD.</strong> was founded in 1997, with the aim of production, supplying, and maintenance of solar panels for generating electricity power. This setup was designed with the main goal of stabilizing electrical power systems across the globe through sunshine, leading to our first development strategy and the main driving force for building a comprehensive and leading technological innovation system.</p>
-        
-        <p style="margin-bottom: 10px;">So far, Skysonsolar has successfully developed technological facilities capable of producing effective solar equipment to facilitate the aim of stabilizing electrical energy through sunshine.</p>
-        
-        <p style="margin-bottom: 10px;">Skysonsolar began in China and has extended its wings globally to make work efficient and effective, achieving our core motives for global electricity stability.</p>
-        
-        <p style="margin-bottom: 10px;">Offices have been established in Zurich-Switzerland, UAE-Dubai & Sharjah, Singapore, Tokyo, Japan, and other regional headquarters in Australia, Korea, India, Turkey, Italy, Germany, Spain, UK, South Africa, Brazil, Chile, Colombia, and Mexico. Local services have also been established in many other countries to promote global marketing and service centers, alongside production and manufacturing bases in Thailand, Vietnam, and other overseas countries, with business partnerships covering more than 100 countries and sectors around the world.</p>
-        
-        <p style="margin-bottom: 10px;">The company has been operating in <strong>Ghana 🇬🇭</strong> through distribution and maintenance services of solar power generators and panels since 2024.</p>
-        
-        <p style="margin-bottom: 10px;">To help citizens who haven’t yet accessed our power supply services directly, company management decided to establish this online platform. This platform aims to help citizens financially through our investment services while extending our reach to far-flung communities across the nation.</p>
-        
+        <p style="margin-bottom: 10px;"><strong>SKYSONSOLAR COMPANY LTD.</strong> was founded in 1997, with the aim of production, supplying, and maintenance of solar panels for generating electricity power.</p>
         <p style="font-size: 11px; color: var(--muted); text-align: center; margin-top: 16px; border-top: 1px solid var(--line); padding-top: 10px;">
           Clean Energy · Green Future © 2026
         </p>
@@ -187,6 +173,41 @@
 
 <script>
 const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
+let displayCurrency = 'GHS';
+
+function money(val) {
+  const num = Number(val) || 0;
+  const valConv = displayCurrency === 'USD' ? num / 12 : num;
+  return (displayCurrency === 'USD' ? '$' : 'GH₵ ') + valConv.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function setCurrency(c) {
+  displayCurrency = c;
+  fetchAccountStats();
+}
+
+async function fetchAccountStats() {
+  const token = localStorage.getItem('skyson_token');
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/user/dashboard`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      document.getElementById('accBalance').textContent = money(data.balance || 0);
+      document.getElementById('accEarnings').textContent = money(data.totalEarnings || data.todayEarnings || 0);
+      document.getElementById('accLeases').textContent = data.activeLeases || 0;
+    }
+  } catch (err) {
+    console.error('Failed to load live account stats:', err);
+  }
+}
 
 function openSecurityModal() {
   document.getElementById('securityModal').style.display = 'flex';
@@ -238,8 +259,8 @@ async function updateLoginPassword() {
     msg.textContent = 'Login password updated successfully!';
     msg.className = 'modal-msg success';
   } catch (err) {
-    msg.textContent = 'Login password updated successfully (Test Mode)';
-    msg.className = 'modal-msg success';
+    msg.textContent = 'Error updating password.';
+    msg.className = 'modal-msg error';
   }
 }
 
@@ -267,8 +288,8 @@ async function updateFundPassword() {
     msg.textContent = 'Fund password updated successfully!';
     msg.className = 'modal-msg success';
   } catch (err) {
-    msg.textContent = 'Fund password updated successfully (Test Mode)';
-    msg.className = 'modal-msg success';
+    msg.textContent = 'Error updating fund password.';
+    msg.className = 'modal-msg error';
   }
 }
 
@@ -281,7 +302,9 @@ function logoutUser() {
 window.addEventListener('DOMContentLoaded', () => {
   if (!localStorage.getItem('skyson_token')) {
     window.location.href = 'index.html';
+    return;
   }
+  fetchAccountStats();
 });
 </script>
 </body>
