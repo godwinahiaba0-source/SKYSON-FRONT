@@ -749,30 +749,45 @@
     }
 
     async function toggleWd(userId, state) {
-      try {
-        const res = await apiRequest('/api/admin/users/toggle-withdrawal', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, enabled: state })
-        });
-        const data = await res.json();
-        showToast(data.message || 'Updated withdrawal status');
-      } catch (e) { alert('Error updating withdrawal permission.'); }
+  try {
+    const res = await apiRequest('/api/admin/users/toggle-withdrawal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, enabled: state })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message || 'Updated withdrawal status');
+      initDashboardData();
+    } else {
+      alert(data.message || 'Failed to update withdrawal permission.');
     }
+  } catch (e) {
+    console.error('Toggle withdrawal error:', e);
+    alert('Server error updating withdrawal permission.');
+  }
+}
 
-    async function userAction(userId, action) {
-      if (!confirm(`Are you sure you want to ${action} user #${userId}?`)) return;
-      try {
-        const res = await apiRequest('/api/admin/users/action', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, action })
-        });
-        const data = await res.json();
-        showToast(data.message || 'Success');
-        initDashboardData();
-      } catch (e) { alert('Error modifying user account.'); }
+async function userAction(userId, action) {
+  if (!confirm(`Are you sure you want to ${action} user #${userId}?`)) return;
+  try {
+    const res = await apiRequest('/api/admin/users/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message || 'Success');
+      initDashboardData();
+    } else {
+      alert(data.message || 'Failed to modify user account.');
     }
+  } catch (e) {
+    console.error('User action error:', e);
+    alert('Server error modifying user account.');
+  }
+}
 
     async function viewTree(userId, username) {
       document.getElementById('treeModalTitle').innerText = `Referral Downline Tree for ${username} (#${userId})`;
