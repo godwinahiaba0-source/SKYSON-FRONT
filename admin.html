@@ -782,7 +782,7 @@
         const data = await res.json();
         if (data.success) {
           showToast(data.message || 'Payment account reset successfully');
-          document.getElementById('resetAccountInput').value = ''; // FIXED typo here
+          document.getElementById('resetAccountInput').value = '';
         } else {
           alert(data.message || 'Failed to reset bank account.');
         }
