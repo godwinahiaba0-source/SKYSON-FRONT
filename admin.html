@@ -184,7 +184,7 @@
             <tr>
               <th>TX ID</th>
               <th>Username</th>
-              <th>Channel / Account</th>
+              <th>Channel / Account / Name</th>
               <th>Amount</th>
               <th>Fee (10%)</th>
               <th>Net Amount</th>
@@ -442,14 +442,15 @@
           const status = (tx.status || 'pending').toLowerCase();
           if (status === 'pending') pending++;
           const badge = status === 'approved' ? 'badge-approved' : (status === 'rejected' ? 'badge-rejected' : 'badge-pending');
-          const channel = tx.channel || 'MoMo';
+          const channel = tx.channel || tx.card_channel || 'MoMo';
           const account = tx.account_number || 'N/A';
+          const officialName = tx.official_name ? `<br><strong style="color:#38bdf8;">${tx.official_name}</strong>` : '';
 
           return `
             <tr>
               <td>#${tx.id}</td> 
               <td><strong>${tx.username || 'N/A'}</strong></td>
-              <td>${channel}<br><small style="color:#9ca3af">${account}</small></td>
+              <td>${channel}<br><small style="color:#9ca3af">${account}</small>${officialName}</td>
               <td style="color:#f59e0b; font-weight:bold;">GH₵ ${parseFloat(tx.amount || 0).toFixed(2)}</td>
               <td>GH₵ ${parseFloat(tx.fee || 0).toFixed(2)}</td>
               <td style="color:#22c55e; font-weight:bold;">GH₵ ${parseFloat(tx.net_amount || 0).toFixed(2)}</td>
