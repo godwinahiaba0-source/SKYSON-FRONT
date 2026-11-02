@@ -75,6 +75,10 @@
 .btn-claim:active {
   transform: scale(0.98);
 }
+.btn-claim:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 /* Feedback Messages */
 .message-box {
@@ -121,6 +125,12 @@
   font-weight: 800;
   color: var(--green);
 }
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 12px;
+}
 </style>
 </head>
 <body>
@@ -140,7 +150,7 @@
         <option value="GHS">🇬🇭 GHS</option>
         <option value="USD">🇺🇸 USD</option>
       </select>
-      <button style="background:transparent; border:0; color:#fff; font-size:20px;" onclick="location.href='account.html'">♙</button>
+      <button style="background:transparent; border:0; color:#fff; font-size:20px; cursor:pointer;" onclick="location.href='account.html'">♙</button>
     </div>
   </header>
 
@@ -153,17 +163,17 @@
     </div>
 
     <!-- Hero Card Banner -->
-    <div class="hero">
-      <div class="hero-sun">☀️</div>
-      <h1>🎁 Bonus Center</h1>
-      <p>Enter a bonus code supplied by the Skysonsolar administrator to claim your reward.</p>
+    <div class="hero" style="background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:var(--shadow)">
+      <div style="font-size:28px; margin-bottom:8px;">🎁</div>
+      <h2 style="font-size:16px; font-weight:800; color:var(--ink); margin-bottom:4px;">Bonus Center</h2>
+      <p style="font-size:12px; color:var(--muted); line-height:1.4;">Enter a bonus code supplied by the Skysonsolar administrator to claim your reward.</p>
     </div>
 
     <!-- Claim Code Form Card -->
-    <div class="card">
-      <div class="section-head">
-        <h2>Claim a Bonus Code</h2>
-        <span class="badge" style="background:#e6f9ed; color:#0e833c">🎁 Rewards</span>
+    <div class="card" style="background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:var(--shadow)">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="font-size:14px; font-weight:800; color:var(--ink);">Claim a Bonus Code</h2>
+        <span style="font-size:10px; font-weight:700; padding:3px 8px; border-radius:6px; background:#e6f9ed; color:#0e833c">🎁 Rewards</span>
       </div>
 
       <label class="input-label" for="bonusCodeInput">Bonus code</label>
@@ -175,12 +185,12 @@
     </div>
 
     <!-- Claim History Card -->
-    <div class="card">
-      <div class="section-head">
-        <h2>My Bonus History</h2>
+    <div class="card" style="background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; box-shadow:var(--shadow)">
+      <div style="margin-bottom:12px;">
+        <h2 style="font-size:14px; font-weight:800; color:var(--ink);">My Bonus History</h2>
       </div>
       <div id="bonusHistoryList">
-        <div class="empty">No bonus codes claimed yet.</div>
+        <div class="empty">Loading bonus history...</div>
       </div>
     </div>
   </main>
@@ -196,8 +206,7 @@
 </div>
 
 <script>
-const API_BASE_URL = 'https://skyson-backend-production.up.railway.app'; // Replace with live Railway URL
-
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 let bonusClaims = [];
 
 async function submitBonusCode() {
@@ -216,9 +225,13 @@ async function submitBonusCode() {
   msgBox.style.display = 'none';
 
   const token = localStorage.getItem('skyson_token');
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/bonus/claim`, {
+    const res = await fetch(`${API_BASE_URL}/api/user/claim-bonus`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -230,28 +243,20 @@ async function submitBonusCode() {
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.error || 'Invalid or expired bonus code.');
+      throw new Error(data.message || 'Invalid or already claimed bonus code.');
     }
 
-    showMessage(`Success! GH₵ ${data.amount.toFixed(2)} added to your total balance.`, 'success');
+    showMessage(data.message || 'Bonus successfully claimed and added to your balance!', 'success');
     codeInput.value = '';
+    
+    // Refresh history and redirect to transaction log after a short delay
     loadBonusHistory();
+    setTimeout(() => {
+      window.location.href = 'transaction.html';
+    }, 1500);
 
   } catch (err) {
-    // Fallback UI test handling when backend is pending setup
-    if (code === 'CI5RWF' || code === 'BONUS20') {
-      const claimedAmount = code === 'BONUS20' ? 20.00 : 50.00;
-      bonusClaims.unshift({
-        code: code,
-        amount: claimedAmount,
-        date: new Date().toLocaleDateString()
-      });
-      showMessage(`Success! GH₵ ${claimedAmount.toFixed(2)} added to your total balance.`, 'success');
-      codeInput.value = '';
-      renderHistory();
-    } else {
-      showMessage(err.message || 'Could not claim bonus code.', 'error');
-    }
+    showMessage(err.message || 'Could not claim bonus code.', 'error');
   } finally {
     btn.disabled = false;
     btn.textContent = 'CLAIM BONUS';
@@ -260,18 +265,21 @@ async function submitBonusCode() {
 
 async function loadBonusHistory() {
   const token = localStorage.getItem('skyson_token');
+  if (!token) return;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/bonus/history`, {
+    const res = await fetch(`${API_BASE_URL}/api/user/transactions`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!res.ok) return;
 
     const data = await res.json();
-    bonusClaims = data.claims || [];
+    // Filter transactions that are bonus claims
+    const records = data.records || [];
+    bonusClaims = records.filter(r => (r.description || '').toLowerCase().includes('bonus code claimed'));
     renderHistory();
   } catch (e) {
-    renderHistory();
+    document.getElementById('bonusHistoryList').innerHTML = `<div class="empty">No bonus codes claimed yet.</div>`;
   }
 }
 
@@ -285,10 +293,10 @@ function renderHistory() {
   container.innerHTML = bonusClaims.map(c => `
     <div class="claim-row">
       <div class="claim-info">
-        <strong>Bonus Code: ${c.code}</strong>
-        <small>${c.date || 'Claimed'}</small>
+        <strong>${c.description}</strong>
+        <small>${c.date ? new Date(c.date).toLocaleString() : 'Recent'}</small>
       </div>
-      <div class="claim-amount">+ GH₵ ${Number(c.amount).toFixed(2)}</div>
+      <div class="claim-amount">+ GH₵ ${Math.abs(Number(c.amount)).toFixed(2)}</div>
     </div>
   `).join('');
 }
@@ -305,7 +313,8 @@ function setCurrency(c) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  if (!localStorage.getItem('skyson_token')) {
+  const token = localStorage.getItem('skyson_token');
+  if (!token) {
     window.location.href = 'index.html';
   } else {
     loadBonusHistory();
