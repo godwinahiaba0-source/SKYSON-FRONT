@@ -80,7 +80,7 @@
 </head>
 <body>
 
-  <!-- Authentication Guard & Auto-Redirect -->
+  <!-- Authentication Guard & Auto-Redirect (FIXED closing bracket bug) -->
   <script>
     function getStoredToken() {
       return localStorage.getItem('skyson_token') || localStorage.getItem('adminToken') || localStorage.getItem('token') || '';
@@ -203,32 +203,30 @@
       </div>
     </div>
 
-    <div class="grid-2col">
-      <!-- User Directory & Management -->
-      <div class="card" style="grid-column: span 2;">
-        <h2>User Account Directory & Controls</h2>
-        <div class="form-group" style="margin-bottom: 14px;">
-          <input type="text" id="userSearchBox" placeholder="Search users by username, email, or user ID..." onkeyup="filterUsersTable()" />
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Withdrawable Balance</th>
-                <th>Deposit Balance</th>
-                <th>Status</th>
-                <th>Withdrawal Control</th>
-                <th>Account Actions</th>
-              </tr>
-            </thead>
-            <tbody id="usersTableBody">
-              <tr><td colspan="8" style="text-align: center; color: #9ca3af;">Loading system users...</td></tr>
-            </tbody>
-          </table>
-        </div>
+    <!-- User Account Directory & Controls -->
+    <div class="card">
+      <h2>User Account Directory & Controls</h2>
+      <div class="form-group" style="margin-bottom: 14px;">
+        <input type="text" id="userSearchBox" placeholder="Search users by username, email, or user ID..." onkeyup="filterUsersTable()" />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Withdrawable Balance</th>
+              <th>Deposit Balance</th>
+              <th>Status</th>
+              <th>Withdrawal Control</th>
+              <th>Account Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="8" style="text-align: center; color: #9ca3af;">Loading system users...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -253,6 +251,7 @@
       </div>
     </div>
 
+    <!-- Control Sidebar Tools Grid (Manual Balance & Reset Password on Left, Reset Bank Card on Right) -->
     <div class="grid-2col" style="margin-top: 20px;">
       <!-- Manual Balance Adjuster -->
       <div class="card">
@@ -284,20 +283,34 @@
         </form>
       </div>
 
-      <!-- Reset User Password -->
-      <div class="card">
-        <h2>Reset User Password</h2>
-        <form onsubmit="resetUserPassword(event)">
-          <div class="form-group">
-            <label>Username or User ID</label>
-            <input type="text" id="resetPassInput" placeholder="e.g. jnrsinny" required>
-          </div>
-          <div class="form-group">
-            <label>New Login Password (Min 8 chars)</label>
-            <input type="text" id="newPasswordInput" placeholder="Enter new plain text password" required minlength="8">
-          </div>
-          <button type="submit" class="btn" style="width:100%; background:#7c3aed;">Update Password</button>
-        </form>
+      <!-- Reset User Password & Reset Bound Payment Account (Right Side Panel) -->
+      <div>
+        <div class="card">
+          <h2>Reset User Password</h2>
+          <form onsubmit="resetUserPassword(event)">
+            <div class="form-group">
+              <label>Username or User ID</label>
+              <input type="text" id="resetPassInput" placeholder="e.g. jnrsinny" required>
+            </div>
+            <div class="form-group">
+              <label>New Login Password (Min 8 chars)</label>
+              <input type="text" id="newPasswordInput" placeholder="Enter new plain text password" required minlength="8">
+            </div>
+            <button type="submit" class="btn" style="width:100%; background:#7c3aed;">Update Password</button>
+          </form>
+        </div>
+
+        <!-- Reset Bound Payment Account (Moved to Right Side as requested) -->
+        <div class="card">
+          <h2>Reset Bound Payment Account</h2>
+          <form onsubmit="resetBoundAccount(event)">
+            <div class="form-group">
+              <label>Username, Phone or User ID</label>
+              <input type="text" id="resetAccountInput" placeholder="e.g. jnrsinny or 1" required>
+            </div>
+            <button type="submit" class="btn btn-warning" style="width:100%;">Clear Bound Channel Info</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -552,7 +565,7 @@
         filterUsersTable();
       } catch (e) {
         document.getElementById('usersTableBody').innerHTML = `<tr><td colspan="8" style="text-align: center; color: #ef4444;">Failed to load users directory.</td></tr>`;
-        document.getElementById('referralsTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef4444;">Failed to load referral stats.</td></tr>`;
+        document.getElementById('referralsTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: #9ca3af;">Failed to load referral stats.</td></tr>`;
       }
     }
 
@@ -612,7 +625,7 @@
       tbody.innerHTML = users.map(u => {
         const id = u.id;
         const username = u.username || 'N/A';
-        const invitedBy = u.invited_by_phone || u.invited_by || 'Direct / None';
+        const invitedBy = u.invited_by_username || 'Direct / None';
 
         return `
           <tr>
@@ -746,6 +759,37 @@
           alert(data.message || 'Failed to update password.');
         }
       } catch (e) { alert('Server error updating password.'); }
+    }
+
+    async function resetBoundAccount(e) {
+      e.preventDefault();
+      const target = document.getElementById('resetAccountInput').value.trim();
+
+      if (!target) {
+        alert('Please enter a username or user ID.');
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to clear bound payment card details for "${target}"?`)) return;
+
+      try {
+        const payload = isNaN(target) ? { username: target } : { userId: target };
+        const res = await apiRequest('/api/admin/bankcard/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message || 'Payment account reset successfully');
+          document.getElementById('resetAccountInput').value = yourField = '';
+          document.getElementById('resetAccountInput').value = '';
+        } else {
+          alert(data.message || 'Failed to reset bank account.');
+        }
+      } catch (e) {
+        alert('Server error resetting payment account.');
+      }
     }
 
     function logoutAdmin() {
