@@ -59,8 +59,9 @@
     .badge-pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
     .badge-approved { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
     .badge-rejected { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-deleted { background: rgba(100, 116, 139, 0.15); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.3); }
 
-    .action-btn { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.75rem; margin-right: 3px; }
+    .action-btn { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.75rem; margin-right: 3px; margin-bottom: 3px; }
     .copy-btn { background: #1e293b; border: 1px solid #334155; color: #38bdf8; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; cursor: pointer; margin-left: 5px; }
     .copy-btn:hover { background: #334155; }
 
@@ -218,15 +219,37 @@
                 <th>Email</th>
                 <th>Withdrawable Balance</th>
                 <th>Deposit Balance</th>
-                <th>Invite Code</th>
-                <th>Created At</th>
+                <th>Status</th>
+                <th>Withdrawal Control</th>
+                <th>Account Actions</th>
               </tr>
             </thead>
             <tbody id="usersTableBody">
-              <tr><td colspan="7" style="text-align: center; color: #9ca3af;">Loading system users...</td></tr>
+              <tr><td colspan="8" style="text-align: center; color: #9ca3af;">Loading system users...</td></tr>
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+
+    <!-- Referral Metrics & Downline Viewer -->
+    <div class="card">
+      <h2>User Referral Network Statistics</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Username</th>
+              <th>Invited By</th>
+              <th>Account Balance</th>
+              <th>Network Tree</th>
+            </tr>
+          </thead>
+          <tbody id="referralsTableBody">
+            <tr><td colspan="5" style="text-align: center; color: #9ca3af;">Loading referral metrics...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -277,6 +300,20 @@
         </form>
       </div>
     </div>
+  </div>
+
+  <!-- Referral Tree Modal -->
+  <div id="treeModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-hdr">
+        <h3 id="treeModalTitle" style="color: #38bdf8; font-size: 1.1rem;">Downline Referral Tree</h3>
+        <button class="close-btn" onclick="closeModal('treeModal')">&times;</button>
+      </div>
+      <div id="treeModalContent">
+        <p style="color: #9ca3af; text-align: center; padding: 20px;">Fetching downline network...</p>
+      </div>
+    </div>
+  </div>
 
   <!-- Image Receipt Viewer Modal -->
   <div id="imageModal" class="modal" onclick="closeModal('imageModal')">
@@ -514,7 +551,8 @@
         globalUsersList = data.users || [];
         filterUsersTable();
       } catch (e) {
-        document.getElementById('usersTableBody').innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">Failed to load users directory.</td></tr>`;
+        document.getElementById('usersTableBody').innerHTML = `<tr><td colspan="8" style="text-align: center; color: #ef4444;">Failed to load users directory.</td></tr>`;
+        document.getElementById('referralsTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef4444;">Failed to load referral stats.</td></tr>`;
       }
     }
 
@@ -527,26 +565,133 @@
         return username.includes(q) || email.includes(q) || id.includes(q);
       });
       renderUsers(filtered);
+      renderReferrals(filtered);
     }
 
     function renderUsers(users) {
       const tbody = document.getElementById('usersTableBody');
       if (!users.length) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #9ca3af;">No matching users found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #9ca3af;">No matching users found.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = users.map(u => `
-        <tr>
-          <td>#${u.id}</td>
-          <td><strong>${u.username}</strong></td>
-          <td>${u.email || 'N/A'}</td>
-          <td>GH₵ ${parseFloat(u.balance || 0).toFixed(2)}</td>
-          <td>GH₵ ${parseFloat(u.deposit_balance || 0).toFixed(2)}</td>
-          <td><code>${u.invitation_code || 'N/A'}</code></td>
-          <td>${new Date(u.created_at).toLocaleString()}</td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = users.map(u => {
+        const id = u.id;
+        const isDel = u.status === 'deleted' || u.is_deleted == 1;
+
+        return `
+          <tr>
+            <td>#${id}</td>
+            <td><strong>${u.username}</strong></td>
+            <td>${u.email || 'N/A'}</td>
+            <td>GH₵ ${parseFloat(u.balance || 0).toFixed(2)}</td>
+            <td>GH₵ ${parseFloat(u.deposit_balance || 0).toFixed(2)}</td>
+            <td><span class="badge ${isDel ? 'badge-deleted' : 'badge-approved'}">${isDel ? 'DELETED' : 'ACTIVE'}</span></td>
+            <td>
+              <button class="action-btn btn-success" onclick="toggleWd(${id}, 1)">Enable</button>
+              <button class="action-btn btn-danger" onclick="toggleWd(${id}, 0)">Disable</button>
+            </td>
+            <td>
+              ${isDel ? 
+                `<button class="action-btn btn btn-success" onclick="userAction(${id}, 'restore')">Restore</button>` : 
+                `<button class="action-btn btn-danger" onclick="userAction(${id}, 'delete')">Delete</button>`
+              }
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderReferrals(users) {
+      const tbody = document.getElementById('referralsTableBody');
+      if (!users.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #9ca3af;">No referral records found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = users.map(u => {
+        const id = u.id;
+        const username = u.username || 'N/A';
+        const invitedBy = u.invited_by_phone || u.invited_by || 'Direct / None';
+
+        return `
+          <tr>
+            <td>#${id}</td>
+            <td><strong>${username}</strong></td>
+            <td><span style="color:#38bdf8; font-weight:600;">${invitedBy}</span></td>
+            <td>GH₵ ${parseFloat(u.balance || 0).toFixed(2)}</td>
+            <td>
+              <button class="action-btn btn" style="background:#7c3aed;" onclick="viewTree(${id}, '${username}')">Tree View</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function toggleWd(userId, state) {
+      try {
+        const res = await apiRequest('/api/admin/users/toggle-withdrawal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, enabled: state })
+        });
+        const data = await res.json();
+        showToast(data.message || 'Updated withdrawal status');
+      } catch (e) { alert('Error updating withdrawal permission.'); }
+    }
+
+    async function userAction(userId, action) {
+      if (!confirm(`Are you sure you want to ${action} user #${userId}?`)) return;
+      try {
+        const res = await apiRequest('/api/admin/users/action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, action })
+        });
+        const data = await res.json();
+        showToast(data.message || 'Success');
+        initDashboardData();
+      } catch (e) { alert('Error modifying user account.'); }
+    }
+
+    async function viewTree(userId, username) {
+      document.getElementById('treeModalTitle').innerText = `Referral Downline Tree for ${username} (#${userId})`;
+      document.getElementById('treeModalContent').innerHTML = `<p style="color:#9ca3af; text-align:center; padding:20px;">Fetching network...</p>`;
+      openModal('treeModal');
+
+      try {
+        const res = await apiRequest(`/api/admin/users/${userId}/referrals`);
+        const data = await res.json();
+        const tree = data.tree || [];
+
+        if (!tree.length) {
+          document.getElementById('treeModalContent').innerHTML = `<p style="color:#9ca3af; text-align:center; padding:20px;">No downline referrals found for this user.</p>`;
+          return;
+        }
+
+        document.getElementById('treeModalContent').innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>ID</th><th>Username</th><th>Level</th><th>Balance</th><th>Joined Date</th></tr>
+              </thead>
+              <tbody>
+                ${tree.map(r => `
+                  <tr>
+                    <td>#${r.id}</td>
+                    <td><strong>${r.username}</strong></td>
+                    <td><span style="color:#38bdf8">Level ${r.level}</span></td>
+                    <td>GH₵ ${parseFloat(r.balance || 0).toFixed(2)}</td>
+                    <td>${new Date(r.created_at).toLocaleString()}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } catch (e) {
+        document.getElementById('treeModalContent').innerHTML = `<p style="color:#ef4444; text-align:center; padding:20px;">Failed to fetch referral tree.</p>`;
+      }
     }
 
     async function adjustUserBalance(e) {
