@@ -199,7 +199,14 @@
 const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 let activeCard = null;
 
-function loadStoredCard() {
+async function fetchWithdrawData() {
+  const token = localStorage.getItem('skyson_token');
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // 1. Try loading card from localStorage first for instant render
   try {
     const cardStr = localStorage.getItem('userBankCard');
     if (cardStr) {
@@ -207,6 +214,35 @@ function loadStoredCard() {
       renderCardInfo(activeCard);
     }
   } catch(e) {}
+
+  // 2. Fetch fresh card and balance data from backend
+  try {
+    const [dashRes, cardRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/api/user/dashboard`, { headers: { 'Authorization': `Bearer ${token}` } }),
+      fetch(`${API_BASE_URL}/api/user/bank-card`, { headers: { 'Authorization': `Bearer ${token}` } }).catch(() => null)
+    ]);
+
+    if (dashRes.ok) {
+      const data = await dashRes.json();
+      document.getElementById('display-balance').textContent = `GH₵ ${(data.balance || 0).toFixed(2)}`;
+    }
+
+    if (cardRes && cardRes.ok) {
+      const cardData = await cardRes.json();
+      const fetchedCard = Array.isArray(cardData) ? cardData[0] : (cardData.card || cardData);
+      if (fetchedCard && (fetchedCard.account_number || fetchedCard.phone_number)) {
+        activeCard = fetchedCard;
+        // Ensure standard field naming
+        if (!activeCard.account_number) activeCard.account_number = activeCard.phone_number;
+        if (!activeCard.channel) activeCard.channel = activeCard.bank_name || 'MTN Mobile Money';
+        
+        localStorage.setItem('userBankCard', JSON.stringify(activeCard));
+        renderCardInfo(activeCard);
+      }
+    }
+  } catch (e) {
+    console.error('Error fetching withdrawal data:', e);
+  }
 }
 
 function renderCardInfo(card) {
@@ -215,8 +251,8 @@ function renderCardInfo(card) {
   const addressElem = document.getElementById('display-address');
 
   methodElem.style.display = 'block';
-  methodElem.textContent = card.channel || 'Mobile Money';
-  addressElem.textContent = maskAccount(card.account_number);
+  methodElem.textContent = card.channel || card.bank_name || 'Mobile Money';
+  addressElem.textContent = maskAccount(card.account_number || card.phone_number);
   addressElem.style.color = 'var(--ink)';
 }
 
@@ -232,27 +268,6 @@ function updateCalculations() {
   const fee = amount * 0.10;
   document.getElementById('fee-display').textContent = `GH₵ ${fee.toFixed(2)}`;
   document.getElementById('conversion-display').textContent = `≈ GH₵ ${(amount - fee).toFixed(2)} net to receive`;
-}
-
-async function fetchWithdrawData() {
-  const token = localStorage.getItem('skyson_token');
-  if (!token) {
-    window.location.href = 'index.html';
-    return;
-  }
-
-  loadStoredCard();
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/user/dashboard`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (!res.ok) return;
-    const data = await res.json();
-    document.getElementById('display-balance').textContent = `GH₵ ${(data.balance || 0).toFixed(2)}`;
-  } catch (e) {
-    document.getElementById('display-balance').textContent = `GH₵ 0.00`;
-  }
 }
 
 async function handleWithdrawal() {
@@ -284,15 +299,20 @@ async function handleWithdrawal() {
     const res = await fetch(`${API_BASE_URL}/api/user/withdraw`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount, fundPassword: password, channel: activeCard.channel, accountNumber: activeCard.account_number })
+      body: JSON.stringify({ 
+        amount, 
+        fundPassword: password, 
+        channel: activeCard.channel || activeCard.bank_name || 'MTN', 
+        accountNumber: activeCard.account_number || activeCard.phone_number 
+      })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Withdrawal request failed.');
+    if (!res.ok) throw new Error(data.error || data.message || 'Withdrawal request failed.');
 
     alert('Withdrawal request submitted successfully!');
     location.href = 'transaction.html';
   } catch (err) {
-    alert('Withdrawal request submitted successfully! (Test Mode)');
+    alert(err.message || 'Withdrawal request submitted successfully!');
     location.href = 'transaction.html';
   } finally {
     submitBtn.disabled = false;
