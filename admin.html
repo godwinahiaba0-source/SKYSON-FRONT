@@ -80,7 +80,7 @@
 </head>
 <body>
 
-  <!-- Authentication Guard & Auto-Redirect (FIXED closing bracket bug) -->
+  <!-- Authentication Guard & Auto-Redirect -->
   <script>
     function getStoredToken() {
       return localStorage.getItem('skyson_token') || localStorage.getItem('adminToken') || localStorage.getItem('token') || '';
@@ -251,7 +251,7 @@
       </div>
     </div>
 
-    <!-- Control Sidebar Tools Grid (Manual Balance & Reset Password on Left, Reset Bank Card on Right) -->
+    <!-- Control Sidebar Tools Grid -->
     <div class="grid-2col" style="margin-top: 20px;">
       <!-- Manual Balance Adjuster -->
       <div class="card">
@@ -283,7 +283,7 @@
         </form>
       </div>
 
-      <!-- Reset User Password & Reset Bound Payment Account (Right Side Panel) -->
+      <!-- Reset User Password & Reset Bound Payment Account -->
       <div>
         <div class="card">
           <h2>Reset User Password</h2>
@@ -300,12 +300,12 @@
           </form>
         </div>
 
-        <!-- Reset Bound Payment Account (Moved to Right Side as requested) -->
+        <!-- Reset Bound Payment Account -->
         <div class="card">
           <h2>Reset Bound Payment Account</h2>
           <form onsubmit="resetBoundAccount(event)">
             <div class="form-group">
-              <label>Username, Phone or User ID</label>
+              <label>Username or User ID</label>
               <input type="text" id="resetAccountInput" placeholder="e.g. jnrsinny or 1" required>
             </div>
             <button type="submit" class="btn btn-warning" style="width:100%;">Clear Bound Channel Info</button>
@@ -782,8 +782,7 @@
         const data = await res.json();
         if (data.success) {
           showToast(data.message || 'Payment account reset successfully');
-          document.getElementById('resetAccountInput').value = yourField = '';
-          document.getElementById('resetAccountInput').value = '';
+          document.getElementById('resetAccountInput').value = ''; // FIXED typo here
         } else {
           alert(data.message || 'Failed to reset bank account.');
         }
