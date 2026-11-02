@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skysonsolar — Administrator Panel</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .admin-container { max-width: 1000px; margin: 20px auto; padding: 16px; }
+  .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: var(--blue); color: #fff; padding: 16px 20px; border-radius: 12px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: #fff; padding: 16px; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .stat-card h4 { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .stat-card .val { font-size: 20px; font-weight: 800; color: var(--ink); }
+  
+  .tabs { display: flex; gap: 10px; margin-bottom: 16px; }
+  .tab-btn { padding: 10px 18px; border-radius: 20px; border: 1px solid var(--line); background: #fff; font-weight: 700; cursor: pointer; font-size: 13px; }
+  .tab-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+  .data-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+  .data-table th, .data-table td { padding: 12px 14px; text-align: left; font-size: 12px; border-bottom: 1px solid var(--line); }
+  .data-table th { background: #f8fafc; font-weight: 700; color: var(--ink); }
+  .action-btn { padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; border: 0; cursor: pointer; }
+  .btn-approve { background: #d1fae5; color: #065f46; margin-right: 6px; }
+  .btn-reject { background: #fee2e2; color: #991b1b; }
+</style>
+</head>
+<body>
+<div class="admin-container">
+  <div class="admin-header">
+    <div>
+      <h2>👑 Skysonsolar Admin Portal</h2>
+      <small>Manage platform accounts, recharges, and transactions</small>
+    </div>
+    <button onclick="logoutAdmin()" style="background:#fff; color:var(--blue); border:0; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;">Log Out</button>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card"><h4>Total Users</h4><div class="val" id="statUsers">0</div></div>
+    <div class="stat-card"><h4>Active Leases</h4><div class="val" id="statLeases">0</div></div>
+    <div class="stat-card"><h4>Total Recharged</h4><div class="val" id="statRecharged">GH₵ 0.00</div></div>
+    <div class="stat-card"><h4>Total Withdrawn</h4><div class="val" id="statWithdrawn">GH₵ 0.00</div></div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('recharges', this)">Pending Recharges</button>
+    <button class="tab-btn" onclick="switchTab('users', this)">Registered Users</button>
+  </div>
+
+  <!-- Recharges Tab View -->
+  <div id="viewRecharges" class="tab-content">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Amount</th>
+          <th>Reference / Channel</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="rechargesTableBody">
+        <tr><td colspan="7" style="text-align:center;">Loading recharges...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Users Tab View -->
+  <div id="viewUsers" class="tab-content" style="display:none;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Balance (Withdrawable)</th>
+          <th>Deposit Balance</th>
+          <th>Invite Code</th>
+        </tr>
+      </thead>
+      <tbody id="usersTableBody">
+        <tr><td colspan="6" style="text-align:center;">Loading users...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
+
+function getAdminToken() {
+  return localStorage.getItem('skyson_token');
+}
+
+async function fetchAdminStats() {
+  const token = getAdminToken();
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/stats`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('statUsers').textContent = data.stats.totalUsers;
+      document.getElementById('statLeases').textContent = data.stats.totalLeases;
+      document.getElementById('statRecharged').textContent = `GH₵ ${data.stats.totalRecharged.toFixed(2)}`;
+      document.getElementById('statWithdrawn').textContent = `GH₵ ${data.stats.totalWithdrawn.toFixed(2)}`;
+    }
+  } catch (err) {
+    console.error('Error fetching stats:', err);
+  }
+}
+
+async function fetchRecharges() {
+  const token = getAdminToken();
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/recharges`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success) {
+      const tbody = document.getElementById('rechargesTableBody');
+      if (data.recharges.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No recharge records found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.recharges.map(r => `
+        <tr>
+          <td>#${r.id}</td>
+          <td><strong>${r.username}</strong></td>
+          <td>GH₵ ${parseFloat(r.amount).toFixed(2)}</td>
+          <td><code>${r.reference || r.channel || 'N/A'}</code></td>
+          <td><span style="color:${r.status === 'approved' ? 'green' : r.status === 'rejected' ? 'red' : 'orange'}; font-weight:700;">${r.status.toUpperCase()}</span></td>
+          <td>${new Date(r.created_at).toLocaleString()}</td>
+          <td>
+            ${r.status === 'pending' ? `
+              <button class="action-btn btn-approve" onclick="processRecharge(${r.id}, 'approved')">Approve</button>
+              <button class="action-btn btn-reject" onclick="processRecharge(${r.id}, 'rejected')">Reject</button>
+            ` : '<em>Completed</em>'}
+          </td>
+        </tr>
+      `).join('');
+    }
+  } catch (err) {
+    console.error('Error fetching recharges:', err);
+  }
+}
+
+async function processRecharge(rechargeId, action) {
+  const token = getAdminToken();
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/recharge/action`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rechargeId, action })
+    });
+    const data = await res.json();
+    alert(data.message);
+    if (data.success) {
+      fetchRecharges();
+      fetchAdminStats();
+    }
+  } catch (err) {
+    console.error('Error processing recharge:', err);
+    alert('Failed to execute action.');
+  }
+}
+
+async function fetchUsers() {
+  const token = getAdminToken();
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/users`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success) {
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = data.users.map(u => `
+        <tr>
+          <td>#${u.id}</td>
+          <td><strong>${u.username}</strong></td>
+          <td>${u.email}</td>
+          <td>GH₵ ${parseFloat(u.balance).toFixed(2)}</td>
+          <td>GH₵ ${parseFloat(u.deposit_balance).toFixed(2)}</td>
+          <td><code>${u.invitation_code || 'N/A'}</code></td>
+        </tr>
+      `).join('');
+    }
+  } catch (err) {
+    console.error('Error fetching users:', err);
+  }
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.getElementById('viewRecharges').style.display = tab === 'recharges' ? 'block' : 'none';
+  document.getElementById('viewUsers').style.display = tab === 'users' ? 'block' : 'none';
+
+  if (tab === 'recharges') fetchRecharges();
+  if (tab === 'users') fetchUsers();
+}
+
+function logoutAdmin() {
+  localStorage.removeItem('skyson_token');
+  window.location.href = 'index.html';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (!getAdminToken()) {
+    window.location.href = 'index.html';
+    return;
+  }
+  fetchAdminStats();
+  fetchRecharges();
+});
+</script>
+</body>
+</html>

@@ -698,7 +698,12 @@
             body: formData
           });
         } else {
-          const payload = { amount, channel: channelName, transactionId: transactionId || reference || 'REC_' + Date.now(), reference };
+          const payload = { 
+            amount, 
+            channel: channelName, 
+            transactionId: transactionId || reference || 'REC_' + Date.now(), 
+            reference: reference || transactionId 
+          };
           response = await fetch(`${API_BASE_URL}/api/recharge/submit`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -706,16 +711,17 @@
           });
         }
 
-        if (response.ok) {
+        const data = await response.json();
+
+        if (response.ok && data.success) {
           alert(`Your ${channelName} deposit request of GH₵ ${amount.toFixed(2)} has been submitted successfully!`);
           setTimeout(() => { handleHeaderBack(); }, 1000);
         } else {
-          throw new Error('Server returned error response');
+          throw new Error(data.message || 'Server returned error response');
         }
       } catch (err) {
-        // Test mode fallback
-        alert(`Your ${channelName} deposit request of GH₵ ${amount.toFixed(2)} has been submitted successfully! (Test Mode)`);
-        setTimeout(() => { handleHeaderBack(); }, 1000);
+        console.error('Deposit submission error:', err);
+        alert(err.message || 'Failed to submit deposit request. Please try again.');
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = channelName === 'USDT Pay' ? 'I Have Transferred USDT' : (channelName === 'Sky 03 Pay' ? 'I Have Paid via Sky 03 Pay' : 'I Have Paid via Zee Pay');
