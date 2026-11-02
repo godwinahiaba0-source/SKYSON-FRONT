@@ -29,7 +29,7 @@
     #connectionAlert { display: none; background: #7f1d1d; border: 1px solid #f87171; color: #fca5a5; padding: 10px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 600; }
 
     /* Stats Grid */
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
     .stat-card { background-color: #111827; padding: 18px; border-radius: 10px; border: 1px solid #1f2937; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
     .stat-card h3 { font-size: 0.75rem; text-transform: uppercase; color: #9ca3af; letter-spacing: 0.5px; margin-bottom: 6px; }
     .stat-card .value { font-size: 1.35rem; font-weight: 700; color: #f9fafb; }
@@ -146,6 +146,10 @@
         <h3>Pending Deposit Queue</h3>
         <div class="value" id="statPendingRecharges">0</div>
       </div>
+      <div class="stat-card">
+        <h3>Pending Withdrawals</h3>
+        <div class="value" id="statPendingWithdrawals">0</div>
+      </div>
     </div>
 
     <!-- Recharge Requests Management Queue -->
@@ -166,6 +170,31 @@
           </thead>
           <tbody id="rechargesTableBody">
             <tr><td colspan="7" style="text-align: center; color: #9ca3af;">Loading deposit requests...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Withdrawal Requests Management Queue -->
+    <div class="card">
+      <h2>Withdrawal Approvals</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>TX ID</th>
+              <th>Username</th>
+              <th>Channel / Account</th>
+              <th>Amount</th>
+              <th>Fee (10%)</th>
+              <th>Net Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="withdrawalsTableBody">
+            <tr><td colspan="9" style="text-align: center; color: #9ca3af;">Loading withdrawal requests...</td></tr>
           </tbody>
         </table>
       </div>
@@ -231,20 +260,22 @@
       </div>
 
       <!-- Reset User Password -->
-<div class="card">
-  <h2>Reset User Password</h2>
-  <form onsubmit="resetUserPassword(event)">
-    <div class="form-group">
-      <label>Username or User ID</label>
-      <input type="text" id="resetPassInput" placeholder="e.g. jnrsinny" required>
+      <div class="card">
+        <h2>Reset User Password</h2>
+        <form onsubmit="resetUserPassword(event)">
+          <div class="form-group">
+            <label>Username or User ID</label>
+            <input type="text" id="resetPassInput" placeholder="e.g. jnrsinny" required>
+          </div>
+          <div class="form-group">
+            <label>New Login Password (Min 8 chars)</label>
+            <input type="text" id="newPasswordInput" placeholder="Enter new plain text password" required minlength="8">
+          </div>
+          <button type="submit" class="btn" style="width:100%; background:#7c3aed;">Update Password</button>
+        </form>
+      </div>
     </div>
-    <div class="form-group">
-      <label>New Login Password (Min 8 chars)</label>
-      <input type="text" id="newPasswordInput" placeholder="Enter new plain text password" required minlength="8">
-    </div>
-    <button type="submit" class="btn" style="width:100%; background:#7c3aed;">Update Password</button>
-  </form>
-</div>
+
   <!-- Image Receipt Viewer Modal -->
   <div id="imageModal" class="modal" onclick="closeModal('imageModal')">
     <div class="modal-box" style="max-width: 550px; text-align: center;" onclick="event.stopPropagation()">
@@ -311,6 +342,7 @@
     async function initDashboardData() {
       loadOverviewStats();
       loadRecharges();
+      loadWithdrawals();
       loadUsers();
     }
 
@@ -390,6 +422,66 @@
         showToast(data.message || 'Success');
         initDashboardData();
       } catch (e) { alert('Error processing recharge.'); }
+    }
+
+    async function loadWithdrawals() {
+      const tbody = document.getElementById('withdrawalsTableBody');
+      try {
+        const res = await apiRequest('/api/admin/withdrawals');
+        const data = await res.json();
+        const list = data.withdrawals || [];
+        let pending = 0;
+
+        if (!list.length) {
+          tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #9ca3af;">No withdrawal records found.</td></tr>`;
+          document.getElementById('statPendingWithdrawals').innerText = '0';
+          return;
+        }
+
+        tbody.innerHTML = list.map(tx => {
+          const status = (tx.status || 'pending').toLowerCase();
+          if (status === 'pending') pending++;
+          const badge = status === 'approved' ? 'badge-approved' : (status === 'rejected' ? 'badge-rejected' : 'badge-pending');
+          const channel = tx.channel || 'MoMo';
+          const account = tx.account_number || 'N/A';
+
+          return `
+            <tr>
+              <td>#${tx.id}</td> 
+              <td><strong>${tx.username || 'N/A'}</strong></td>
+              <td>${channel}<br><small style="color:#9ca3af">${account}</small></td>
+              <td style="color:#f59e0b; font-weight:bold;">GH₵ ${parseFloat(tx.amount || 0).toFixed(2)}</td>
+              <td>GH₵ ${parseFloat(tx.fee || 0).toFixed(2)}</td>
+              <td style="color:#22c55e; font-weight:bold;">GH₵ ${parseFloat(tx.net_amount || 0).toFixed(2)}</td>
+              <td><span class="badge ${badge}">${status.toUpperCase()}</span></td>
+              <td>${new Date(tx.created_at).toLocaleString()}</td>
+              <td>
+                ${status === 'pending' ? `
+                  <button class="action-btn btn-success" onclick="procWithdrawal(${tx.id}, 'approved')">Approve</button>
+                  <button class="action-btn btn-danger" onclick="procWithdrawal(${tx.id}, 'rejected')">Reject</button>
+                ` : '<span style="color:#6b7280; font-size:0.75rem;">Completed</span>'}
+              </td>
+            </tr>
+          `;
+        }).join('');
+        document.getElementById('statPendingWithdrawals').innerText = pending;
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #ef4444;">Failed to load withdrawals.</td></tr>`;
+      }
+    }
+
+    async function procWithdrawal(withdrawalId, action) {
+      if (!confirm(`Are you sure you want to ${action} withdrawal #${withdrawalId}?`)) return;
+      try {
+        const res = await apiRequest('/api/admin/withdrawal/action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ withdrawalId, action })
+        });
+        const data = await res.json();
+        showToast(data.message || 'Success');
+        initDashboardData();
+      } catch (e) { alert('Error processing withdrawal.'); }
     }
 
     async function loadUsers() {
