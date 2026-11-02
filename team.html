@@ -55,12 +55,7 @@
       <div style="width: 40px;"></div>
     </div>
 
-    <!-- Metric Cards -->
-    <div class="metrics-grid">
-      <div class="metric-box"><div class="metric-label">Team recharge</div><div class="metric-value" id="metricTeamRecharge">GH₵ 0.00</div></div>
-      <div class="metric-box"><div class="metric-label">First charges</div><div class="metric-value" id="metricFirstCharges">0</div></div>
-      <div class="metric-box"><div class="metric-label">Team size</div><div class="metric-value" id="metricTeamSize">0</div></div>
-    </div>
+    <!-- Metric Cards (Blue & Green Rows) -->
     <div class="metrics-grid">
       <div class="metric-box blue"><div class="metric-label">Team recharge (GHS)</div><div class="metric-value" id="metricBlueRecharge">0.00</div></div>
       <div class="metric-box blue"><div class="metric-label">Number of first charge</div><div class="metric-value" id="metricFirstChargeNum">0</div></div>
@@ -159,9 +154,6 @@ async function loadTeamData() {
     });
     if (reportRes.ok) {
       const report = await reportRes.json();
-      document.getElementById('metricTeamRecharge').textContent = `GH₵ ${(report.teamRecharge || 0).toFixed(2)}`;
-      document.getElementById('metricFirstCharges').textContent = report.firstChargeCount || 0;
-      document.getElementById('metricTeamSize').textContent = report.teamSize || 0;
       document.getElementById('metricBlueRecharge').textContent = (report.teamRecharge || 0).toFixed(2);
       document.getElementById('metricFirstChargeNum').textContent = report.firstChargeCount || 0;
       document.getElementById('metricBlueTeamSize').textContent = report.teamSize || 0;
