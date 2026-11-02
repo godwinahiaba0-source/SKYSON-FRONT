@@ -175,7 +175,7 @@ async function fetchTransactionRecords() {
 }
 
 function switchTab(type, btn) {
-    currentFilter = type;
+  currentFilter = type;
   document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   renderRecords();
@@ -195,11 +195,34 @@ function renderRecords() {
 
   container.innerHTML = filtered.map(r => {
     const amountVal = Number(r.amount) || 0;
-    const isPos = amountVal > 0 && r.type !== 'recharge';
-    const sign = isPos ? '+' : '';
+    const typeLower = (r.type || '').toLowerCase();
     const statusLower = (r.status || 'success').toLowerCase();
-    const statusClass = statusLower === 'success' ? 'status-success' : (statusLower === 'pending' ? 'status-pending' : 'status-failed');
-    
+
+    // Determine Status Class & Label styling
+    let statusClass = 'status-success';
+    if (statusLower === 'pending') {
+      statusClass = 'status-pending';
+    } else if (statusLower === 'failed' || statusLower === 'rejected') {
+      statusClass = 'status-failed';
+    }
+
+    // Determine positive/negative amount colors & signs
+    // Recharges and Withdrawals are outflows/debits (Negative / Red)
+    // Earnings are inflows (Positive / Green)
+    let isPos = false;
+    let sign = '';
+
+    if (typeLower === 'earnings' || typeLower === 'earning') {
+      isPos = true;
+      sign = '+';
+    } else if (typeLower === 'withdraw' || typeLower === 'withdrawal' || typeLower === 'recharge') {
+      isPos = false;
+      sign = '';
+    } else {
+      isPos = amountVal > 0;
+      sign = isPos ? '+' : '';
+    }
+
     return `
       <div class="record-item">
         <div>
