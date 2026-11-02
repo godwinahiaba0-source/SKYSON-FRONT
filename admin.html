@@ -231,23 +231,20 @@
       </div>
 
       <!-- Reset User Password -->
-      <div class="card">
-        <h2>Reset User Password</h2>
-        <form onsubmit="resetUserPassword(event)">
-          <div class="form-group">
-            <label>Username or User ID</label>
-            <input type="text" id="resetPassInput" placeholder="e.g. jnrsinny" required>
-          </div>
-          <div class="form-group">
-            <label>New Login Password (Min 8 chars)</label>
-            <input type="password" id="newPasswordInput" placeholder="New secure password" required minlength="8">
-          </div>
-          <button type="submit" class="btn" style="width:100%; background:#7c3aed;">Update Password</button>
-        </form>
-      </div>
+<div class="card">
+  <h2>Reset User Password</h2>
+  <form onsubmit="resetUserPassword(event)">
+    <div class="form-group">
+      <label>Username or User ID</label>
+      <input type="text" id="resetPassInput" placeholder="e.g. jnrsinny" required>
     </div>
-  </div>
-
+    <div class="form-group">
+      <label>New Login Password (Min 8 chars)</label>
+      <input type="text" id="newPasswordInput" placeholder="Enter new plain text password" required minlength="8">
+    </div>
+    <button type="submit" class="btn" style="width:100%; background:#7c3aed;">Update Password</button>
+  </form>
+</div>
   <!-- Image Receipt Viewer Modal -->
   <div id="imageModal" class="modal" onclick="closeModal('imageModal')">
     <div class="modal-box" style="max-width: 550px; text-align: center;" onclick="event.stopPropagation()">
