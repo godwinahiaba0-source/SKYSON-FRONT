@@ -187,7 +187,6 @@ function renderRecords() {
     if (currentFilter === 'all') return true;
     const itemType = (r.type || '').toLowerCase();
     
-    // Flexible matching for withdrawals tab
     if (currentFilter === 'withdraw') {
       return itemType === 'withdraw' || itemType === 'withdrawal';
     }
@@ -213,14 +212,16 @@ function renderRecords() {
       statusClass = 'status-failed';
     }
 
-    // Determine positive/negative amount colors & signs
+    // Amount Color Logic:
+    // Recharges and Earnings are Inflows -> Green (+)
+    // Withdrawals are Outflows -> Red (No + sign)
     let isPos = false;
     let sign = '';
 
-    if (typeLower === 'earnings' || typeLower === 'earning') {
+    if (typeLower === 'earnings' || typeLower === 'earning' || typeLower === 'recharge' || typeLower === 'deposit') {
       isPos = true;
       sign = '+';
-    } else if (typeLower === 'withdraw' || typeLower === 'withdrawal' || typeLower === 'recharge') {
+    } else if (typeLower === 'withdraw' || typeLower === 'withdrawal') {
       isPos = false;
       sign = '';
     } else {
