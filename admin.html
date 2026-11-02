@@ -1,223 +1,502 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Skysonsolar — Administrator Panel</title>
-<link rel="stylesheet" href="style.css">
-<style>
-  .admin-container { max-width: 1000px; margin: 20px auto; padding: 16px; }
-  .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: var(--blue); color: #fff; padding: 16px 20px; border-radius: 12px; }
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .stat-card { background: #fff; padding: 16px; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  .stat-card h4 { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-  .stat-card .val { font-size: 20px; font-weight: 800; color: var(--ink); }
-  
-  .tabs { display: flex; gap: 10px; margin-bottom: 16px; }
-  .tab-btn { padding: 10px 18px; border-radius: 20px; border: 1px solid var(--line); background: #fff; font-weight: 700; cursor: pointer; font-size: 13px; }
-  .tab-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skysonsolar — Administrator Panel</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background-color: #0b0f19; color: #f1f5f9; padding: 20px; min-height: 100vh; }
+    .container { max-width: 1450px; margin: 0 auto; }
+    
+    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid #1e293b; margin-bottom: 20px; }
+    h1 { font-size: 1.5rem; color: #38bdf8; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; background-color: #ef4444; display: inline-block; }
+    .status-dot.online { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
+    
+    .btn { background-color: #0284c7; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.2s; }
+    .btn:hover { background-color: #0369a1; }
+    .btn-success { background-color: #16a34a; }
+    .btn-success:hover { background-color: #15803d; }
+    .btn-danger { background-color: #dc2626; }
+    .btn-danger:hover { background-color: #b91c1c; }
+    .btn-warning { background-color: #d97706; color: #fff; }
+    .btn-warning:hover { background-color: #b45309; }
 
-  .data-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
-  .data-table th, .data-table td { padding: 12px 14px; text-align: left; font-size: 12px; border-bottom: 1px solid var(--line); }
-  .data-table th { background: #f8fafc; font-weight: 700; color: var(--ink); }
-  .action-btn { padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; border: 0; cursor: pointer; }
-  .btn-approve { background: #d1fae5; color: #065f46; margin-right: 6px; }
-  .btn-reject { background: #fee2e2; color: #991b1b; }
-</style>
+    /* Connection Banner */
+    #connectionAlert { display: none; background: #7f1d1d; border: 1px solid #f87171; color: #fca5a5; padding: 10px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 600; }
+
+    /* Stats Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .stat-card { background-color: #111827; padding: 18px; border-radius: 10px; border: 1px solid #1f2937; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+    .stat-card h3 { font-size: 0.75rem; text-transform: uppercase; color: #9ca3af; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .stat-card .value { font-size: 1.35rem; font-weight: 700; color: #f9fafb; }
+
+    /* Layout Sections */
+    .grid-2col { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    @media (max-width: 950px) { .grid-2col { grid-template-columns: 1fr; } }
+
+    .card { background-color: #111827; border-radius: 10px; padding: 18px; border: 1px solid #1f2937; margin-bottom: 20px; }
+    .card h2 { font-size: 1.1rem; color: #f3f4f6; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2937; padding-bottom: 8px; }
+
+    /* Form Elements */
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 0.8rem; color: #9ca3af; margin-bottom: 4px; }
+    input, select, textarea { width: 100%; padding: 8px 12px; background-color: #030712; border: 1px solid #374151; border-radius: 6px; color: #fff; font-size: 0.9rem; }
+    textarea { resize: vertical; min-height: 70px; }
+    input:focus, select:focus, textarea:focus { border-color: #38bdf8; outline: none; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #1f2937; font-size: 0.85rem; vertical-align: middle; }
+    th { background-color: #030712; color: #9ca3af; font-weight: 600; }
+    tr:hover { background-color: #1f293750; }
+
+    .badge { padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.7rem; display: inline-block; }
+    .badge-pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-approved { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .badge-rejected { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    .action-btn { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.75rem; margin-right: 3px; }
+
+    /* Proof Image */
+    .proof-link { display: inline-flex; align-items: center; gap: 5px; background: #030712; padding: 3px 6px; border-radius: 4px; border: 1px solid #374151; color: #38bdf8; font-size: 0.7rem; text-decoration: none; margin-top: 3px; }
+    .proof-thumb { width: 20px; height: 20px; object-fit: cover; border-radius: 3px; }
+
+    /* Modals */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-box { background: #111827; border: 1px solid #1f2937; border-radius: 10px; width: 90%; max-width: 750px; max-height: 85vh; overflow-y: auto; padding: 20px; position: relative; }
+    .modal-hdr { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2937; padding-bottom: 10px; margin-bottom: 14px; }
+    .close-btn { background: none; border: none; color: #9ca3af; font-size: 1.4rem; cursor: pointer; }
+
+    #toast { display: none; position: fixed; bottom: 20px; right: 20px; background-color: #22c55e; color: #fff; padding: 10px 16px; border-radius: 6px; font-weight: 600; z-index: 2000; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  </style>
 </head>
 <body>
-<div class="admin-container">
-  <div class="admin-header">
-    <div>
-      <h2>👑 Skysonsolar Admin Portal</h2>
-      <small>Manage platform accounts, recharges, and transactions</small>
-    </div>
-    <button onclick="logoutAdmin()" style="background:#fff; color:var(--blue); border:0; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;">Log Out</button>
-  </div>
 
-  <!-- Statistics Cards -->
-  <div class="stats-grid">
-    <div class="stat-card"><h4>Total Users</h4><div class="val" id="statUsers">0</div></div>
-    <div class="stat-card"><h4>Active Leases</h4><div class="val" id="statLeases">0</div></div>
-    <div class="stat-card"><h4>Total Recharged</h4><div class="val" id="statRecharged">GH₵ 0.00</div></div>
-    <div class="stat-card"><h4>Total Withdrawn</h4><div class="val" id="statWithdrawn">GH₵ 0.00</div></div>
-  </div>
-
-  <!-- Navigation Tabs -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('recharges', this)">Pending Recharges</button>
-    <button class="tab-btn" onclick="switchTab('users', this)">Registered Users</button>
-  </div>
-
-  <!-- Recharges Tab View -->
-  <div id="viewRecharges" class="tab-content">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Username</th>
-          <th>Amount</th>
-          <th>Reference / Channel</th>
-          <th>Status</th>
-          <th>Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="rechargesTableBody">
-        <tr><td colspan="7" style="text-align:center;">Loading recharges...</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Users Tab View -->
-  <div id="viewUsers" class="tab-content" style="display:none;">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Username</th>
-          <th>Email</th>
-          <th>Balance (Withdrawable)</th>
-          <th>Deposit Balance</th>
-          <th>Invite Code</th>
-        </tr>
-      </thead>
-      <tbody id="usersTableBody">
-        <tr><td colspan="6" style="text-align:center;">Loading users...</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<script>
-const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
-
-function getAdminToken() {
-  return localStorage.getItem('skyson_token');
-}
-
-async function fetchAdminStats() {
-  const token = getAdminToken();
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/stats`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (data.success) {
-      document.getElementById('statUsers').textContent = data.stats.totalUsers;
-      document.getElementById('statLeases').textContent = data.stats.totalLeases;
-      document.getElementById('statRecharged').textContent = `GH₵ ${data.stats.totalRecharged.toFixed(2)}`;
-      document.getElementById('statWithdrawn').textContent = `GH₵ ${data.stats.totalWithdrawn.toFixed(2)}`;
+  <!-- Authentication Guard & Auto-Redirect -->
+  <script>
+    function getStoredToken() {
+      return localStorage.getItem('skyson_token') || localStorage.getItem('adminToken') || localStorage.getItem('token') || '';
     }
-  } catch (err) {
-    console.error('Error fetching stats:', err);
-  }
-}
+    if (!getStoredToken()) {
+      window.location.href = 'admin-login.html';
+    }
 
-async function fetchRecharges() {
-  const token = getAdminToken();
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/recharges`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+    // 5-Minute Inactivity Auto-Logout Mechanism
+    let inactivityTimer;
+    const INACTIVITY_TIMEOUT = 5 * 60 * 1000; 
+
+    function logoutAdminSession() {
+      localStorage.removeItem('skyson_token');
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('token');
+      alert('Session expired due to 5 minutes of inactivity.');
+      window.location.href = 'admin-login.html';
+    }
+
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(logoutAdminSession, INACTIVITY_TIMEOUT);
+    }
+
+    window.onload = resetInactivityTimer;
+    document.onmousemove = resetInactivityTimer;
+    document.onkeypress = resetInactivityTimer;
+    document.onclick = resetInactivityTimer;
+    document.onscroll = resetInactivityTimer;
+  </script>
+
+  <div class="container">
+    <header>
+      <h1>
+        <span class="status-dot" id="serverStatusDot" title="Disconnected"></span>
+        SKYSONSOLAR // Master Admin Command Center
+      </h1>
+      <button class="btn btn-danger" onclick="logoutAdmin()">Log Out</button>
+    </header>
+
+    <!-- Connection Error Warning Banner -->
+    <div id="connectionAlert">
+      ⚠️ Warning: Unable to communicate with backend server. Please verify your connection or admin token.
+    </div>
+
+    <!-- Quick Stats Bar -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Registered Users</h3>
+        <div class="value" id="statUsers">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Active Leases</h3>
+        <div class="value" id="statLeases">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Recharged</h3>
+        <div class="value" id="statRecharged">GH₵ 0.00</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Withdrawn</h3>
+        <div class="value" id="statWithdrawn">GH₵ 0.00</div>
+      </div>
+      <div class="stat-card">
+        <h3>Pending Deposit Queue</h3>
+        <div class="value" id="statPendingRecharges">0</div>
+      </div>
+    </div>
+
+    <!-- Recharge Requests Management Queue -->
+    <div class="card">
+      <h2>Recharge (Deposit) Approvals</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>TX ID</th>
+              <th>Username</th>
+              <th>Channel / Reference</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rechargesTableBody">
+            <tr><td colspan="7" style="text-align: center; color: #9ca3af;">Loading deposit requests...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2col">
+      <!-- User Directory & Management -->
+      <div class="card" style="grid-column: span 2;">
+        <h2>User Account Directory & Controls</h2>
+        <div class="form-group" style="margin-bottom: 14px;">
+          <input type="text" id="userSearchBox" placeholder="Search users by username, email, or user ID..." onkeyup="filterUsersTable()" />
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Withdrawable Balance</th>
+                <th>Deposit Balance</th>
+                <th>Invite Code</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="7" style="text-align: center; color: #9ca3af;">Loading system users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2col" style="margin-top: 20px;">
+      <!-- Manual Balance Adjuster -->
+      <div class="card">
+        <h2>Manual Balance Adjustment</h2>
+        <form onsubmit="adjustUserBalance(event)">
+          <div class="form-group">
+            <label>Username or User ID</label>
+            <input type="text" id="adjUsername" placeholder="e.g. jnrsinny or 1" required>
+          </div>
+          <div class="form-group">
+            <label>Balance Type</label>
+            <select id="adjBalanceType">
+              <option value="balance">Withdrawable Balance</option>
+              <option value="deposit_balance">Deposit Balance (Leases)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Action</label>
+            <select id="adjType">
+              <option value="add">Credit (+ Add)</option>
+              <option value="deduct">Deduct (- Subtract)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Amount (GH₵)</label>
+            <input type="number" step="0.01" id="adjAmount" placeholder="0.00" required>
+          </div>
+          <button type="submit" class="btn btn-success" style="width:100%;">Execute Balance Change</button>
+        </form>
+      </div>
+
+      <!-- Reset User Password -->
+      <div class="card">
+        <h2>Reset User Password</h2>
+        <form onsubmit="resetUserPassword(event)">
+          <div class="form-group">
+            <label>Username or User ID</label>
+            <input type="text" id="resetPassInput" placeholder="e.g. jnrsinny" required>
+          </div>
+          <div class="form-group">
+            <label>New Login Password (Min 8 chars)</label>
+            <input type="password" id="newPasswordInput" placeholder="New secure password" required minlength="8">
+          </div>
+          <button type="submit" class="btn" style="width:100%; background:#7c3aed;">Update Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Receipt Viewer Modal -->
+  <div id="imageModal" class="modal" onclick="closeModal('imageModal')">
+    <div class="modal-box" style="max-width: 550px; text-align: center;" onclick="event.stopPropagation()">
+      <div class="modal-hdr">
+        <h3>Payment Proof Receipt</h3>
+        <button class="close-btn" onclick="closeModal('imageModal')">&times;</button>
+      </div>
+      <div style="padding: 10px;">
+        <img id="modalReceiptImg" src="" alt="Proof Receipt" style="max-width: 100%; max-height: 70vh; border-radius: 6px; border: 1px solid #374151;" />
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">Action completed successfully</div>
+
+  <!-- Master Logic Script -->
+  <script>
+    const API_BASE = 'https://skyson-backend-production.up.railway.app';
+
+    let globalUsersList = [];
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2500);
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function openReceiptModal(url) {
+      if (!url) return;
+      const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+      const full = url.startsWith('http') ? url : `${API_BASE}${cleanUrl}`;
+      document.getElementById('modalReceiptImg').src = full;
+      openModal('imageModal');
+    }
+
+    async function apiRequest(endpoint, options = {}) {
+      options.headers = options.headers || {};
+      const token = getStoredToken();
+      if (token) {
+        options.headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const alertBanner = document.getElementById('connectionAlert');
+      try {
+        const res = await fetch(`${API_BASE}${endpoint}`, options);
+        alertBanner.style.display = 'none';
+        return res;
+      } catch (err) {
+        console.error('API Connection Error:', err);
+        alertBanner.style.display = 'block';
+        throw err;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initDashboardData();
+      setInterval(initDashboardData, 12000);
     });
-    const data = await res.json();
-    if (data.success) {
+
+    async function initDashboardData() {
+      loadOverviewStats();
+      loadRecharges();
+      loadUsers();
+    }
+
+    async function loadOverviewStats() {
+      try {
+        const res = await apiRequest('/api/admin/stats');
+        const data = await res.json();
+        if (data.success && data.stats) {
+          const s = data.stats;
+          document.getElementById('statUsers').innerText = s.totalUsers || 0;
+          document.getElementById('statLeases').innerText = s.totalLeases || 0;
+          document.getElementById('statRecharged').innerText = `GH₵ ${parseFloat(s.totalRecharged || 0).toFixed(2)}`;
+          document.getElementById('statWithdrawn').innerText = `GH₵ ${parseFloat(s.totalWithdrawn || 0).toFixed(2)}`;
+        }
+      } catch (e) {}
+    }
+
+    async function loadRecharges() {
       const tbody = document.getElementById('rechargesTableBody');
-      if (data.recharges.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No recharge records found.</td></tr>';
+      try {
+        const res = await apiRequest('/api/admin/recharges');
+        const data = await res.json();
+        const list = data.recharges || [];
+        let pending = 0;
+
+        if (!list.length) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #9ca3af;">No deposit records found.</td></tr>`;
+          document.getElementById('statPendingRecharges').innerText = '0';
+          return;
+        }
+
+        tbody.innerHTML = list.map(tx => {
+          const status = (tx.status || 'pending').toLowerCase();
+          if (status === 'pending') pending++;
+          const badge = status === 'approved' ? 'badge-approved' : (status === 'rejected' ? 'badge-rejected' : 'badge-pending');
+          const channel = tx.channel || 'MoMo';
+          const ref = tx.reference || tx.transaction_id || tx.id;
+          
+          let proofHtml = '';
+          if (tx.proof_image) {
+            const fullUrl = tx.proof_image.startsWith('http') ? tx.proof_image : `${API_BASE}${tx.proof_image}`;
+            proofHtml = `<br><a href="javascript:void(0)" onclick="openReceiptModal('${tx.proof_image}')" class="proof-link"><img src="${fullUrl}" class="proof-thumb" /> View Receipt</a>`;
+          }
+
+          return `
+            <tr>
+              <td>#${tx.id}</td>
+              <td><strong>${tx.username || 'N/A'}</strong></td>
+              <td>${channel} <br><small style="color:#9ca3af">Ref: ${ref}</small>${proofHtml}</td>
+              <td style="color:#22c55e; font-weight:bold;">GH₵ ${parseFloat(tx.amount || 0).toFixed(2)}</td>
+              <td><span class="badge ${badge}">${status.toUpperCase()}</span></td>
+              <td>${new Date(tx.created_at).toLocaleString()}</td>
+              <td>
+                ${status === 'pending' ? `
+                  <button class="action-btn btn-success" onclick="procRecharge(${tx.id}, 'approved')">Approve</button>
+                  <button class="action-btn btn-danger" onclick="procRecharge(${tx.id}, 'rejected')">Reject</button>
+                ` : '<span style="color:#6b7280; font-size:0.75rem;">Completed</span>'}
+              </td>
+            </tr>
+          `;
+        }).join('');
+        document.getElementById('statPendingRecharges').innerText = pending;
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">Failed to load recharges.</td></tr>`;
+      }
+    }
+
+    async function procRecharge(rechargeId, action) {
+      if (!confirm(`Are you sure you want to ${action} recharge #${rechargeId}?`)) return;
+      try {
+        const res = await apiRequest('/api/admin/recharge/action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rechargeId, action })
+        });
+        const data = await res.json();
+        showToast(data.message || 'Success');
+        initDashboardData();
+      } catch (e) { alert('Error processing recharge.'); }
+    }
+
+    async function loadUsers() {
+      try {
+        const res = await apiRequest('/api/admin/users');
+        const data = await res.json();
+        globalUsersList = data.users || [];
+        filterUsersTable();
+      } catch (e) {
+        document.getElementById('usersTableBody').innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">Failed to load users directory.</td></tr>`;
+      }
+    }
+
+    function filterUsersTable() {
+      const q = document.getElementById('userSearchBox').value.trim().toLowerCase();
+      const filtered = globalUsersList.filter(u => {
+        const username = String(u.username || '').toLowerCase();
+        const email = String(u.email || '').toLowerCase();
+        const id = String(u.id || '');
+        return username.includes(q) || email.includes(q) || id.includes(q);
+      });
+      renderUsers(filtered);
+    }
+
+    function renderUsers(users) {
+      const tbody = document.getElementById('usersTableBody');
+      if (!users.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #9ca3af;">No matching users found.</td></tr>`;
         return;
       }
-      tbody.innerHTML = data.recharges.map(r => `
-        <tr>
-          <td>#${r.id}</td>
-          <td><strong>${r.username}</strong></td>
-          <td>GH₵ ${parseFloat(r.amount).toFixed(2)}</td>
-          <td><code>${r.reference || r.channel || 'N/A'}</code></td>
-          <td><span style="color:${r.status === 'approved' ? 'green' : r.status === 'rejected' ? 'red' : 'orange'}; font-weight:700;">${r.status.toUpperCase()}</span></td>
-          <td>${new Date(r.created_at).toLocaleString()}</td>
-          <td>
-            ${r.status === 'pending' ? `
-              <button class="action-btn btn-approve" onclick="processRecharge(${r.id}, 'approved')">Approve</button>
-              <button class="action-btn btn-reject" onclick="processRecharge(${r.id}, 'rejected')">Reject</button>
-            ` : '<em>Completed</em>'}
-          </td>
-        </tr>
-      `).join('');
-    }
-  } catch (err) {
-    console.error('Error fetching recharges:', err);
-  }
-}
 
-async function processRecharge(rechargeId, action) {
-  const token = getAdminToken();
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/recharge/action`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rechargeId, action })
-    });
-    const data = await res.json();
-    alert(data.message);
-    if (data.success) {
-      fetchRecharges();
-      fetchAdminStats();
-    }
-  } catch (err) {
-    console.error('Error processing recharge:', err);
-    alert('Failed to execute action.');
-  }
-}
-
-async function fetchUsers() {
-  const token = getAdminToken();
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/users`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (data.success) {
-      const tbody = document.getElementById('usersTableBody');
-      tbody.innerHTML = data.users.map(u => `
+      tbody.innerHTML = users.map(u => `
         <tr>
           <td>#${u.id}</td>
           <td><strong>${u.username}</strong></td>
-          <td>${u.email}</td>
-          <td>GH₵ ${parseFloat(u.balance).toFixed(2)}</td>
-          <td>GH₵ ${parseFloat(u.deposit_balance).toFixed(2)}</td>
+          <td>${u.email || 'N/A'}</td>
+          <td>GH₵ ${parseFloat(u.balance || 0).toFixed(2)}</td>
+          <td>GH₵ ${parseFloat(u.deposit_balance || 0).toFixed(2)}</td>
           <td><code>${u.invitation_code || 'N/A'}</code></td>
+          <td>${new Date(u.created_at).toLocaleString()}</td>
         </tr>
       `).join('');
     }
-  } catch (err) {
-    console.error('Error fetching users:', err);
-  }
-}
 
-function switchTab(tab, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+    async function adjustUserBalance(e) {
+      e.preventDefault();
+      const username = document.getElementById('adjUsername').value.trim();
+      const balanceType = document.getElementById('adjBalanceType').value;
+      const type = document.getElementById('adjType').value;
+      const amount = parseFloat(document.getElementById('adjAmount').value);
 
-  document.getElementById('viewRecharges').style.display = tab === 'recharges' ? 'block' : 'none';
-  document.getElementById('viewUsers').style.display = tab === 'users' ? 'block' : 'none';
+      try {
+        const res = await apiRequest('/api/admin/users/balance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, balanceType, type, amount })
+        });
+        const data = await res.json();
+        showToast(data.message || 'Balance adjusted successfully');
+        if (data.success) {
+          document.getElementById('adjUsername').value = '';
+          document.getElementById('adjAmount').value = '';
+          initDashboardData();
+        } else {
+          alert(data.message || 'Failed to adjust balance.');
+        }
+      } catch (e) { alert('Server error adjusting balance.'); }
+    }
 
-  if (tab === 'recharges') fetchRecharges();
-  if (tab === 'users') fetchUsers();
-}
+    async function resetUserPassword(e) {
+      e.preventDefault();
+      const username = document.getElementById('resetPassInput').value.trim();
+      const newPassword = document.getElementById('newPasswordInput').value.trim();
 
-function logoutAdmin() {
-  localStorage.removeItem('skyson_token');
-  window.location.href = 'index.html';
-}
+      if (newPassword.length < 8) {
+        alert('New password must be at least 8 characters.');
+        return;
+      }
 
-window.addEventListener('DOMContentLoaded', () => {
-  if (!getAdminToken()) {
-    window.location.href = 'index.html';
-    return;
-  }
-  fetchAdminStats();
-  fetchRecharges();
-});
-</script>
+      if (!confirm(`Are you sure you want to update the password for "${username}"?`)) return;
+
+      try {
+        const res = await apiRequest('/api/admin/users/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, newPassword })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message || 'Password updated successfully');
+          document.getElementById('resetPassInput').value = '';
+          document.getElementById('newPasswordInput').value = '';
+        } else {
+          alert(data.message || 'Failed to update password.');
+        }
+      } catch (e) { alert('Server error updating password.'); }
+    }
+
+    function logoutAdmin() {
+      localStorage.removeItem('skyson_token');
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('token');
+      window.location.href = 'admin-login.html';
+    }
+  </script>
 </body>
 </html>
