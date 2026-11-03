@@ -6,6 +6,114 @@
 <title>Skysonsolar — Home</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  /* Announcement Ticker Styling */
+  .announcement-bar {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin: -6px 16px 14px 16px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow);
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+  }
+  .announcement-icon {
+    color: var(--blue);
+    font-size: 16px;
+    animation: pulseIcon 1.5s infinite ease-in-out;
+  }
+  @keyframes pulseIcon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+  .announcement-ticker {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+  }
+  .ticker-text {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marqueeTicker 22s linear infinite;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  @keyframes marqueeTicker {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-100%, 0); }
+  }
+
+  /* Beautiful Video Showcase Card Styling */
+  .video-showcase-card {
+    background: linear-gradient(135deg, #f8fbff 0%, #edf4ff 100%);
+    border: 1px solid #d0e3ff;
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(0, 123, 255, 0.08);
+  }
+  .video-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .video-header h2 {
+    font-size: 16px;
+    font-weight: 850;
+    color: var(--blue);
+    margin: 0;
+  }
+  .video-container {
+    position: relative;
+    width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    aspect-ratio: 16/9;
+  }
+  .video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .video-description {
+    margin-top: 14px;
+  }
+  .video-description p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .video-features-pill {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .video-features-pill span {
+    background: #ffffff;
+    border: 1px solid #cce2ff;
+    color: var(--blue);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  }
+</style>
 </head>
 <body>
 <div class="app">
@@ -29,7 +137,7 @@
   </header>
 
   <main class="page">
-    <!-- Hero Banner with Rotating Images (Sun removed) -->
+    <!-- Hero Banner with Rotating Images -->
     <div class="hero">
       <div class="hero-slides">
         <img class="active" src="solar-1.jpg" alt="Solar 1">
@@ -46,6 +154,16 @@
       </div>
     </div>
 
+    <!-- Announcement Speaker Ticker Bar -->
+    <div class="announcement-bar">
+      <div class="announcement-icon"><i class="fa-solid fa-bullhorn"></i></div>
+      <div class="announcement-ticker">
+        <div class="ticker-text">
+          🎉 Welcome to Skysonsolar! Powering your financial freedom with sustainable clean energy solutions. Lease equipment, earn daily profits, spin the Lucky Draw for amazing rewards, and build your referral team today! ☀️🚀
+        </div>
+      </div>
+    </div>
+
     <!-- Live Balance Stats -->
     <div class="card stats">
       <div class="stat"><div class="stat-label">Total Balance (withdrawable)</div><div class="stat-value" id="balanceDisplay">GH₵ 0.00</div></div>
@@ -54,7 +172,7 @@
       <div class="stat"><div class="stat-label">Total Deposit Amount (lease only)</div><div class="stat-value small" id="depositDisplay">GH₵ 0.00</div></div>
     </div>
 
-    <!-- Shortcuts Grid (Bonus changed to Lucky Draw, Telegram updated with FontAwesome brand icon) -->
+    <!-- Shortcuts Grid -->
     <div class="card shortcuts">
       <button class="shortcut" onclick="location.href='recharge.html'"><span class="bubble">▣</span>Recharge</button>
       <button class="shortcut" onclick="location.href='withdraw.html'"><span class="bubble green">⇧</span>Withdraw</button>
@@ -66,7 +184,7 @@
       <button class="shortcut" onclick="window.open('https://t.me/+Cyig_WpOo5k1NzBk','_blank')"><span class="bubble purple"><i class="fa-brands fa-telegram"></i></span>Telegram</button>
     </div>
 
-    <!-- Lucky Draw Banner (Replaced Bonus Banner) -->
+    <!-- Lucky Draw Banner -->
     <div class="bonus-banner">
       <div class="gift"><i class="fa-solid fa-gift" style="font-size: 24px; color: #ff9800;"></i></div>
       <div style="flex:1">
@@ -79,12 +197,26 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="section-head">
-        <h2>Recent Activity</h2>
-        <button class="btn outline" onclick="location.href='transaction.html'">View all →</button>
+    <!-- Beautiful Solar Installation Video Showcase Card -->
+    <div class="video-showcase-card">
+      <div class="video-header">
+        <i class="fa-solid fa-solar-panel" style="color: var(--blue); font-size: 18px;"></i>
+        <h2>Solar Energy Installation & Cost Savings</h2>
       </div>
-      <div id="homeActivity" class="empty">Your activity will appear here.</div>
+      <div class="video-container">
+        <video controls autoplay muted loop playsinline>
+          <source src="sky.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="video-description">
+        <p>Discover how professional solar panel installations harness limitless sunlight to power your home or business efficiently. By switching to clean solar power, you slash your monthly electricity bills by up to 80%, protect yourself against power outages, and secure long-term financial freedom.</p>
+        <div class="video-features-pill">
+          <span>⚡ Massive Cost Reduction</span>
+          <span>☀️ 100% Clean Energy</span>
+          <span>🛡️ Maintenance Free</span>
+        </div>
+      </div>
     </div>
   </main>
 
