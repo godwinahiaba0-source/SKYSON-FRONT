@@ -91,6 +91,14 @@
   font-weight: 700;
   color: var(--ink);
 }
+
+.btn:disabled {
+  background: #94a3b8 !important;
+  color: #e2e8f0 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  opacity: 0.7;
+}
 </style>
 </head>
 <body>
@@ -215,11 +223,12 @@ async function fetchWithdrawData() {
     }
   } catch(e) {}
 
-  // 2. Fetch fresh card and balance data from backend
+  // 2. Fetch fresh card, balance, and transaction data from backend
   try {
-    const [dashRes, cardRes] = await Promise.all([
+    const [dashRes, cardRes, txRes] = await Promise.all([
       fetch(`${API_BASE_URL}/api/user/dashboard`, { headers: { 'Authorization': `Bearer ${token}` } }),
-      fetch(`${API_BASE_URL}/api/user/bank-card`, { headers: { 'Authorization': `Bearer ${token}` } }).catch(() => null)
+      fetch(`${API_BASE_URL}/api/user/bank-card`, { headers: { 'Authorization': `Bearer ${token}` } }).catch(() => null),
+      fetch(`${API_BASE_URL}/api/user/transactions`, { headers: { 'Authorization': `Bearer ${token}` } }).catch(() => null)
     ]);
 
     if (dashRes.ok) {
@@ -232,12 +241,31 @@ async function fetchWithdrawData() {
       const fetchedCard = Array.isArray(cardData) ? cardData[0] : (cardData.card || cardData);
       if (fetchedCard && (fetchedCard.account_number || fetchedCard.phone_number)) {
         activeCard = fetchedCard;
-        // Ensure standard field naming
         if (!activeCard.account_number) activeCard.account_number = activeCard.phone_number;
         if (!activeCard.channel) activeCard.channel = activeCard.bank_name || 'MTN Mobile Money';
         
         localStorage.setItem('userBankCard', JSON.stringify(activeCard));
         renderCardInfo(activeCard);
+      }
+    }
+
+    // 3. Check for pending withdrawals to lock/disable button
+    if (txRes && txRes.ok) {
+      const txData = await txRes.json();
+      const records = txData.records || [];
+      const hasPendingWithdrawal = records.some(r => {
+        const type = (r.type || '').toLowerCase();
+        const status = (r.status || '').toLowerCase();
+        return (type === 'withdraw' || type === 'withdrawal') && status === 'pending';
+      });
+
+      const submitBtn = document.getElementById('submit-btn');
+      if (hasPendingWithdrawal) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'WITHDRAWAL PENDING';
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'SUBMIT WITHDRAWAL';
       }
     }
   } catch (e) {
