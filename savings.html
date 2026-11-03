@@ -314,12 +314,14 @@ async function handleSubmit() {
       body: JSON.stringify({ planId: selectedPlan.id, amount })
     });
 
-    const contentType = res.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      throw new Error("Server route /api/fund/invest is not active or missing from backend.");
+    const textResponse = await res.text();
+    let data;
+    try {
+      data = JSON.parse(textResponse);
+    } catch (e) {
+      throw new Error(`Server error (HTML received instead of JSON). Status: ${res.status}`);
     }
 
-    const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Investment failed.');
 
     alert('Investment submitted successfully!');
