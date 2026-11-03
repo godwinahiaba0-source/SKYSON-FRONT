@@ -310,12 +310,14 @@ async function updateLoginPassword() {
       body: JSON.stringify({ currentPassword, newPassword })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to update password.');
+    if (!res.ok) throw new Error(data.message || data.error || 'Failed to update password.');
 
-    msg.textContent = 'Login password updated successfully!';
+    msg.textContent = data.message || 'Login password updated successfully!';
     msg.className = 'modal-msg success';
+    document.getElementById('currLoginPass').value = '';
+    document.getElementById('newLoginPass').value = '';
   } catch (err) {
-    msg.textContent = 'Error updating password.';
+    msg.textContent = err.message || 'Error updating password.';
     msg.className = 'modal-msg error';
   }
 }
@@ -339,12 +341,14 @@ async function updateFundPassword() {
       body: JSON.stringify({ currentPassword, newFundPassword })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to update fund password.');
+    if (!res.ok) throw new Error(data.message || data.error || 'Failed to update fund password.');
 
-    msg.textContent = 'Fund password updated successfully!';
+    msg.textContent = data.message || 'Fund password updated successfully!';
     msg.className = 'modal-msg success';
+    document.getElementById('currFundPass').value = '';
+    document.getElementById('newFundPass').value = '';
   } catch (err) {
-    msg.textContent = 'Error updating fund password.';
+    msg.textContent = err.message || 'Error updating fund password.';
     msg.className = 'modal-msg error';
   }
 }
