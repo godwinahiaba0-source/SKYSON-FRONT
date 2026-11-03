@@ -266,7 +266,7 @@ async function loadFundSummary() {
   if (!token) { window.location.href = 'index.html'; return; }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/fund/summary`, {
+    const res = await fetch(`${API_BASE_URL}/api/user/fund/summary`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
@@ -308,7 +308,7 @@ async function handleSubmit() {
 
   const token = localStorage.getItem('skyson_token');
   try {
-    const res = await fetch(`${API_BASE_URL}/api/fund/invest`, {
+    const res = await fetch(`${API_BASE_URL}/api/user/fund/invest`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ planId: selectedPlan.id, amount })
