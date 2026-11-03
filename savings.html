@@ -210,7 +210,7 @@
   <!-- Bottom Navigation Bar -->
   <nav class="bottom-nav">
     <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
-    <button class="nav-btn active" onclick="location.href='yf-life fund.html'"><span class="nav-icon">⬡</span>Savings</button>
+    <button class="nav-btn active" onclick="location.href='savings.html'"><span class="nav-icon">⬡</span>Savings</button>
     <button class="nav-btn" onclick="location.href='team.html'"><span class="nav-icon">♟</span>Team</button>
     <button class="nav-btn" onclick="location.href='Plan.html'"><span class="nav-icon">▤</span>Plan</button>
     <button class="nav-btn" onclick="location.href='account.html'"><span class="nav-icon">♙</span>Account</button>
@@ -269,13 +269,18 @@ async function loadFundSummary() {
     const res = await fetch(`${API_BASE_URL}/api/fund/summary`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    if (!res.ok) return;
+    
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      console.warn("Backend route /api/fund/summary not returning JSON yet.");
+      return;
+    }
+
     const data = await res.json();
     document.getElementById('active-invested').textContent = `GH₵ ${(data.totalActive || 0).toFixed(2)}`;
     document.getElementById('todays-earnings').textContent = `GH₵ ${(data.todayEarnings || 0).toFixed(2)}`;
   } catch (e) {
-    document.getElementById('active-invested').textContent = 'GH₵ 0.00';
-    document.getElementById('todays-earnings').textContent = 'GH₵ 0.00';
+    console.error('Fund summary load error:', e);
   }
 }
 
@@ -285,10 +290,6 @@ async function openRecordsModal() {
   const token = localStorage.getItem('skyson_token');
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/fund/summary`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    // This trigger ensures background completion check runs, and summary data updates
     loadFundSummary();
     container.innerHTML = `<div style="text-align: center; color: var(--muted); padding: 20px;">Active investments are running and will auto-credit upon completion.</div>`;
   } catch (err) {
@@ -312,6 +313,12 @@ async function handleSubmit() {
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ planId: selectedPlan.id, amount })
     });
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      throw new Error("Server route /api/fund/invest is not active or missing from backend.");
+    }
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Investment failed.');
 
