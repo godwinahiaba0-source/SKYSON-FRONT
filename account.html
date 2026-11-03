@@ -137,11 +137,6 @@
         <div class="menu-main"><strong>Customer Support</strong><small>Get help and contact us on Telegram</small></div>
         <span style="color:var(--muted)">›</span>
       </div>
-      <div class="menu-row" onclick="openAboutModal()">
-        <div class="menu-icon">ℹ️</div>
-        <div class="menu-main"><strong>About Us</strong><small>Learn more about Skysonsolar platform</small></div>
-        <span style="color:var(--muted)">›</span>
-      </div>
       <div class="menu-row" onclick="logoutUser()">
         <div class="menu-icon" style="background:#ffebee;color:#d32f2f">⇥</div>
         <div class="menu-main"><strong style="color:#d32f2f">Log Out</strong><small>Return to login screen</small></div>
@@ -191,23 +186,6 @@
       </div>
 
       <div id="secModalMsg" class="modal-msg"></div>
-    </div>
-  </div>
-
-  <!-- About Us Modal -->
-  <div class="modal-overlay" id="aboutModal">
-    <div class="modal-card">
-      <div class="modal-title">
-        <span>About Our Company</span>
-        <button class="close-btn" onclick="closeAboutModal()">✕</button>
-      </div>
-      <div style="font-size: 12px; color: var(--ink); line-height: 1.6; font-weight: 500;">
-        <p style="margin-bottom: 12px; font-weight: 700; color: var(--blue);">A BRIEF INFORMATION ABOUT OUR COMPANY</p>
-        <p style="margin-bottom: 10px;"><strong>SKYSONSOLAR COMPANY LTD.</strong> was founded in 1997, with the aim of production, supplying, and maintenance of solar panels for generating electricity power.</p>
-        <p style="font-size: 11px; color: var(--muted); text-align: center; margin-top: 16px; border-top: 1px solid var(--line); padding-top: 10px;">
-          Clean Energy · Green Future © 2026
-        </p>
-      </div>
     </div>
   </div>
 
@@ -265,14 +243,6 @@ function openSecurityModal() {
 
 function closeSecurityModal() {
   document.getElementById('securityModal').style.display = 'none';
-}
-
-function openAboutModal() {
-  document.getElementById('aboutModal').style.display = 'flex';
-}
-
-function closeAboutModal() {
-  document.getElementById('aboutModal').style.display = 'none';
 }
 
 function switchSecTab(tab) {
