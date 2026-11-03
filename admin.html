@@ -265,8 +265,6 @@
     </div>
 
     <!-- Referral Metrics & Downline Viewer -->
-    <!-- Referral Metrics & Downline Viewer -->
-    <!-- Referral Metrics & Downline Viewer -->
     <div class="card">
       <h2>User Referral Network Statistics</h2>
       <div class="table-wrap">
@@ -729,7 +727,7 @@
     function renderReferrals(users) {
       const tbody = document.getElementById('referralsTableBody');
       if (!users.length) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #9ca3af;">No referral records found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #9ca3af;">No referral records found.</td></tr>`;
         return;
       }
 
@@ -747,7 +745,9 @@
             <td><span style="color:#38bdf8; font-weight:600;">${invitedBy}</span></td>
             <td>GH₵ ${parseFloat(u.balance || 0).toFixed(2)}</td>
             <td>
-              <button class="action-btn btn" style="background:#7c3aed; margin-right:4px;" onclick="viewTree(${id}, '${username}')">Tree</button>
+              <button class="action-btn btn" style="background:#7c3aed;" onclick="viewTree(${id}, '${username}')">Tree View</button>
+            </td>
+            <td>
               <button class="action-btn btn-success" onclick="loginAsUser(${id}, '${username}')">Login as User</button>
             </td>
           </tr>
@@ -798,7 +798,7 @@ async function userAction(userId, action) {
 
     async function viewTree(userId, username) {
       document.getElementById('treeModalTitle').innerText = `Referral Downline Tree for ${username} (#${userId})`;
-      document.getElementById('treeModalContent').innerHTML = `<p style="color:#9ca3af; text-align:center; padding:20px;">Fetching network...</p>`;
+      document.getElementById('treeModalContent').innerHTML = `<p style="color:#9ca3af; text-align:center; padding:20px;">Fetching downline network...</p>`;
       openModal('treeModal');
 
       try {
