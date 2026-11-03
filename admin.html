@@ -265,6 +265,7 @@
     </div>
 
     <!-- Referral Metrics & Downline Viewer -->
+    <!-- Referral Metrics & Downline Viewer -->
     <div class="card">
       <h2>User Referral Network Statistics</h2>
       <div class="table-wrap">
@@ -273,13 +274,14 @@
             <tr>
               <th>User ID</th>
               <th>Username</th>
+              <th>Team Count</th>
               <th>Invited By</th>
               <th>Account Balance</th>
               <th>Network Tree</th>
             </tr>
           </thead>
           <tbody id="referralsTableBody">
-            <tr><td colspan="5" style="text-align: center; color: #9ca3af;">Loading referral metrics...</td></tr>
+            <tr><td colspan="6" style="text-align: center; color: #9ca3af;">Loading referral metrics...</td></tr>
           </tbody>
         </table>
       </div>
@@ -725,19 +727,21 @@
     function renderReferrals(users) {
       const tbody = document.getElementById('referralsTableBody');
       if (!users.length) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #9ca3af;">No referral records found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #9ca3af;">No referral records found.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = users.map(u => {
         const id = u.id;
         const username = u.username || 'N/A';
+        const teamCount = u.team_count || 0;
         const invitedBy = u.invited_by_username || 'Direct / None';
 
         return `
           <tr>
             <td>#${id}</td>
             <td><strong>${username}</strong></td>
+            <td><span class="badge badge-approved" style="font-size:0.8rem;">${teamCount} Members</span></td>
             <td><span style="color:#38bdf8; font-weight:600;">${invitedBy}</span></td>
             <td>GH₵ ${parseFloat(u.balance || 0).toFixed(2)}</td>
             <td>
