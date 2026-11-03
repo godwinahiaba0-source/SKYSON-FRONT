@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skysonsolar — Administrator Panel</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background-color: #0b0f19; color: #f1f5f9; padding: 20px; min-height: 100vh; }
+    .container { max-width: 1450px; margin: 0 auto; }
+    
+    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid #1e293b; margin-bottom: 20px; }
+    h1 { font-size: 1.5rem; color: #38bdf8; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; background-color: #ef4444; display: inline-block; }
+    .status-dot.online { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
+    
+    .btn { background-color: #0284c7; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.2s; }
+    .btn:hover { background-color: #0369a1; }
+    .btn-success { background-color: #16a34a; }
+    .btn-success:hover { background-color: #15803d; }
+    .btn-danger { background-color: #dc2626; }
+    .btn-danger:hover { background-color: #b91c1c; }
+    .btn-warning { background-color: #d97706; color: #fff; }
+    .btn-warning:hover { background-color: #b45309; }
+
+    /* Connection Banner */
+    #connectionAlert { display: none; background: #7f1d1d; border: 1px solid #f87171; color: #fca5a5; padding: 10px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 600; }
+
+    /* Stats Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .stat-card { background-color: #111827; padding: 18px; border-radius: 10px; border: 1px solid #1f2937; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+    .stat-card h3 { font-size: 0.75rem; text-transform: uppercase; color: #9ca3af; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .stat-card .value { font-size: 1.35rem; font-weight: 700; color: #f9fafb; }
+
+    /* Layout Sections */
+    .grid-2col { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    @media (max-width: 950px) { .grid-2col { grid-template-columns: 1fr; } }
+
+    .card { background-color: #111827; border-radius: 10px; padding: 18px; border: 1px solid #1f2937; margin-bottom: 20px; }
+    .card h2 { font-size: 1.1rem; color: #f3f4f6; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2937; padding-bottom: 8px; }
+
+    /* Form Elements */
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 0.8rem; color: #9ca3af; margin-bottom: 4px; }
+    input, select, textarea { width: 100%; padding: 8px 12px; background-color: #030712; border: 1px solid #374151; border-radius: 6px; color: #fff; font-size: 0.9rem; }
+    textarea { resize: vertical; min-height: 70px; }
+    input:focus, select:focus, textarea:focus { border-color: #38bdf8; outline: none; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #1f2937; font-size: 0.85rem; vertical-align: middle; }
+    th { background-color: #030712; color: #9ca3af; font-weight: 600; }
+    tr:hover { background-color: #1f293750; }
+
+    .badge { padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.7rem; display: inline-block; }
+    .badge-pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-approved { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .badge-rejected { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-deleted { background: rgba(100, 116, 139, 0.15); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.3); }
+
+    .action-btn { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.75rem; margin-right: 3px; margin-bottom: 3px; }
+    .copy-btn { background: #1e293b; border: 1px solid #334155; color: #38bdf8; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; cursor: pointer; margin-left: 5px; }
+    .copy-btn:hover { background: #334155; }
+
+    /* Proof Image */
+    .proof-link { display: inline-flex; align-items: center; gap: 5px; background: #030712; padding: 3px 6px; border-radius: 4px; border: 1px solid #374151; color: #38bdf8; font-size: 0.7rem; text-decoration: none; margin-top: 3px; }
+    .proof-thumb { width: 20px; height: 20px; object-fit: cover; border-radius: 3px; }
+
+    /* Modals */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-box { background: #111827; border: 1px solid #1f2937; border-radius: 10px; width: 90%; max-width: 750px; max-height: 85vh; overflow-y: auto; padding: 20px; position: relative; }
+    .modal-hdr { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2937; padding-bottom: 10px; margin-bottom: 14px; }
+    .close-btn { background: none; border: none; color: #9ca3af; font-size: 1.4rem; cursor: pointer; }
+
+    #toast { display: none; position: fixed; bottom: 20px; right: 20px; background-color: #22c55e; color: #fff; padding: 10px 16px; border-radius: 6px; font-weight: 600; z-index: 2000; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  </style>
+</head>
+<body>
+
+  <!-- Authentication Guard & Auto-Redirect -->
+  <script>
+    function getStoredToken() {
+      return localStorage.getItem('skyson_token') || localStorage.getItem('adminToken') || localStorage.getItem('token') || '';
+    }
+    if (!getStoredToken()) {
+      window.location.href = 'godwin-genius.html';
+    }
+
+    // 5-Minute Inactivity Auto-Logout Mechanism
+    let inactivityTimer;
+    const INACTIVITY_TIMEOUT = 5 * 60 * 1000; 
+
+    function logoutAdminSession() {
+      localStorage.removeItem('skyson_token');
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('token');
+      alert('Session expired due to 5 minutes of inactivity.');
+      window.location.href = 'godwin-genius.html';
+    }
+
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(logoutAdminSession, INACTIVITY_TIMEOUT);
+    }
+
+    window.onload = resetInactivityTimer;
+    document.onmousemove = resetInactivityTimer;
+    document.onkeypress = resetInactivityTimer;
+    document.onclick = resetInactivityTimer;
+    document.onscroll = resetInactivityTimer;
+  </script>
+
+  <div class="container">
+    <header>
+      <h1>
+        <span class="status-dot" id="serverStatusDot" title="Disconnected"></span>
+        SKYSONSOLAR // Master Admin Command Center
+      </h1>
+      <button class="btn btn-danger" onclick="logoutAdmin()">Log Out</button>
+    </header>
+
+    <!-- Connection Error Warning Banner -->
+    <div id="connectionAlert">
+      ⚠️ Warning: Unable to communicate with backend server. Please verify your connection or admin token.
+    </div>
+
+    <!-- Quick Stats Bar -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Registered Users</h3>
+        <div class="value" id="statUsers">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Active Leases</h3>
+        <div class="value" id="statLeases">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Recharged</h3>
+        <div class="value" id="statRecharged">GH₵ 0.00</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Withdrawn</h3>
+        <div class="value" id="statWithdrawn">GH₵ 0.00</div>
+      </div>
+      <div class="stat-card">
+        <h3>Pending Deposit Queue</h3>
+        <div class="value" id="statPendingRecharges">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Pending Withdrawals</h3>
+        <div class="value" id="statPendingWithdrawals">0</div>
+      </div>
+    </div>
+
+    <!-- Recharge Requests Management Queue -->
+    <div class="card">
+      <h2>Recharge (Deposit) Approvals</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>TX ID</th>
+              <th>Username</th>
+              <th>Channel / Reference</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rechargesTableBody">
+            <tr><td colspan="7" style="text-align: center; color: #9ca3af;">Loading deposit requests...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Withdrawal Requests Management Queue -->
+    <div class="card">
+      <h2>Withdrawal Approvals</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>TX ID</th>
+              <th>Username</th>
+              <th>Channel / Account / Name</th>
+              <th>Amount</th>
+              <th>Fee (10%)</th>
+              <th>Net Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="withdrawalsTableBody">
+            <tr><td colspan="9" style="text-align: center; color: #9ca3af;">Loading withdrawal requests...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bonus Code Management & Generation Section -->
+    <div class="card">
+      <h2>Bonus Code Management & Generation</h2>
+      <div class="grid-2col" style="align-items: start;">
+        <form onsubmit="createBonusCode(event)">
+          <div class="form-group">
+            <label>Bonus Code</label>
+            <input type="text" id="newBonusCode" placeholder="e.g. SKYBONUS50" required style="text-transform: uppercase;">
+          </div>
+          <div class="form-group">
+            <label>Bonus Amount (GH₵)</label>
+            <input type="number" step="0.01" id="newBonusAmount" placeholder="0.00" required>
+          </div>
+          <button type="submit" class="btn btn-success" style="width:100%;">Generate Bonus Code</button>
+        </form>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Claimed By</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="bonusCodesTableBody">
+              <tr><td colspan="5" style="text-align: center; color: #9ca3af;">Loading bonus codes...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Account Directory & Controls -->
+    <div class="card">
+      <h2>User Account Directory & Controls</h2>
+      <div class="form-group" style="margin-bottom: 14px;">
+        <input type="text" id="userSearchBox" placeholder="Search users by username, email, or user ID..." onkeyup="filterUsersTable()" />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Withdrawable Balance</th>
+              <th>Deposit Balance</th>
+              <th>Status</th>
+              <th>Withdrawal Control</th>
+              <th>Account Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="8" style="text-align: center; color: #9ca3af;">Loading system users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Referral Metrics & Downline Viewer -->
+    <div class="card">
+      <h2>User Referral Network Statistics</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Username</th>
+              <th>Team Count</th>
+              <th>Invited By</th>
+              <th>Account Balance</th>
+              <th>Network Tree</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="referralsTableBody">
+            <tr><td colspan="7" style="text-align: center; color: #9ca3af;">Loading referral metrics...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Control Sidebar Tools Grid -->
+    <div class="grid-2col" style="margin-top: 20px;">
+      <!-- Manual Balance Adjuster -->
+      <div class="card">
+        <h2>Manual Balance Adjustment</h2>
+        <form onsubmit="adjustUserBalance(event)">
+          <div class="form-group">
+            <label>Username or User ID</label>
+            <input type="text" id="adjUsername" placeholder="e.g. jnrsinny or 1" required>
+          </div>
+          <div class="form-group">
+            <label>Balance Type</label>
+            <select id="adjBalanceType">
+              <option value="balance">Withdrawable Balance</option>
+              <option value="deposit_balance">Deposit Balance (Leases)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Action</label>
+            <select id="adjType">
+              <option value="add">Credit (+ Add)</option>
+              <option value="deduct">Deduct (- Subtract)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Amount (GH₵)</label>
+            <input type="number" step="0.01" id="adjAmount" placeholder="0.00" required>
+          </div>
+          <button type="submit" class="btn btn-success" style="width:100%;">Execute Balance Change</button>
+        </form>
+      </div>
+
+      <!-- Reset User Password & Reset Bound Payment Account -->
+      <div>
+        <div class="card">
+          <h2>Reset User Password</h2>
+          <form onsubmit="resetUserPassword(event)">
+            <div class="form-group">
+              <label>Username or User ID</label>
+              <input type="text" id="resetPassInput" placeholder="e.g. jnrsinny" required>
+            </div>
+            <div class="form-group">
+              <label>New Login Password (Min 8 chars)</label>
+              <input type="text" id="newPasswordInput" placeholder="Enter new plain text password" required minlength="8">
+            </div>
+            <button type="submit" class="btn" style="width:100%; background:#7c3aed;">Update Password</button>
+          </form>
+        </div>
+
+        <!-- Reset Bound Payment Account -->
+        <div class="card">
+          <h2>Reset Bound Payment Account</h2>
+          <form onsubmit="resetBoundAccount(event)">
+            <div class="form-group">
+              <label>Username or User ID</label>
+              <input type="text" id="resetAccountInput" placeholder="e.g. jnrsinny or 1" required>
+            </div>
+            <button type="submit" class="btn btn-warning" style="width:100%;">Clear Bound Channel Info</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Referral Tree Modal -->
+  <div id="treeModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-hdr">
+        <h3 id="treeModalTitle" style="color: #38bdf8; font-size: 1.1rem;">Downline Referral Tree</h3>
+        <button class="close-btn" onclick="closeModal('treeModal')">&times;</button>
+      </div>
+      <div id="treeModalContent">
+        <p style="color: #9ca3af; text-align: center; padding: 20px;">Fetching downline network...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Receipt Viewer Modal -->
+  <div id="imageModal" class="modal" onclick="closeModal('imageModal')">
+    <div class="modal-box" style="max-width: 550px; text-align: center;" onclick="event.stopPropagation()">
+      <div class="modal-hdr">
+        <h3>Payment Proof Receipt</h3>
+        <button class="close-btn" onclick="closeModal('imageModal')">&times;</button>
+      </div>
+      <div style="padding: 10px;">
+        <img id="modalReceiptImg" src="" alt="Proof Receipt" style="max-width: 100%; max-height: 70vh; border-radius: 6px; border: 1px solid #374151;" />
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">Action completed successfully</div>
+
+  <!-- Master Logic Script -->
+  <script>
+    const API_BASE = 'https://skyson-backend-production.up.railway.app';
+
+    let globalUsersList = [];
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2500);
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(`Copied: ${text}`);
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function openReceiptModal(url) {
+      if (!url) return;
+      const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+      const full = url.startsWith('http') ? url : `${API_BASE}${cleanUrl}`;
+      document.getElementById('modalReceiptImg').src = full;
+      openModal('imageModal');
+    }
+
+    async function apiRequest(endpoint, options = {}) {
+      options.headers = options.headers || {};
+      const token = getStoredToken();
+      if (token) {
+        options.headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const alertBanner = document.getElementById('connectionAlert');
+      try {
+        const res = await fetch(`${API_BASE}${endpoint}`, options);
+        alertBanner.style.display = 'none';
+        return res;
+      } catch (err) {
+        console.error('API Connection Error:', err);
+        alertBanner.style.display = 'block';
+        throw err;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initDashboardData();
+      setInterval(initDashboardData, 12000);
+    });
+
+    async function initDashboardData() {
+      loadOverviewStats();
+      loadRecharges();
+      loadWithdrawals();
+      loadBonusCodes();
+      loadUsers();
+    }
+
+    async function loadOverviewStats() {
+      try {
+        const res = await apiRequest('/api/admin/stats');
+        const data = await res.json();
+        if (data.success && data.stats) {
+          const s = data.stats;
+          document.getElementById('statUsers').innerText = s.totalUsers || 0;
+          document.getElementById('statLeases').innerText = s.totalLeases || 0;
+          document.getElementById('statRecharged').innerText = `GH₵ ${parseFloat(s.totalRecharged || 0).toFixed(2)}`;
+          document.getElementById('statWithdrawn').innerText = `GH₵ ${parseFloat(s.totalWithdrawn || 0).toFixed(2)}`;
+        }
+      } catch (e) {}
+    }
+
+    async function loadRecharges() {
+      const tbody = document.getElementById('rechargesTableBody');
+      try {
+        const res = await apiRequest('/api/admin/recharges');
+        const data = await res.json();
+        const list = data.recharges || [];
+        let pending = 0;
+
+        if (!list.length) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #9ca3af;">No deposit records found.</td></tr>`;
+          document.getElementById('statPendingRecharges').innerText = '0';
+          return;
+        }
+
+        tbody.innerHTML = list.map(tx => {
+          const status = (tx.status || 'pending').toLowerCase();
+          if (status === 'pending') pending++;
+          const badge = status === 'approved' ? 'badge-approved' : (status === 'rejected' ? 'badge-rejected' : 'badge-pending');
+          const channel = tx.channel || 'MoMo';
+          const ref = tx.reference || tx.transaction_id || tx.id;
+          
+          let proofHtml = '';
+          if (tx.proof_image) {
+            const fullUrl = tx.proof_image.startsWith('http') ? tx.proof_image : `${API_BASE}${tx.proof_image}`;
+            proofHtml = `<br><a href="javascript:void(0)" onclick="openReceiptModal('${tx.proof_image}')" class="proof-link"><img src="${fullUrl}" class="proof-thumb" /> View Receipt</a>`;
+          }
+
+          return `
+            <tr>
+              <td>#${tx.id}</td> 
+              <td><strong>${tx.username || 'N/A'}</strong></td>
+              <td>${channel} <br><small style="color:#9ca3af">Ref: ${ref}</small>${proofHtml}</td>
+              <td style="color:#22c55e; font-weight:bold;">GH₵ ${parseFloat(tx.amount || 0).toFixed(2)}</td>
+              <td><span class="badge ${badge}">${status.toUpperCase()}</span></td>
+              <td>${new Date(tx.created_at).toLocaleString()}</td>
+              <td>
+                ${status === 'pending' ? `
+                  <button class="action-btn btn-success" onclick="procRecharge(${tx.id}, 'approved')">Approve</button>
+                  <button class="action-btn btn-danger" onclick="procRecharge(${tx.id}, 'rejected')">Reject</button>
+                ` : '<span style="color:#6b7280; font-size:0.75rem;">Completed</span>'}
+              </td>
+            </tr>
+          `;
+        }).join('');
+        document.getElementById('statPendingRecharges').innerText = pending;
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444;">Failed to load recharges.</td></tr>`;
+      }
+    }
+
+    async function procRecharge(rechargeId, action) {
+      if (!confirm(`Are you sure you want to ${action} recharge #${rechargeId}?`)) return;
+      try {
+        const res = await apiRequest('/api/admin/recharge/action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rechargeId, action })
+        });
+        const data = await res.json();
+        showToast(data.message || 'Success');
+        initDashboardData();
+      } catch (e) { alert('Error processing recharge.'); }
+    }
+
+    async function loadWithdrawals() {
+      const tbody = document.getElementById('withdrawalsTableBody');
+      try {
+        const res = await apiRequest('/api/admin/withdrawals');
+        const data = await res.json();
+        const list = data.withdrawals || [];
+        let pending = 0;
+
+        if (!list.length) {
+          tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #9ca3af;">No withdrawal records found.</td></tr>`;
+          document.getElementById('statPendingWithdrawals').innerText = '0';
+          return;
+        }
+
+        tbody.innerHTML = list.map(tx => {
+          const status = (tx.status || 'pending').toLowerCase();
+          if (status === 'pending') pending++;
+          const badge = status === 'approved' ? 'badge-approved' : (status === 'rejected' ? 'badge-rejected' : 'badge-pending');
+          const channel = tx.channel || tx.card_channel || 'MoMo';
+          const account = tx.account_number || 'N/A';
+          const officialName = tx.official_name ? tx.official_name : '';
+
+          return `
+            <tr>
+              <td>#${tx.id}</td> 
+              <td><strong>${tx.username || 'N/A'}</strong></td>
+              <td>
+                <div><strong>${channel}</strong></div>
+                <div style="font-family: monospace; color:#38bdf8;">
+                  <span id="acc-${tx.id}">${account}</span>
+                  <button class="copy-btn" onclick="copyToClipboard('${account}')">Copy No.</button>
+                </div>
+                ${officialName ? `
+                  <div style="color:#9ca3af; font-size: 0.8rem;">
+                    <span id="name-${tx.id}">${officialName}</span>
+                    <button class="copy-btn" onclick="copyToClipboard('${officialName}')">Copy Name</button>
+                  </div>
+                ` : ''}
+              </td>
+              <td style="color:#f59e0b; font-weight:bold;">GH₵ ${parseFloat(tx.amount || 0).toFixed(2)}</td>
+              <td>GH₵ ${parseFloat(tx.fee || 0).toFixed(2)}</td>
+              <td style="color:#22c55e; font-weight:bold;">GH₵ ${parseFloat(tx.net_amount || 0).toFixed(2)}</td>
+              <td><span class="badge ${badge}">${status.toUpperCase()}</span></td>
+              <td>${new Date(tx.created_at).toLocaleString()}</td>
+              <td>
+                ${status === 'pending' ? `
+                  <button class="action-btn btn-success" onclick="procWithdrawal(${tx.id}, 'approved')">Approve</button>
+                  <button class="action-btn btn-danger" onclick="procWithdrawal(${tx.id}, 'rejected')">Reject</button>
+                ` : '<span style="color:#6b7280; font-size:0.75rem;">Completed</span>'}
+              </td>
+            </tr>
+          `;
+        }).join('');
+        document.getElementById('statPendingWithdrawals').innerText = pending;
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #ef4444;">Failed to load withdrawals.</td></tr>`;
+      }
+    }
+
+    async function procWithdrawal(withdrawalId, action) {
+      if (!confirm(`Are you sure you want to ${action} withdrawal #${withdrawalId}?`)) return;
+      try {
+        const res = await apiRequest('/api/admin/withdrawal/action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ withdrawalId, action })
+        });
+        const data = await res.json();
+        showToast(data.message || 'Success');
+        initDashboardData();
+      } catch (e) { alert('Error processing withdrawal.'); }
+    }
+
+    async function loadBonusCodes() {
+      const tbody = document.getElementById('bonusCodesTableBody');
+      try {
+        const res = await apiRequest('/api/admin/bonus-codes');
+        const data = await res.json();
+        const list = data.codes || [];
+
+        if (!list.length) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #9ca3af;">No bonus codes generated yet.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = list.map(b => {
+          const isClaimed = b.status === 'claimed';
+          return `
+            <tr>
+              <td><strong>${b.code}</strong></td>
+              <td style="color:#22c55e; font-weight:bold;">GH₵ ${parseFloat(b.amount || 0).toFixed(2)}</td>
+              <td><span class="badge ${isClaimed ? 'badge-rejected' : 'badge-approved'}">${b.status.toUpperCase()}</span></td>
+              <td>${b.claimed_by_username || '—'}</td>
+              <td>
+                <button class="action-btn btn-danger" onclick="deleteBonusCode(${b.id})">Delete</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef4444;">Failed to load bonus codes.</td></tr>`;
+      }
+    }
+
+    async function createBonusCode(e) {
+      e.preventDefault();
+      const code = document.getElementById('newBonusCode').value.trim().toUpperCase();
+      const amount = parseFloat(document.getElementById('newBonusAmount').value);
+
+      try {
+        const res = await apiRequest('/api/admin/bonus-codes/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, amount })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message || 'Bonus code created successfully');
+          document.getElementById('newBonusCode').value = '';
+          document.getElementById('newBonusAmount').value = '';
+          loadBonusCodes();
+        } else {
+          alert(data.message || 'Failed to create bonus code.');
+        }
+      } catch (e) {
+        alert('Server error creating bonus code.');
+      }
+    }
+
+    async function deleteBonusCode(codeId) {
+      if (!confirm('Are you sure you want to delete this bonus code?')) return;
+      try {
+        const res = await apiRequest('/api/admin/bonus-codes/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ codeId })
+        });
+        const data = await res.json();
+        showToast(data.message || 'Deleted successfully');
+        loadBonusCodes();
+      } catch (e) {
+        alert('Error deleting bonus code.');
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        const res = await apiRequest('/api/admin/users');
+        const data = await res.json();
+        globalUsersList = data.users || [];
+        filterUsersTable();
+      } catch (e) {
+        document.getElementById('usersTableBody').innerHTML = `<tr><td colspan="8" style="text-align: center; color: #ef4444;">Failed to load users directory.</td></tr>`;
+        document.getElementById('referralsTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: #9ca3af;">Failed to load referral stats.</td></tr>`;
+      }
+    }
+
+    function filterUsersTable() {
+      const q = document.getElementById('userSearchBox').value.trim().toLowerCase();
+      const filtered = globalUsersList.filter(u => {
+        const username = String(u.username || '').toLowerCase();
+        const email = String(u.email || '').toLowerCase();
+        const id = String(u.id || '');
+        return username.includes(q) || email.includes(q) || id.includes(q);
+      });
+      renderUsers(filtered);
+      renderReferrals(filtered);
+    }
+
+    function renderUsers(users) {
+      const tbody = document.getElementById('usersTableBody');
+      if (!users.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #9ca3af;">No matching users found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = users.map(u => {
+        const id = u.id;
+        const isDel = u.status === 'deleted' || u.is_deleted == 1;
+
+        return `
+          <tr>
+            <td>#${id}</td>
+            <td><strong>${u.username}</strong></td>
+            <td>${u.email || 'N/A'}</td>
+            <td>GH₵ ${parseFloat(u.balance || 0).toFixed(2)}</td>
+            <td>GH₵ ${parseFloat(u.deposit_balance || 0).toFixed(2)}</td>
+            <td><span class="badge ${isDel ? 'badge-deleted' : 'badge-approved'}">${isDel ? 'DELETED' : 'ACTIVE'}</span></td>
+            <td>
+              <button class="action-btn btn-success" onclick="toggleWd(${id}, 1)">Enable</button>
+              <button class="action-btn btn-danger" onclick="toggleWd(${id}, 0)">Disable</button>
+            </td>
+            <td>
+              ${isDel ? 
+                `<button class="action-btn btn btn-success" onclick="userAction(${id}, 'restore')">Restore</button>` : 
+                `<button class="action-btn btn-danger" onclick="userAction(${id}, 'delete')">Delete</button>`
+              }
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderReferrals(users) {
+      const tbody = document.getElementById('referralsTableBody');
+      if (!users.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #9ca3af;">No referral records found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = users.map(u => {
+        const id = u.id;
+        const username = u.username || 'N/A';
+        const teamCount = u.team_count || 0;
+        const invitedBy = u.invited_by_username || 'Direct / None';
+
+        return `
+          <tr>
+            <td>#${id}</td>
+            <td><strong>${username}</strong></td>
+            <td><span class="badge badge-approved" style="font-size:0.8rem;">${teamCount} Members</span></td>
+            <td><span style="color:#38bdf8; font-weight:600;">${invitedBy}</span></td>
+            <td>GH₵ ${parseFloat(u.balance || 0).toFixed(2)}</td>
+            <td>
+              <button class="action-btn btn" style="background:#7c3aed;" onclick="viewTree(${id}, '${username}')">Tree View</button>
+            </td>
+            <td>
+              <button class="action-btn btn-success" onclick="loginAsUser(${id}, '${username}')">Login as User</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function toggleWd(userId, state) {
+  try {
+    const res = await apiRequest('/api/admin/users/toggle-withdrawal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, enabled: state })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message || 'Updated withdrawal status');
+      initDashboardData();
+    } else {
+      alert(data.message || 'Failed to update withdrawal permission.');
+    }
+  } catch (e) {
+    console.error('Toggle withdrawal error:', e);
+    alert('Server error updating withdrawal permission.');
+  }
+}
+
+async function userAction(userId, action) {
+  if (!confirm(`Are you sure you want to ${action} user #${userId}?`)) return;
+  try {
+    const res = await apiRequest('/api/admin/users/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message || 'Success');
+      initDashboardData();
+    } else {
+      alert(data.message || 'Failed to modify user account.');
+    }
+  } catch (e) {
+    console.error('User action error:', e);
+    alert('Server error modifying user account.');
+  }
+}
+
+    async function viewTree(userId, username) {
+      document.getElementById('treeModalTitle').innerText = `Referral Downline Tree for ${username} (#${userId})`;
+      document.getElementById('treeModalContent').innerHTML = `<p style="color:#9ca3af; text-align:center; padding:20px;">Fetching downline network...</p>`;
+      openModal('treeModal');
+
+      try {
+        const res = await apiRequest(`/api/admin/users/${userId}/referrals`);
+        const data = await res.json();
+        const tree = data.tree || [];
+
+        if (!tree.length) {
+          document.getElementById('treeModalContent').innerHTML = `<p style="color:#9ca3af; text-align:center; padding:20px;">No downline referrals found for this user.</p>`;
+          return;
+        }
+
+        document.getElementById('treeModalContent').innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>ID</th><th>Username</th><th>Level</th><th>Balance</th><th>Joined Date</th></tr>
+              </thead>
+              <tbody>
+                ${tree.map(r => `
+                  <tr>
+                    <td>#${r.id}</td>
+                    <td><strong>${r.username}</strong></td>
+                    <td><span style="color:#38bdf8">Level ${r.level}</span></td>
+                    <td>GH₵ ${parseFloat(r.balance || 0).toFixed(2)}</td>
+                    <td>${new Date(r.created_at).toLocaleString()}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } catch (e) {
+        document.getElementById('treeModalContent').innerHTML = `<p style="color:#ef4444; text-align:center; padding:20px;">Failed to fetch referral tree.</p>`;
+      }
+    }
+
+    async function adjustUserBalance(e) {
+      e.preventDefault();
+      const username = document.getElementById('adjUsername').value.trim();
+      const balanceType = document.getElementById('adjBalanceType').value;
+      const type = document.getElementById('adjType').value;
+      const amount = parseFloat(document.getElementById('adjAmount').value);
+
+      try {
+        const res = await apiRequest('/api/admin/users/balance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, balanceType, type, amount })
+        });
+        const data = await res.json();
+        showToast(data.message || 'Balance adjusted successfully');
+        if (data.success) {
+          document.getElementById('adjUsername').value = '';
+          document.getElementById('adjAmount').value = '';
+          initDashboardData();
+        } else {
+          alert(data.message || 'Failed to adjust balance.');
+        }
+      } catch (e) { alert('Server error adjusting balance.'); }
+    }
+
+    async function resetUserPassword(e) {
+      e.preventDefault();
+      const username = document.getElementById('resetPassInput').value.trim();
+      const newPassword = document.getElementById('newPasswordInput').value.trim();
+
+      if (newPassword.length < 8) {
+        alert('New password must be at least 8 characters.');
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to update the password for "${username}"?`)) return;
+
+      try {
+        const res = await apiRequest('/api/admin/users/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, newPassword })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message || 'Password updated successfully');
+          document.getElementById('resetPassInput').value = '';
+          document.getElementById('newPasswordInput').value = '';
+        } else {
+          alert(data.message || 'Failed to update password.');
+        }
+      } catch (e) { alert('Server error updating password.'); }
+    }
+
+    async function resetBoundAccount(e) {
+      e.preventDefault();
+      const target = document.getElementById('resetAccountInput').value.trim();
+
+      if (!target) {
+        alert('Please enter a username or user ID.');
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to clear bound payment card details for "${target}"?`)) return;
+
+      try {
+        const payload = isNaN(target) ? { username: target } : { userId: target };
+        const res = await apiRequest('/api/admin/bankcard/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message || 'Payment account reset successfully');
+          document.getElementById('resetAccountInput').value = '';
+        } else {
+          alert(data.message || 'Failed to reset bank account.');
+        }
+      } catch (e) {
+        alert('Server error resetting payment account.');
+      }
+    }
+
+    async function loginAsUser(userId, username) {
+      if (!confirm(`Are you sure you want to log in as user "${username}" (#${userId})?`)) return;
+
+      try {
+        const res = await apiRequest('/api/admin/users/impersonate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId })
+        });
+        const data = await res.json();
+
+        if (data.success && data.token) {
+          // Store token under user key and open home/dashboard in a new tab
+          localStorage.setItem('skyson_token', data.token);
+          window.open('home.html', '_blank');
+        } else {
+          alert(data.message || 'Failed to generate user session.');
+        }
+      } catch (e) {
+        console.error('Impersonation error:', e);
+        alert('Server error logging in as user.');
+      }
+    }
+
+    function logoutAdmin() {
+      localStorage.removeItem('skyson_token');
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('token');
+      window.location.href = 'godwin-genius.html';
+    }
+  </script>
+</body>
+</html>

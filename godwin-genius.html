@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skysonsolar — Admin Portal Login</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: #0b0f19;
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      background-color: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 420px;
+      padding: 30px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .login-header h1 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .login-header p {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      background-color: #030712;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus {
+      border-color: #38bdf8;
+    }
+
+    .alert-error {
+      display: none;
+      background-color: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background-color: #0284c7;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-submit:hover {
+      background-color: #0369a1;
+    }
+
+    .btn-submit:disabled {
+      background-color: #374151;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="login-header">
+      <h1>👑 Skysonsolar Admin</h1>
+      <p>Enter administrative credentials to access command center</p>
+    </div>
+
+    <div id="errorAlert" class="alert-error"></div>
+
+    <form onsubmit="handleAdminLogin(event)">
+      <div class="form-group">
+        <label for="usernameInput">Administrator Username</label>
+        <input type="text" id="usernameInput" placeholder="Enter admin username" required autocomplete="username">
+      </div>
+
+      <div class="form-group">
+        <label for="passwordInput">Password</label>
+        <input type="password" id="passwordInput" placeholder="Enter secure password" required autocomplete="current-password">
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn-submit">Authenticate Session</button>
+    </form>
+  </div>
+
+  <script>
+    const API_BASE = 'https://skyson-backend-production.up.railway.app';
+
+    // Auto-redirect if already logged in with a valid token
+    if (localStorage.getItem('skyson_token')) {
+      window.location.href = 'ctrl-ctrl-lilhexz-gtrc36.html';
+    }
+
+    async function handleAdminLogin(event) {
+      event.preventDefault();
+
+      const username = document.getElementById('usernameInput').value.trim();
+      const password = document.getElementById('passwordInput').value.trim();
+      const errorAlert = document.getElementById('errorAlert');
+      const submitBtn = document.getElementById('submitBtn');
+
+      errorAlert.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Authenticating...';
+
+      try {
+        const response = await fetch(`${API_BASE}/api/admin/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success && data.token) {
+          // Store token under skyson_token
+          localStorage.setItem('skyson_token', data.token);
+          window.location.href = 'ctrl-ctrl-lilhexz-gtrc36.html';
+        } else {
+          throw new Error(data.message || 'Invalid administrator credentials.');
+        }
+      } catch (err) {
+        errorAlert.textContent = err.message || 'Failed to connect to backend server.';
+        errorAlert.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Authenticate Session';
+      }
+    }
+  </script>
+</body>
+</html>
