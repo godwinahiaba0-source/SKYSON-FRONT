@@ -266,6 +266,7 @@
 
     <!-- Referral Metrics & Downline Viewer -->
     <!-- Referral Metrics & Downline Viewer -->
+    <!-- Referral Metrics & Downline Viewer -->
     <div class="card">
       <h2>User Referral Network Statistics</h2>
       <div class="table-wrap">
@@ -278,10 +279,11 @@
               <th>Invited By</th>
               <th>Account Balance</th>
               <th>Network Tree</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="referralsTableBody">
-            <tr><td colspan="6" style="text-align: center; color: #9ca3af;">Loading referral metrics...</td></tr>
+            <tr><td colspan="7" style="text-align: center; color: #9ca3af;">Loading referral metrics...</td></tr>
           </tbody>
         </table>
       </div>
@@ -745,7 +747,8 @@
             <td><span style="color:#38bdf8; font-weight:600;">${invitedBy}</span></td>
             <td>GH₵ ${parseFloat(u.balance || 0).toFixed(2)}</td>
             <td>
-              <button class="action-btn btn" style="background:#7c3aed;" onclick="viewTree(${id}, '${username}')">Tree View</button>
+              <button class="action-btn btn" style="background:#7c3aed; margin-right:4px;" onclick="viewTree(${id}, '${username}')">Tree</button>
+              <button class="action-btn btn-success" onclick="loginAsUser(${id}, '${username}')">Login as User</button>
             </td>
           </tr>
         `;
@@ -914,6 +917,30 @@ async function userAction(userId, action) {
         }
       } catch (e) {
         alert('Server error resetting payment account.');
+      }
+    }
+
+    async function loginAsUser(userId, username) {
+      if (!confirm(`Are you sure you want to log in as user "${username}" (#${userId})?`)) return;
+
+      try {
+        const res = await apiRequest('/api/admin/users/impersonate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId })
+        });
+        const data = await res.json();
+
+        if (data.success && data.token) {
+          // Store token under user key and open home/dashboard in a new tab
+          localStorage.setItem('skyson_token', data.token);
+          window.open('home.html', '_blank');
+        } else {
+          alert(data.message || 'Failed to generate user session.');
+        }
+      } catch (e) {
+        console.error('Impersonation error:', e);
+        alert('Server error logging in as user.');
       }
     }
 
