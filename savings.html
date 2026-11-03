@@ -279,21 +279,50 @@ async function loadFundSummary() {
     const data = await res.json();
     document.getElementById('active-invested').textContent = `GH₵ ${(data.totalActive || 0).toFixed(2)}`;
     document.getElementById('todays-earnings').textContent = `GH₵ ${(data.todayEarnings || 0).toFixed(2)}`;
+    return data; // Return data so openRecordsModal can use it directly
   } catch (e) {
     console.error('Fund summary load error:', e);
+    return null;
   }
 }
 
 async function openRecordsModal() {
   document.getElementById('recordsModal').classList.add('active');
   const container = document.getElementById('purchasedRecordsContainer');
+  container.innerHTML = `<div style="text-align: center; color: var(--muted); padding: 20px;">Loading investment records...</div>`;
+  
   const token = localStorage.getItem('skyson_token');
 
   try {
-    loadFundSummary();
-    container.innerHTML = `<div style="text-align: center; color: var(--muted); padding: 20px;">Active investments are running and will auto-credit upon completion.</div>`;
+    const data = await loadFundSummary();
+    
+    if (!data || !data.investments || data.investments.length === 0) {
+      container.innerHTML = `<div style="text-align: center; color: var(--muted); padding: 20px;">No investment records found.</div>`;
+      return;
+    }
+
+    // Render list of active/completed investments dynamically
+    container.innerHTML = data.investments.map(inv => {
+      const planTitle = inv.plan_name || 'Solar Storage Plan';
+      const statusColor = inv.status === 'active' ? 'var(--blue)' : 'var(--green)';
+      const dateStr = new Date(inv.created_at).toLocaleDateString();
+
+      return `
+        <div class="record-item-card" style="display: flex; justify-content: space-between; align-items: center; background: #f8fbff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;">
+          <div>
+            <div style="font-weight: 800; color: var(--ink); font-size: 13px;">${planTitle}</div>
+            <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">Date: ${dateStr}</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-weight: 850; color: var(--ink); font-size: 13px;">GH₵ ${parseFloat(inv.amount).toFixed(2)}</div>
+            <div style="font-size: 11px; font-weight: 700; color: ${statusColor}; text-transform: uppercase;">${inv.status}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
   } catch (err) {
-    container.innerHTML = `<div style="text-align: center; color: var(--muted); padding: 20px;">No investment records found.</div>`;
+    container.innerHTML = `<div style="text-align: center; color: var(--muted); padding: 20px;">Failed to load records.</div>`;
   }
 }
 
