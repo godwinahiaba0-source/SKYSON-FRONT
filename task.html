@@ -1,4 +1,210 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skysonsolar — Task Center</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #f4f6f9;
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      background: #f4f6f9;
+      padding-bottom: 90px;
+      position: relative;
+    }
+
+    .header-nav {
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      background: linear-gradient(120deg, #064aa8, #087cf9); 
+      padding: 14px 16px; 
+      color: #fff;
+    }
+    .back-btn { 
+      width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.2); border: 0; color: #fff; font-size: 22px; display: grid; place-items: center; cursor: pointer; text-decoration: none; 
+    }
+    .header-nav h1 { font-size: 18px; margin: 0; font-weight: 800; }
+
+    .banner-card {
+      margin: 16px 14px;
+      background: linear-gradient(135deg, #06459d, #0878f9);
+      border-radius: 20px;
+      padding: 20px;
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(8, 120, 249, 0.25);
+    }
+    .banner-card h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      font-weight: 850;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .banner-card p {
+      margin: 0;
+      font-size: 12px;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+
+    .task-list {
+      padding: 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .task-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .task-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .task-title {
+      font-size: 15px;
+      font-weight: 850;
+      color: var(--blue);
+    }
+
+    .gen-badge {
+      font-size: 11px;
+      background: #dcfce7;
+      color: #15803d;
+      padding: 4px 10px;
+      font-weight: 800;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .task-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      background: #f8fbff;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+    }
+
+    .task-info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .info-label {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .info-val {
+      font-size: 14px;
+      font-weight: 850;
+      color: var(--ink);
+    }
+
+    .claim-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #06459d, #0878f9);
+      color: #ffffff;
+      border: none;
+      padding: 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(8, 120, 249, 0.3);
+      transition: transform 0.1s ease;
+    }
+
+    .claim-btn:active {
+      transform: scale(0.98);
+    }
+
+    .claim-btn.disabled {
+      background: #cbd5e1;
+      color: #64748b;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Topbar Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">☀️</div>
+        <div>
+          <div class="brand-name">Skysonsolar</div>
+          <div class="tagline">CLEAN ENERGY · GREEN FUTURE</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='team.html'" title="Team">♣</button>
+        <button style="background:transparent; border:0; color:#fff; font-size:18px; cursor:pointer;" onclick="location.href='account.html'" title="Account">👤</button>
+      </div>
+    </header>
+
+    <main style="padding: 0;">
+      <div class="header-nav">
+        <button class="back-btn" onclick="location.href='home.html'">‹</button>
+        <h1>Task Center — Claim Daily Income</h1>
+        <div style="width: 40px;"></div>
+      </div>
+
+      <div class="banner-card">
+        <h2><span>▤</span> Daily Revenue Collection</h2>
+        <p>Claim your 24-hour daily generation earnings for all active leased products below.</p>
+      </div>
+
+      <div id="tasksContainer" class="task-list">
+        <div style="background: #ffffff; border-radius: 18px; padding: 24px; text-align: center; color: var(--muted); font-size: 13px; font-weight: 700; border: 1px solid var(--line);">
+          Loading your active solar generation plants...
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <button class="nav-btn" onclick="location.href='home.html'"><span class="nav-icon">⌂</span>Home</button>
+      <button class="nav-btn" onclick="location.href='lease.html'"><span class="nav-icon">⬡</span>Lease</button>
+      <button class="nav-btn" onclick="location.href='team.html'"><span class="nav-icon">♟</span>Team</button>
+      <button class="nav-btn" onclick="location.href='plan.html'"><span class="nav-icon">▤</span>Plan</button>
+      <button class="nav-btn" onclick="location.href='account.html'"><span class="nav-icon">♙</span>Account</button>
+    </nav>
+  </div>
+
+  <script>
     const API_BASE_URL = 'https://skyson-backend-production.up.railway.app';
 
     async function fetchTaskLeases() {
@@ -59,3 +265,5 @@
 
     window.addEventListener('DOMContentLoaded', fetchTaskLeases);
   </script>
+</body>
+</html>
