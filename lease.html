@@ -204,7 +204,7 @@
       <!-- LEASE CARDS S1 TO S8 -->
       <div class="lease-list">
 
-        <!-- S1 -->
+        <!-- S1 (Open) -->
         <div class="lease-card">
           <div class="lease-card-header">
             <img src="s1.jpg" alt="S1 Solar Lease" class="lease-img">
@@ -222,7 +222,7 @@
           <button id="btn-S1 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S1 Skysonsolar Plan', 100, 5, 60)">Lease / Purchase S1</button>
         </div>
 
-        <!-- S2 -->
+        <!-- S2 (Open) -->
         <div class="lease-card">
           <div class="lease-card-header">
             <img src="s2.jpg" alt="S2 Solar Lease" class="lease-img">
@@ -240,7 +240,7 @@
           <button id="btn-S2 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S2 Skysonsolar Plan', 200, 10, 60)">Lease / Purchase S2</button>
         </div>
 
-        <!-- S3 -->
+        <!-- S3 (Open) -->
         <div class="lease-card">
           <div class="lease-card-header">
             <img src="s3.jpg" alt="S3 Solar Lease" class="lease-img">
@@ -258,7 +258,7 @@
           <button id="btn-S3 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S3 Skysonsolar Plan', 600, 25, 60)">Lease / Purchase S3</button>
         </div>
 
-        <!-- S4 -->
+        <!-- S4 (Locked) -->
         <div class="lease-card">
           <div class="lease-card-header">
             <img src="s4.jpg" alt="S4 Solar Lease" class="lease-img">
@@ -273,10 +273,10 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 6,720.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">204.32 KWH</span></div>
           </div>
-          <button id="btn-S4 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S4 Skysonsolar Plan', 1000, 42, 160)">Lease / Purchase S4</button>
+          <button id="btn-S4 Skysonsolar Plan" class="lease-btn disabled" disabled>Plan Locked</button>
         </div>
 
-        <!-- S5 -->
+        <!-- S5 (Locked) -->
         <div class="lease-card">
           <div class="lease-card-header">
             <img src="s5.jpg" alt="S5 Solar Lease" class="lease-img">
@@ -291,10 +291,10 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 9,920.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">409.86 KWH</span></div>
           </div>
-          <button id="btn-S5 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S5 Skysonsolar Plan', 1500, 62, 160)">Lease / Purchase S5</button>
+          <button id="btn-S5 Skysonsolar Plan" class="lease-btn disabled" disabled>Plan Locked</button>
         </div>
 
-        <!-- S6 -->
+        <!-- S6 (Locked) -->
         <div class="lease-card">
           <div class="lease-card-header">
             <img src="s6.jpg" alt="S6 Solar Lease" class="lease-img">
@@ -309,10 +309,10 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 13,440.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">875.64 KWH</span></div>
           </div>
-          <button id="btn-S6 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S6 Skysonsolar Plan', 2000, 84, 160)">Lease / Purchase S6</button>
+          <button id="btn-S6 Skysonsolar Plan" class="lease-btn disabled" disabled>Plan Locked</button>
         </div>
 
-        <!-- S7 -->
+        <!-- S7 (Locked) -->
         <div class="lease-card">
           <div class="lease-card-header">
             <img src="s7.jpg" alt="S7 Solar Lease" class="lease-img">
@@ -327,10 +327,10 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 20,000.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">942.86 KWH</span></div>
           </div>
-          <button id="btn-S7 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S7 Skysonsolar Plan', 3000, 125, 160)">Lease / Purchase S7</button>
+          <button id="btn-S7 Skysonsolar Plan" class="lease-btn disabled" disabled>Plan Locked</button>
         </div>
 
-        <!-- S8 -->
+        <!-- S8 (Locked) -->
         <div class="lease-card">
           <div class="lease-card-header">
             <img src="s8.jpg" alt="S8 Solar Lease" class="lease-img">
@@ -345,7 +345,7 @@
             <div class="lease-info-item"><span class="info-label">Total Returns</span><span class="info-val" style="color:#0878f9;">GH₵ 30,720.00</span></div>
             <div class="lease-info-item"><span class="info-label">Generation</span><span class="info-val">1,280.00 KWH</span></div>
           </div>
-          <button id="btn-S8 Skysonsolar Plan" class="lease-btn" onclick="submitLease('S8 Skysonsolar Plan', 5000, 192, 160)">Lease / Purchase S8</button>
+          <button id="btn-S8 Skysonsolar Plan" class="lease-btn disabled" disabled>Plan Locked</button>
         </div>
 
       </div>
@@ -386,11 +386,11 @@
         const container = document.getElementById('myLeasesContainer');
 
         if (res.ok && data.leases && data.leases.length > 0) {
-          // Disable buttons for plans already leased
+          // Disable buttons for plans already leased (Only for S1 to S3 since S4-S8 are permanently locked)
           data.leases.forEach(lease => {
             const btnId = `btn-${lease.plan_name}`;
             const btn = document.getElementById(btnId);
-            if (btn) {
+            if (btn && !btn.disabled) {
               btn.textContent = 'Already Leased / Active';
               btn.className = 'lease-btn disabled';
               btn.disabled = true;
