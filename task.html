@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skysonsolar — EARNINGS CENTER</title>
+  <title>Skysonsolar — Task Center</title>
   <link rel="stylesheet" href="style.css">
   <style>
     body {
@@ -178,13 +178,13 @@
     <main style="padding: 0;">
       <div class="header-nav">
         <button class="back-btn" onclick="location.href='home.html'">‹</button>
-        <h1>Earnings Center</h1>
+        <h1>Task Center — Claim Daily Income</h1>
         <div style="width: 40px;"></div>
       </div>
 
       <div class="banner-card">
         <h2><span>▤</span> Daily Revenue Collection</h2>
-        <p>Your 24-hourly earnings from active solar generation plants are automatically credited to your withdrawable balance.</p>
+        <p>Claim your 24-hour daily generation earnings for all active leased products below.</p>
       </div>
 
       <div id="tasksContainer" class="task-list">
@@ -222,31 +222,57 @@
         const container = document.getElementById('tasksContainer');
 
         if (res.ok && data.leases && data.leases.length > 0) {
+          const now = new Date();
+
           container.innerHTML = data.leases.map(lease => {
+            const hasNeverClaimed = !lease.last_claim_time;
+            let isReady = hasNeverClaimed;
+            let timeRemainingText = '';
+
+            if (!hasNeverClaimed) {
+              const lastClaim = new Date(lease.last_claim_time);
+              const nextClaimTime = new Date(lastClaim.getTime() + (24 * 60 * 60 * 1000));
+              const diffMs = nextClaimTime - now;
+
+              if (diffMs <= 0) {
+                isReady = true;
+              } else {
+                const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                timeRemainingText = `Next Claim Available in ${hours}h ${mins}m`;
+              }
+            }
+
             const dailyIncomeNum = Number(lease.daily_income).toFixed(2);
 
             return `
               <div class="task-card">
                 <div class="task-card-head">
                   <span class="task-title">${lease.plan_name}</span>
-                  <span class="gen-badge">⚡ Auto-Crediting Active</span>
+                  <span class="gen-badge">⚡ Generating</span>
                 </div>
                 <div class="task-grid">
                   <div class="task-info-item">
-                    <span class="info-label">Daily Income Payout</span>
-                    <span class="info-val" style="color: #0878f9;">GH₵ ${dailyIncomeNum} / 24h</span>
+                    <span class="info-label">Daily Income</span>
+                    <span class="info-val" style="color: #0878f9;">GH₵ ${dailyIncomeNum}</span>
                   </div>
                   <div class="task-info-item">
                     <span class="info-label">Status</span>
-                    <span class="info-val" style="color: #16a34a;">
-                      Running & Crediting
+                    <span class="info-val" style="color: ${isReady ? '#16a34a' : '#0284c7'};">
+                      ${isReady ? 'Ready to Claim' : 'In Progress'}
                     </span>
                   </div>
                 </div>
 
-                <div style="font-size: 11px; color: #15803d; background: #dcfce7; padding: 10px; border-radius: 10px; text-align: center; font-weight: 700;">
-                  ✓ Daily earnings are automatically added to your withdrawable balance.
-                </div>
+                ${isReady ? `
+                  <button class="claim-btn" onclick="claimIncome(${lease.id}, '${lease.plan_name}')">
+                    Claim GH₵ ${dailyIncomeNum}
+                  </button>
+                ` : `
+                  <button class="claim-btn disabled" disabled>
+                    ${timeRemainingText || 'Next Claim Available in 24h'}
+                  </button>
+                `}
               </div>
             `;
           }).join('');
@@ -260,6 +286,31 @@
         }
       } catch (err) {
         console.error('Task fetch error:', err);
+      }
+    }
+
+    async function claimIncome(leaseId, planName) {
+      const token = localStorage.getItem('skyson_token');
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/lease/claim`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ leaseId })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert(data.message || `Successfully claimed daily income for ${planName}!`);
+          fetchTaskLeases();
+        } else {
+          alert(data.message || 'Failed to claim daily income.');
+        }
+      } catch (err) {
+        console.error('Claim error:', err);
+        alert('Network error attempting to claim earnings.');
       }
     }
 

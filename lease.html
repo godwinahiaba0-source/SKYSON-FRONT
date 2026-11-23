@@ -397,7 +397,7 @@
             }
           });
 
-          // Render active leases box with auto-crediting confirmation
+          // Render active leases box with manual Claim Daily Income button
           container.innerHTML = data.leases.map(lease => `
             <div class="active-lease-card">
               <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -406,11 +406,11 @@
               </div>
               <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted);">
                 <span>Price Paid: <strong>GH₵ ${Number(lease.price).toFixed(2)}</strong></span>
-                <span>Daily Payout: <strong style="color: #16a34a;">GH₵ ${Number(lease.daily_income).toFixed(2)} / 24h</strong></span>
+                <span>Daily Income: <strong style="color: #16a34a;">GH₵ ${Number(lease.daily_income).toFixed(2)}</strong></span>
               </div>
-              <div style="font-size: 11px; color: #15803d; background: #dcfce7; padding: 8px; border-radius: 8px; text-align: center; font-weight: 700; margin-top: 4px;">
-                ✓ Auto-crediting daily to your withdrawable balance.
-              </div>
+              <button class="lease-btn" style="background: #16a34a; box-shadow: 0 3px 8px rgba(22, 163, 74, 0.3); margin-top: 4px;" onclick="claimDailyIncome(${lease.id})">
+                Claim Daily Income →
+              </button>
             </div>
           `).join('');
         } else {
@@ -458,6 +458,30 @@
       } catch (err) {
         console.error('Lease error:', err);
         alert('Network error connecting to server.');
+      }
+    }
+
+    async function claimDailyIncome(leaseId) {
+      const token = localStorage.getItem('skyson_token');
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/lease/claim`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ leaseId })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert(data.message);
+          location.reload();
+        } else {
+          alert(data.message || 'Failed to claim daily income.');
+        }
+      } catch (err) {
+        alert('Network error during daily claim.');
       }
     }
 
